@@ -1,0 +1,25 @@
+# --- OS & IDE ---
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# --- Backend (Laravel) ---
+/backend/vendor/
+/backend/.env
+/backend/storage/framework/
+/backend/storage/logs/
+/backend/bootstrap/cache/
+/backend/public/storage/
+/backend/public/build/
+
+# --- Frontend (NextJS) ---
+/frontend/node_modules/
+/frontend/.next/
+/frontend/out/
+/frontend/.env*.local
+
+# --- General ---
+*.sqlite
+node_modules/
+vendor/
