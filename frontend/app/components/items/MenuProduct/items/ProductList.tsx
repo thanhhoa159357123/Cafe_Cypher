@@ -5,9 +5,14 @@ import Image from 'next/image'
 interface ProductListProps {
   products: IProduct[]
   childItems: ICategory[]
+  setSelectedProduct: (product: IProduct | null) => void
 }
 
-const ProductList = ({ products, childItems }: ProductListProps) => {
+const ProductList = ({
+  products,
+  childItems,
+  setSelectedProduct,
+}: ProductListProps) => {
   if (products.length === 0) {
     return <p>Sản phẩm sắp được lên kệ.</p>
   }
@@ -16,21 +21,22 @@ const ProductList = ({ products, childItems }: ProductListProps) => {
     <div className="px-2 py-1">
       {childItems.map((child) => {
         const filteredProducts = products.filter(
-          (p) => p.category?.id === child.id,
+          (p) => p.category?.category_id === child.category_id,
         )
         return (
           <div
-            key={child.id}
-            id={child.slug}
+            key={child.category_id}
+            id={child.category_slug}
             className="flex flex-col mb-6 gap-4 scroll-mt-24"
           >
             <h2 className="text-xl font-semibold text-gray-800">
-              {child.name}
+              {child.category_name}
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {filteredProducts.map((product) => (
                 <div
                   key={product.id}
+                  onClick={() => setSelectedProduct(product)}
                   className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer"
                 >
                   <div className="p-4">

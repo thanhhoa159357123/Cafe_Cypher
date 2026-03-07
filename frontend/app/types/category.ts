@@ -1,7 +1,7 @@
 interface ICategory {
-  id: number | string
-  name: string
-  slug: string
+  category_id: number | string
+  category_name: string
+  category_slug: string
   children?: ICategory[]
 }
 
@@ -11,7 +11,7 @@ interface CategoryState {
   categories: ICategory[]
 
   selectedCategory: ICategory | null
-  selectCategory: (category: ICategory | null) => void
+  setSelectedCategory: (category: ICategory | null) => void
 
   fetchCategories: () => Promise<void>
 }

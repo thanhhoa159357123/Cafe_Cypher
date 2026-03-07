@@ -6,6 +6,7 @@ export const useProductStore = create<ProductState>((set) => ({
   loading: false,
   error: null,
   products: [],
+  selectedProduct: null,
 
   fetchProducts: async () => {
     set({ loading: true, error: null })
@@ -17,4 +18,6 @@ export const useProductStore = create<ProductState>((set) => ({
       set({ error: 'Không lấy được dữ liệu', loading: false })
     }
   },
+
+  setSelectedProduct: (product) => set({ selectedProduct: product }),
 }))

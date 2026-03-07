@@ -13,8 +13,10 @@ interface ProductState {
   loading: boolean
   error: string | null
   products: IProduct[]
+  selectedProduct: IProduct | null
 
   fetchProducts: () => Promise<void>
+  setSelectedProduct: (product: IProduct | null) => void
 }
 
 export type { IProduct, ProductState }
