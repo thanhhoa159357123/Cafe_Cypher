@@ -11,11 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('product_topping', function (Blueprint $table) {
+        Schema::create('product_sizes', function (Blueprint $table) {
             $table->id();
             $table->foreignId('product_id')->constrained()->onDelete('cascade');
-            $table->foreignId('topping_id')->constrained()->onDelete('cascade');
-            $table->unique(['product_id', 'topping_id']);
+            $table->foreignId('size_id')->constrained()->onDelete('cascade');
+            $table->unique(['product_id', 'size_id']);
+            $table->decimal('price', 8, 2);
             $table->timestamps();
         });
     }
@@ -25,9 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('product_topping', function (Blueprint $table) {
-            // Cách để gỡ luật nếu sau này muốn đổi ý
-            $table->dropUnique('prod_topping_unique');
-        });
+        Schema::dropIfExists('product_sizes');
     }
 };

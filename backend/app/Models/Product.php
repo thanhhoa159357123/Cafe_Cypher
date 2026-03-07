@@ -30,4 +30,10 @@ class Product extends Model
     {
         return $this->belongsToMany(Topping::class, 'product_topping');
     }
+
+    // Thiết lập mối quan hệ giữa Product và Size (nhiều-nhiều)
+    public function sizes()
+    {
+        return $this->belongsToMany(Size::class, 'product_sizes')->withPivot('price');
+    }
 }

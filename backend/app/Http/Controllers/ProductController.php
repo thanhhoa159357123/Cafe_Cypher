@@ -14,7 +14,7 @@ class ProductController extends Controller
     public function index()
     {
         // Eager loading 'category' và 'toppings' để tránh lỗi N+1 (lag database)
-        $products = Product::with(['category', 'toppings'])->get();
+        $products = Product::with(['category', 'sizes'])->get();
         return ProductResource::collection($products);
     }
 }
