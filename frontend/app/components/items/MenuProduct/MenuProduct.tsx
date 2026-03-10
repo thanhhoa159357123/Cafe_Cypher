@@ -4,12 +4,14 @@ import { CategoryHook } from '@/app/hooks/CategoryHook'
 import { ProductHook } from '@/app/hooks/ProductHook'
 import CategoryList from './items/CategoryList'
 import ProductList from './items/ProductList'
+import ProductDetail from '../ProductDetail/ProductDetail'
+import { AnimatePresence } from 'motion/react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useRef } from 'react'
 
 const MenuProduct = () => {
-  const { categories, selectedCategory, selectCategory } = CategoryHook()
-  const { products } = ProductHook()
+  const { categories, selectedCategory, setSelectedCategory } = CategoryHook()
+  const { products, selectedProduct, setSelectedProduct } = ProductHook()
 
   const searchParams = useSearchParams()
   const router = useRouter()
@@ -79,15 +81,17 @@ const MenuProduct = () => {
       if (activeSlugRef.current === activeSlug) return
 
       for (const parent of categories) {
-        const child = parent.children?.find((c) => c.slug === activeSlug)
+        const child = parent.children?.find(
+          (c) => c.category_slug === activeSlug,
+        )
 
         if (child) {
           activeSlugRef.current = activeSlug // Cập nhật bộ nhớ đệm
-          selectCategory(child) // Gọi React đổi màu CSS
+          setSelectedCategory(child) // Gọi React đổi màu CSS
 
           const params = new URLSearchParams(window.location.search)
-          params.set('parent_categories', parent.slug)
-          params.set('child_categories', child.slug)
+          params.set('parent_categories', parent.category_slug)
+          params.set('child_categories', child.category_slug)
           window.history.replaceState(
             null,
             '',
@@ -105,14 +109,14 @@ const MenuProduct = () => {
 
     categories.forEach((parent) => {
       parent.children?.forEach((child) => {
-        const el = document.getElementById(child.slug)
+        const el = document.getElementById(child.category_slug)
         if (el) observer.observe(el)
       })
     })
 
     return () => observer.disconnect()
     // 🚀 QUAN TRỌNG NHẤT: Đã tháo cái quả bom selectedCategory ra khỏi đây!
-  }, [categories, pathname, selectCategory])
+  }, [categories, pathname, setSelectedCategory])
 
   return (
     <div className="px-3 py-2">
@@ -125,15 +129,15 @@ const MenuProduct = () => {
 
         {categories.map((category) => {
           const children = category.children || []
-          const category_child = children.map((child) => child.id)
+          const category_child = children.map((child) => child.category_id)
           const filteredProducts = products.filter((product) =>
-            category_child.includes(product.category?.id || 0),
+            category_child.includes(product.category?.category_id || 0),
           )
 
           return (
             <section
-              key={category.id}
-              id={category.slug}
+              key={category.category_id}
+              id={category.category_slug}
               className="scroll-mt-20"
             >
               <div className="flex gap-8">
@@ -142,7 +146,7 @@ const MenuProduct = () => {
                     categories={category}
                     childItems={children}
                     selectedCategory={selectedCategory}
-                    onSelectCategory={selectCategory}
+                    onSelectCategory={setSelectedCategory}
                     handleChildCategoryClick={handleChildCategoryClick}
                   />
                 </div>
@@ -150,6 +154,7 @@ const MenuProduct = () => {
                   <ProductList
                     products={filteredProducts}
                     childItems={children}
+                    setSelectedProduct={setSelectedProduct}
                   />
                 </div>
               </div>
@@ -157,6 +162,16 @@ const MenuProduct = () => {
           )
         })}
       </div>
+
+      <AnimatePresence>
+        {selectedProduct && (
+          <ProductDetail
+            key={selectedProduct.id}
+            product={selectedProduct}
+            onClose={() => setSelectedProduct(null)}
+          />
+        )}
+      </AnimatePresence>
     </div>
   )
 }

@@ -18,11 +18,11 @@ const Navbar = () => {
 
     if (selectChild) {
       router.push(
-        `/?parent_categories=${parentCategory.slug}&child_categories=${selectChild.slug}`,
+        `/?parent_categories=${parentCategory.category_slug}&child_categories=${selectChild.category_slug}`,
         { scroll: false },
       )
     } else {
-      router.push(`/?parent_categories=${parentCategory.slug}`, {
+      router.push(`/?parent_categories=${parentCategory.category_slug}`, {
         scroll: false,
       })
     }
@@ -39,11 +39,11 @@ const Navbar = () => {
         <div className="flex gap-6">
           {categories.map((category) => (
             <span
-              key={category.id}
+              key={category.category_id}
               className="font-medium text-md cursor-pointer hover:text-secondary-foreground transition-colors duration-300"
               onClick={() => handleCategoryClick(category)}
             >
-              {category.name.toUpperCase()}
+              {category.category_name}
             </span>
           ))}
         </div>

@@ -9,7 +9,7 @@ export const useCategoryStore = create<CategoryState>((set) => ({
 
   selectedCategory: null,
 
-  selectCategory: (category: ICategory | null) =>
+  setSelectedCategory: (category: ICategory | null) =>
     set({ selectedCategory: category }),
 
   fetchCategories: async () => {

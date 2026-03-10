@@ -4,7 +4,7 @@ import { useEffect } from 'react'
 import { useCategoryStore } from '../store/useCategoryStore'
 
 export const CategoryHook = () => {
-  const { categories, selectedCategory, selectCategory, fetchCategories } =
+  const { categories, selectedCategory, setSelectedCategory, fetchCategories } =
     useCategoryStore()
 
   useEffect(() => {
@@ -12,5 +12,9 @@ export const CategoryHook = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  return { categories, selectedCategory, selectCategory }
+  return {
+    categories,
+    selectedCategory,
+    setSelectedCategory,
+  }
 }
