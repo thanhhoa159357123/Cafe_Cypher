@@ -2,7 +2,6 @@
 
 namespace App\Http\Resources;
 
-use App\Http\Resources\ToppingResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -22,6 +21,7 @@ class ProductResource extends JsonResource
             'description' => $this->description,
             'price' => (float) $this->price,
             'category' => CategoryResource::make($this->whenLoaded('category')) ?? null,
+            
             'size' => $this->whenLoaded('sizes', function () {
                 return $this->sizes->map(function ($size) {
                     return [
@@ -32,9 +32,9 @@ class ProductResource extends JsonResource
                 });
             }) ?? [],
             'toppings' => $this->whenLoaded('toppings', function () {
-
-                $this->toppings->map(function ($tp) {
+                return $this->toppings->map(function ($tp) {
                     return [
+                        'topping_id' => $tp->id,
                         'topping_name' => $tp->name,
                         'topping_price' => (float) $tp->price,
                     ];

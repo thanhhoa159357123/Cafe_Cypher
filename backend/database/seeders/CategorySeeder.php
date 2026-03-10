@@ -26,7 +26,7 @@ class CategorySeeder extends Seeder
 
         // Tạo category con cho category cha "Cà phê"
         Category::create([
-            'name' => "Espresso",
+            'name' => "Espresso",       
             'slug' => 'espresso',
             'parent_id' => $ca_phe->id,
         ]);
