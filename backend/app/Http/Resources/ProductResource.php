@@ -22,7 +22,7 @@ class ProductResource extends JsonResource
             'price' => (float) $this->price,
             'category' => CategoryResource::make($this->whenLoaded('category')) ?? null,
             
-            'size' => $this->whenLoaded('sizes', function () {
+            'sizes' => $this->whenLoaded('sizes', function () {
                 return $this->sizes->map(function ($size) {
                     return [
                         'size_id' => $size->id,

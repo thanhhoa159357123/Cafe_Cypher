@@ -1,87 +1,95 @@
-'use client'
-import React from 'react'
-import { motion } from 'motion/react'
-import Image from 'next/image'
-import { IProduct } from '@/app/types/product'
+"use client";
+import React from "react";
+import { motion } from "motion/react";
+import Image from "next/image";
+import { IProduct } from "@/app/types/product";
+import SizeAndTopping from "./SizeAndTopping";
+import { X } from "lucide-react";
+import ActionButton from "./ActionButton";
 
 interface ProductDetailProps {
-  product: IProduct
-  onClose: () => void
+  product: IProduct;
+  onClose: () => void;
 }
 
 const ProductDetail = ({ product, onClose }: ProductDetailProps) => {
-  console.log('sản phẩm được chọn:', product)
+  console.log("sản phẩm được chọn:", product);
   return (
     <>
-      {/* Backdrop - Click vào nền đen để đóng */}
+      {/* Backdrop */}
       <motion.div
         key="backdrop"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        onClick={onClose}
-        className="fixed inset-0 bg-black/40 z-60"
+        transition={{ duration: 0.3 }}
+        className="fixed inset-0 bg-black/40 z-40 pointer-events-auto"
       />
 
       {/* Modal Content */}
       <motion.div
         key="modal-content"
-        initial={{ opacity: 0, y: -50, x: '-50%' }}
-        animate={{ opacity: 1, y: 0, x: '-50%' }}
-        exit={{ opacity: 0, y: -50, x: '-50%' }}
-        transition={{ duration: 0.3, ease: 'easeOut' }}
-        className="fixed top-20 left-1/2 z-70 w-full max-w-4xl px-4"
+        initial={{ opacity: 0, y: -100 }} // Sửa y: 100 để nó trồi từ dưới lên cho đẹp
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -100 }} // Khi tắt nó sẽ thụt xuống dưới lại
+        transition={{ duration: 0.3, ease: "easeOut" }}
+        className="fixed top-20 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-6xl px-4 pointer-events-auto max-h-[calc(100vh-120px)] overflow-y-auto"
       >
-        <div className="bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col md:flex-row max-h-[80vh]">
-          {/* Ảnh sản phẩm bên trái */}
-          <div className="relative w-full md:w-1/2 h-64 md:h-auto bg-gray-100">
-            <Image
-              src={product.image ?? '/placeholder.png'}
-              alt={product.name}
-              fill
-              className="object-cover"
-            />
-          </div>
+        <div className="max-w-6xl mx-auto h-auto bg-linear-to-br from-background via-card to-background rounded-xl border border-border shadow-sm relative">
+          <div className="flex flex-col p-4">
+            <div className="flex flex-col md:flex-row justify-center mt-4 mb-4 items-center md:items-start gap-8">
+              {/* Ảnh sản phẩm bên trái */}
+              <div className="relative w-full max-w-xs shrink-0">
+                <Image
+                  src={product.image ?? "/placeholder.png"}
+                  alt={product.name}
+                  width={300}
+                  height={300}
+                  className="relative rounded-2xl object-cover border border-primary/20 shadow-lg"
+                  priority
+                />
+                {!product.image && (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="text-gray-400 font-medium">
+                      Chưa có ảnh
+                    </span>
+                  </div>
+                )}
+              </div>
 
-          {/* Thông tin bên phải */}
-          <div className="p-8 w-full md:w-1/2 flex flex-col overflow-y-auto">
-            <button
-              onClick={onClose}
-              className="self-end text-gray-400 hover:text-black transition-colors"
-            >
-              ✕ Đóng
-            </button>
+              {/* Thông tin bên phải */}
+              <div className="flex flex-col space-y-4 flex-1">
+                <div className="space-y-2">
+                  <h1 className="text-3xl md:text-4xl font-bold text-foreground leading-tight">
+                    {product?.name}
+                  </h1>
+                  <p className="text-2xl font-bold text-transparent bg-clip-text bg-linear-to-r from-primary to-secondary">
+                    {product?.price.toLocaleString("vi-VN")} đ
+                  </p>
+                </div>
 
-            <h2 className="text-3xl font-bold text-gray-900 mt-2">
-              {product.name}
-            </h2>
-            <p className="text-red-600 text-2xl font-bold mt-2">
-              {new Intl.NumberFormat('vi-VN', {
-                style: 'currency',
-                currency: 'VND',
-              }).format(product.price)}
-            </p>
-
-            <div className="mt-4 text-gray-600 leading-relaxed">
-              <h3 className="font-semibold text-black">Mô tả món:</h3>
-              <p>{product.description}</p>
+                {product?.description && (
+                  <div className="border-t border-primary/10 pt-4">
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      {product.description}
+                    </p>
+                  </div>
+                )}
+                <SizeAndTopping
+                  product={product}
+                  sizes={product.sizes}
+                  toppings={product.toppings}
+                />
+              </div>
             </div>
 
-            {/* Chỗ này mai mốt ông giáo đổ Size & Topping vào đây nè */}
-            <div className="mt-6 flex-1">
-              <p className="text-sm text-gray-400 italic">
-                * Tùy chọn Size và Topping sẽ hiển thị ở đây
-              </p>
-            </div>
-
-            <button className="mt-8 w-full py-4 bg-primary text-white rounded-xl font-bold hover:brightness-110 transition-all shadow-lg active:scale-95">
-              Thêm vào giỏ hàng
-            </button>
+            {/* Các nút hành động */}
+            <ActionButton />
           </div>
         </div>
       </motion.div>
     </>
-  )
-}
+  );
+};
 
-export default ProductDetail
+export default ProductDetail;
