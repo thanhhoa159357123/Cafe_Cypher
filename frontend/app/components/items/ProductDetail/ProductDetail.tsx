@@ -2,7 +2,7 @@
 import React from "react";
 import { motion } from "motion/react";
 import Image from "next/image";
-import { IProduct } from "@/app/types/product";
+import { IProduct, ISize, ITopping } from "@/app/types/product";
 import SizeAndTopping from "./SizeAndTopping";
 import { X } from "lucide-react";
 import ActionButton from "./ActionButton";
@@ -10,10 +10,20 @@ import ActionButton from "./ActionButton";
 interface ProductDetailProps {
   product: IProduct;
   onClose: () => void;
+  selectedSize: ISize | null;
+  setSelectedSize: (size: ISize | null) => void;
+  selectedToppings: ITopping[];
+  setSelectedToppings: (topping: ITopping) => void;
 }
 
-const ProductDetail = ({ product, onClose }: ProductDetailProps) => {
-  console.log("sản phẩm được chọn:", product);
+const ProductDetail = ({
+  product,
+  onClose,
+  selectedSize,
+  setSelectedSize,
+  selectedToppings,
+  setSelectedToppings,
+}: ProductDetailProps) => {
   return (
     <>
       {/* Backdrop */}
@@ -23,15 +33,16 @@ const ProductDetail = ({ product, onClose }: ProductDetailProps) => {
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         transition={{ duration: 0.3 }}
+        onClick={onClose}
         className="fixed inset-0 bg-black/40 z-40 pointer-events-auto"
       />
 
       {/* Modal Content */}
       <motion.div
         key="modal-content"
-        initial={{ opacity: 0, y: -100 }} // Sửa y: 100 để nó trồi từ dưới lên cho đẹp
+        initial={{ opacity: 0, y: -100 }}
         animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -100 }} // Khi tắt nó sẽ thụt xuống dưới lại
+        exit={{ opacity: 0, y: -100 }}
         transition={{ duration: 0.3, ease: "easeOut" }}
         className="fixed top-20 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-6xl px-4 pointer-events-auto max-h-[calc(100vh-120px)] overflow-y-auto"
       >
@@ -79,6 +90,10 @@ const ProductDetail = ({ product, onClose }: ProductDetailProps) => {
                   product={product}
                   sizes={product.sizes}
                   toppings={product.toppings}
+                  selectedSize={selectedSize}
+                  setSelectedSize={setSelectedSize}
+                  selectedToppings={selectedToppings}
+                  setSelectedToppings={setSelectedToppings}
                 />
               </div>
             </div>

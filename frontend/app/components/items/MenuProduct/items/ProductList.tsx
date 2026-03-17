@@ -1,11 +1,11 @@
-import { ICategory } from '@/app/types/category'
-import { IProduct } from '@/app/types/product'
-import Image from 'next/image'
+import { ICategory } from "@/app/types/category";
+import { IProduct } from "@/app/types/product";
+import Image from "next/image";
 
 interface ProductListProps {
-  products: IProduct[]
-  childItems: ICategory[]
-  setSelectedProduct: (product: IProduct | null) => void
+  products: IProduct[];
+  childItems: ICategory[];
+  setSelectedProduct: (product: IProduct | null) => void;
 }
 
 const ProductList = ({
@@ -14,7 +14,7 @@ const ProductList = ({
   setSelectedProduct,
 }: ProductListProps) => {
   if (products.length === 0) {
-    return <p>Sản phẩm sắp được lên kệ.</p>
+    return <p>Sản phẩm sắp được lên kệ.</p>;
   }
 
   return (
@@ -22,7 +22,7 @@ const ProductList = ({
       {childItems.map((child) => {
         const filteredProducts = products.filter(
           (p) => p.category?.category_id === child.category_id,
-        )
+        );
         return (
           <div
             key={child.category_id}
@@ -42,7 +42,7 @@ const ProductList = ({
                   <div className="p-4">
                     <div className="relative w-full h-48 mb-4">
                       <Image
-                        src={product.image ?? '/placeholder.png'}
+                        src={product.image ?? "/placeholder.png"}
                         alt={product.name}
                         fill
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
@@ -54,9 +54,9 @@ const ProductList = ({
                         {product.name}
                       </span>
                       <span className="text-xl font-bold text-red-600">
-                        {new Intl.NumberFormat('vi-VN', {
-                          style: 'currency',
-                          currency: 'VND',
+                        {new Intl.NumberFormat("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
                         }).format(product.price)}
                       </span>
                     </div>
@@ -65,10 +65,10 @@ const ProductList = ({
               ))}
             </div>
           </div>
-        )
+        );
       })}
     </div>
-  )
-}
+  );
+};
 
-export default ProductList
+export default ProductList;

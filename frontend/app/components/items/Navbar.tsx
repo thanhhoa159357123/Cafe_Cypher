@@ -1,32 +1,48 @@
-'use client'
+"use client";
 
-import { CategoryHook } from '@/app/hooks/CategoryHook'
-import { Button } from '../ui/button'
-import { ICategory } from '@/app/types/category'
-import { useRouter } from 'next/navigation'
-import Link from 'next/link'
+import { CategoryHook } from "@/app/hooks/CategoryHook";
+import { Button } from "../ui/button";
+import { ICategory } from "@/app/types/category";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { AnimatePresence } from "motion/react";
+import FormLogin from "./FormLogin";
+import { useState } from "react";
 
 const Navbar = () => {
-  const { categories } = CategoryHook()
-  const router = useRouter()
+  const { categories } = CategoryHook();
+  const router = useRouter();
+  const [isOpenLogin, setIsOpenLogin] = useState<boolean | null>(false);
+
+  const handleOpenLogin = () => {
+    setIsOpenLogin(true);
+  };
+
+  const handleCloseLogin = () => {
+    setIsOpenLogin(false);
+  };
 
   const handleCategoryClick = (
     parentCategory: ICategory,
     childCategory?: ICategory,
   ) => {
-    const selectChild = childCategory || parentCategory.children?.[0]
+    const selectChild = childCategory || parentCategory.children?.[0];
 
+    // 🚀 THÊM &t=${Date.now()} VÀO 2 CÁI URL NÀY:
     if (selectChild) {
       router.push(
-        `/?parent_categories=${parentCategory.category_slug}&child_categories=${selectChild.category_slug}`,
+        `/?parent_categories=${parentCategory.category_slug}&child_categories=${selectChild.category_slug}&t=${Date.now()}`,
         { scroll: false },
-      )
+      );
     } else {
-      router.push(`/?parent_categories=${parentCategory.category_slug}`, {
-        scroll: false,
-      })
+      router.push(
+        `/?parent_categories=${parentCategory.category_slug}&t=${Date.now()}`,
+        {
+          scroll: false,
+        },
+      );
     }
-  }
+  };
 
   return (
     <div className="sticky top-0 inset-x-0 px-3 py-1 border-b rounded-b-lg border-foreground bg-primary-lighter/70 shadow-xl z-50">
@@ -49,12 +65,18 @@ const Navbar = () => {
         </div>
         {/* Left */}
         <div className="flex items-center gap-2">
-          <Button className="px-3 py-1">Đăng nhập</Button>
+          <Button className="px-3 py-1" onClick={handleOpenLogin}>
+            Đăng nhập
+          </Button>
           <Button className="px-4 py-1">Đăng ký</Button>
         </div>
       </div>
-    </div>
-  )
-}
 
-export default Navbar
+      <AnimatePresence>
+        <FormLogin isOpen={isOpenLogin} onClose={handleCloseLogin} />
+      </AnimatePresence>
+    </div>
+  );
+};
+
+export default Navbar;
