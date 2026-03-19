@@ -1,0 +1,73 @@
+import { useRouter } from "next/navigation";
+import { useAuthStore } from "../store/useAuthStore";
+import { CategoryHook } from "./CategoryHook";
+import { useEffect, useState } from "react";
+import { ICategory } from "../types/category";
+
+export const NavbarHook = () => {
+  const { user, isAuthenticated, logout } = useAuthStore();
+  const { categories } = CategoryHook();
+  const router = useRouter();
+  const [isOpenLogin, setIsOpenLogin] = useState(false);
+  const [isOpenRegister, setIsOpenRegister] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  const handleOpenLogin = () => {
+    setIsOpenLogin(true);
+    setIsOpenRegister(false);
+  };
+
+  const handleCloseLogin = () => {
+    setIsOpenLogin(false);
+  };
+
+  const handleOpenRegister = () => {
+    setIsOpenRegister(true);
+    setIsOpenLogin(false);
+  };
+
+  const handleCloseRegister = () => {
+    setIsOpenRegister(false);
+  };
+
+  const handleCategoryClick = (
+    parentCategory: ICategory,
+    childCategory?: ICategory,
+  ) => {
+    const selectChild = childCategory || parentCategory.children?.[0];
+
+    // 🚀 THÊM &t=${Date.now()} VÀO 2 CÁI URL NÀY:
+    if (selectChild) {
+      router.push(
+        `/?parent_categories=${parentCategory.category_slug}&child_categories=${selectChild.category_slug}&t=${Date.now()}`,
+        { scroll: false },
+      );
+    } else {
+      router.push(
+        `/?parent_categories=${parentCategory.category_slug}&t=${Date.now()}`,
+        {
+          scroll: false,
+        },
+      );
+    }
+  };
+
+  return {
+    handleOpenLogin,
+    handleCloseLogin,
+    handleOpenRegister,
+    handleCloseRegister,
+    handleCategoryClick,
+    isOpenLogin,
+    isOpenRegister,
+    isAuthenticated,
+    user,
+    logout,
+    categories,
+    isMounted,
+  };
+};

@@ -11,7 +11,8 @@ export const login = async (data: { email: string; password: string }) => {
 };
 
 export const register = async (data: {
-  name: string;
+  last_name: string;
+  first_name: string;
   email: string;
   password: string;
 }) => {

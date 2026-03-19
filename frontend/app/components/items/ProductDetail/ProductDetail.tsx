@@ -32,7 +32,7 @@ const ProductDetail = ({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        transition={{ duration: 0.3 }}
+        transition={{ duration: 0.2 }}
         onClick={onClose}
         className="fixed inset-0 bg-black/40 z-40 pointer-events-auto"
       />
@@ -43,7 +43,7 @@ const ProductDetail = ({
         initial={{ opacity: 0, y: -100 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -100 }}
-        transition={{ duration: 0.3, ease: "easeOut" }}
+        transition={{ duration: 0.2, ease: "easeOut" }}
         className="fixed top-20 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-6xl px-4 pointer-events-auto max-h-[calc(100vh-120px)] overflow-y-auto"
       >
         <div className="max-w-6xl mx-auto h-auto bg-linear-to-br from-background via-card to-background rounded-xl border border-border shadow-sm relative">

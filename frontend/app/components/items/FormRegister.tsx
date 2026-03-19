@@ -2,28 +2,29 @@ import React from "react";
 import { motion } from "motion/react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { loginSchema, LoginFormData } from "@/app/types/auth";
+import { registerSchema, RegisterFormData } from "@/app/types/auth";
 import { AuthHook } from "@/app/hooks/AuthHook";
 
-interface FormLoginProps {
+interface FormRegisterProps {
   onClose: () => void;
-  onOpenRegister: () => void;
+  onOpenLogin: () => void;
 }
 
-const FormLogin = ({ onClose, onOpenRegister }: FormLoginProps) => {
-  const { handleLogin } = AuthHook();
+const FormRegister = ({ onClose, onOpenLogin }: FormRegisterProps) => {
+  const { handleRegister } = AuthHook();
 
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<LoginFormData>({
-    resolver: zodResolver(loginSchema),
+  } = useForm<RegisterFormData>({
+    resolver: zodResolver(registerSchema),
   });
 
-  const onSubmit = (data: LoginFormData) => {
-    handleLogin(data, () => {
-      onClose(); // Đăng nhập xong thì đóng
+  const onSubmit = (data: RegisterFormData) => {
+    handleRegister(data, () => {
+      onClose();
+      onOpenLogin();
     });
   };
 
@@ -42,7 +43,7 @@ const FormLogin = ({ onClose, onOpenRegister }: FormLoginProps) => {
 
       {/* Modal Content */}
       <motion.div
-        key="login-modal-content"
+        key="register-modal-content"
         initial={{ opacity: 0, y: -100 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -100 }}
@@ -52,12 +53,55 @@ const FormLogin = ({ onClose, onOpenRegister }: FormLoginProps) => {
         <div className="text-center">
           <h1 className="text-3xl font-black text-primary mb-2">CAFE CYPHER</h1>
           <p className="text-muted-foreground mb-6">
-            Chào mừng bạn đến với quán cà phê của chúng tôi! Hãy đăng nhập để
-            trải nghiệm những điều tuyệt vời mà chúng tôi mang lại.
+            Chào mừng đến với Cypher Cafe! Hãy đăng ký để trải nghiệm những điều
+            tuyệt vời tại quán chúng tôi.
           </p>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+          <div className="flex gap-4">
+            <div className="flex-1">
+              <label className="block text-sm font-medium text-foreground/80 mb-1">
+                Họ <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                {...register("lastName")}
+                className={`w-full px-4 py-3 bg-background border rounded-xl focus:ring-2 focus:ring-primary/30 outline-none transition duration-200 placeholder:text-muted-foreground/50 ${
+                  errors.lastName
+                    ? "border-red-500 focus:border-red-500"
+                    : "border-input focus:border-primary"
+                }`}
+                placeholder="Nguyen"
+              />
+              {errors.lastName && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.lastName.message}
+                </p>
+              )}
+            </div>
+            <div className="flex-1">
+              <label className="block text-sm font-medium text-foreground/80 mb-1">
+                Tên <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                {...register("firstName")}
+                className={`w-full px-4 py-3 bg-background border rounded-xl focus:ring-2 focus:ring-primary/30 outline-none transition duration-200 placeholder:text-muted-foreground/50 ${
+                  errors.firstName
+                    ? "border-red-500 focus:border-red-500"
+                    : "border-input focus:border-primary"
+                }`}
+                placeholder="Van A"
+              />
+              {errors.firstName && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.firstName.message}
+                </p>
+              )}
+            </div>
+          </div>
+
           <div>
             <label className="block text-sm font-medium text-foreground/80 mb-1">
               Email
@@ -102,24 +146,25 @@ const FormLogin = ({ onClose, onOpenRegister }: FormLoginProps) => {
 
           <button
             type="submit"
-            className="w-full py-3.5 mt-2 font-bold text-primary-foreground bg-primary rounded-xl hover:bg-primary-light active:bg-primary transition-all duration-200 shadow-md hover:shadow-lg cursor-pointer"
+            disabled={isSubmitting}
+            className="w-full py-3.5 mt-2 font-bold text-primary-foreground bg-primary rounded-xl hover:bg-primary-light active:bg-primary transition-all duration-200 shadow-md hover:shadow-lg disabled:opacity-70 disabled:cursor-not-allowed cursor-pointer"
           >
-            ĐĂNG NHẬP NGAY
+            {isSubmitting ? "ĐANG ĐĂNG KÝ..." : "ĐĂNG KÝ NGAY"}
           </button>
         </form>
 
-        {/* Chuyển sang đăng ký */}
+        {/* Chuyển sang đăng nhập */}
         <div className="mt-6 text-center text-sm text-muted-foreground">
-          Bạn chưa có tài khoản?{" "}
+          Bạn đã có tài khoản?{" "}
           <button
             type="button"
             onClick={() => {
               onClose();
-              onOpenRegister();
+              onOpenLogin();
             }}
             className="font-medium text-primary hover:text-primary-light underline-offset-2 hover:underline transition-colors cursor-pointer"
           >
-            Đăng ký ngay
+            Đăng nhập ngay
           </button>
         </div>
       </motion.div>
@@ -127,4 +172,4 @@ const FormLogin = ({ onClose, onOpenRegister }: FormLoginProps) => {
   );
 };
 
-export default FormLogin;
+export default FormRegister;

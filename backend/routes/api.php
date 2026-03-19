@@ -12,13 +12,7 @@ Route::get('/categories', [CategoryController::class, 'index'])->name('categorie
 Route::get('/products', [ProductController::class, 'index'])->name('products');
 
 Route::post('/register', [AuthController::class, 'register']);
-// Route::post('/register', function (Request $request) {
-//     // In thẳng dữ liệu Postman gửi lên
-//     dd([
-//         'thong_bao' => 'Đã đi vào được Route API!',
-//         'du_lieu_postman_gui' => $request->all()
-//     ]);
-// });
+
 Route::post('/login', [AuthController::class, 'login']);
 
 // Dùng middleware auth:sanctum

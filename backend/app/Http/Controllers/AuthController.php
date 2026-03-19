@@ -13,13 +13,13 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'first_name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6',
         ]);
 
         $user = User::create($validated);
-
 
         return response()->json([
             'message' => 'Đăng ký thành công!',
@@ -42,6 +42,8 @@ class AuthController extends Controller
         if (!$user || !Hash::check($request->password, $user->password)) {
             return response()->json(['message' => 'Sai Email hoặc Mật khẩu rồi ba!'], 401);
         }
+
+        $user->tokens()->delete(); // Xóa token cũ nếu có, tránh rối loạn token
 
         // Tạo Token "thẻ bài"
         $token = $user->createToken('auth_token')->plainTextToken;
