@@ -2,39 +2,34 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\LoginRequest;
+use App\Http\Requests\RegisterRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+// use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash; // Quan trọng: Để kiểm tra mật khẩu
 
 class AuthController extends Controller
 {
     // 1. ĐĂNG KÝ
-    public function register(Request $request)
+    public function register(RegisterRequest $request)
     {
-        $validated = $request->validate([
-            'last_name' => 'required|string|max:255',
-            'first_name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:6',
+        $user = User::create([
+            'last_name' => $request->last_name,
+            'first_name' => $request->first_name,
+            'email' => $request->email,
+            'password' => bcrypt($request->password),
         ]);
 
-        $user = User::create($validated);
-
         return response()->json([
-            'message' => 'Đăng ký thành công!',
-            'token_type' => 'Bearer',
+            'message' => 'Tạo tài khoản thành công',
+            'user' => $user
         ], 201);
     }
 
     // 2. ĐĂNG NHẬP (Bỏ hẳn Session, dùng Token)
-    public function login(Request $request)
+    public function login(LoginRequest $request)
     {
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-        ]);
-
         // Tìm user
         $user = User::where('email', $request->email)->first();
 
