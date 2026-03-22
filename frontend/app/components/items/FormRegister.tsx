@@ -104,7 +104,7 @@ const FormRegister = ({ onClose, onOpenLogin }: FormRegisterProps) => {
 
           <div>
             <label className="block text-sm font-medium text-foreground/80 mb-1">
-              Email
+              Email <span className="text-red-500">*</span>
             </label>
             <input
               type="email"
@@ -125,7 +125,7 @@ const FormRegister = ({ onClose, onOpenLogin }: FormRegisterProps) => {
 
           <div>
             <label className="block text-sm font-medium text-foreground/80 mb-1">
-              Mật khẩu
+              Mật khẩu <span className="text-red-500">*</span>
             </label>
             <input
               type="password"

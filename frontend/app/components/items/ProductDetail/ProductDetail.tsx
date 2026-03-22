@@ -4,7 +4,6 @@ import { motion } from "motion/react";
 import Image from "next/image";
 import { IProduct, ISize, ITopping } from "@/app/types/product";
 import SizeAndTopping from "./SizeAndTopping";
-import { X } from "lucide-react";
 import ActionButton from "./ActionButton";
 
 interface ProductDetailProps {

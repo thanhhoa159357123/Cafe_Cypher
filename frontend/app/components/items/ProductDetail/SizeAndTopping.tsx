@@ -22,135 +22,115 @@ const SizeAndTopping = ({
   selectedToppings,
   setSelectedToppings,
 }: SizeAndToppingProps) => {
+  const isMaxToppings = selectedToppings.length >= 3;
+
   return (
     <div className="flex flex-col gap-6">
       {/* SIZE SECTION */}
-      <div className="flex flex-col justify-center gap-3">
-        <div className="flex items-center gap-2">
-          <Coffee className="w-4 h-4 text-orange-500" />
-          <span className="text-sm font-semibold text-gray-700">
-            Chọn Size <span className="text-red-500">*</span>
-          </span>
-        </div>
+      {product.sizes.length > 0 && (
+        <div className="flex flex-col justify-center gap-3">
+          <div className="flex items-center gap-2">
+            <Coffee className="w-4 h-4 text-primary" />
+            <span className="text-sm font-semibold text-foreground">
+              Chọn Size <span className="text-destructive">*</span>
+            </span>
+          </div>
 
-        <div className="flex flex-row flex-wrap gap-3">
-          {sizes?.map((size) => {
-            const isSelected = selectedSize?.size_id === size.size_id;
-            const priceDiff = size.size_price - product.price;
+          <div className="flex flex-row flex-wrap gap-3">
+            {sizes?.map((size) => {
+              const isSelected = selectedSize?.size_id === size.size_id;
+              const priceDiff = size.size_price - product.price;
 
-            return (
-              <div
-                key={size.size_id}
-                onClick={() => setSelectedSize(size)}
-                className={`
-                  relative flex items-center px-4 py-3 rounded-xl border-2 transition-all duration-300 
-                  cursor-pointer group hover:scale-105 active:scale-95
+              return (
+                <div
+                  key={size.size_id}
+                  onClick={() => setSelectedSize(size)}
+                  className={`
+                  flex items-center px-4 py-3 rounded-xl border-2 transition-colors duration-200 cursor-pointer
                   ${
                     isSelected
-                      ? "bg-orange-500 border-orange-500 text-white shadow-lg shadow-orange-200"
-                      : "bg-white border-gray-200 text-gray-700 hover:border-orange-300 hover:bg-orange-50/50"
+                      ? "bg-primary border-primary text-primary-foreground shadow-sm"
+                      : "bg-background border-border text-foreground hover:border-primary/40 hover:bg-primary/5"
                   }
                 `}
-              >
-                <div className="flex items-center gap-2">
-                  {isSelected && (
-                    <Check className="w-4 h-4 animate-in fade-in zoom-in" />
-                  )}
-                  <span className="text-sm font-semibold whitespace-nowrap">
-                    {size.size_name}
-                  </span>
-                  <span
-                    className={`text-xs font-medium px-1.5 py-0.5 rounded-full ${
-                      isSelected
-                        ? "bg-white/20 text-white"
-                        : "bg-orange-100 text-orange-600"
-                    }`}
-                  >
-                    +{priceDiff.toLocaleString("vi-VN")}đ
-                  </span>
+                >
+                  <div className="flex items-center gap-2">
+                    {isSelected && <Check className="w-4 h-4" />}
+                    <span className="text-sm font-semibold whitespace-nowrap">
+                      {size.size_name}
+                    </span>
+                    <span
+                      className={`text-xs font-medium px-1.5 py-0.5 rounded-full bg-background/20 ${
+                        isSelected
+                          ? "text-primary-foreground"
+                          : "text-muted-foreground"
+                      }`}
+                    >
+                      +{priceDiff.toLocaleString("vi-VN")}đ
+                    </span>
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* TOPPING SECTION */}
-      <div className="flex flex-col gap-3">
-        <div className="flex items-center gap-2">
-          <Candy className="w-4 h-4 text-orange-500" />
-          <span className="text-sm font-semibold text-gray-700">
-            Chọn Topping{" "}
-          </span>
-          <span className="text-gray-400 font-normal">(Tối đa 3)</span>
-          {selectedToppings.length >= 3 && (
-            <div className="flex items-center gap-2 text-amber-600 bg-amber-50 px-4 py-2 rounded-lg animate-pulse border border-amber-200">
-              <span className="text-xs font-medium">
-                ⚡ Bạn đã chọn tối đa 3 loại topping. Hãy bỏ chọn để thay đổi!
-              </span>
-            </div>
-          )}
-        </div>
+      {product.toppings.length > 0 && (
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center gap-2">
+            <Candy className="w-4 h-4 text-primary" />
+            <span className="text-sm font-semibold text-foreground">
+              Chọn Topping
+            </span>
+            <span
+              className={`text-sm ${
+                isMaxToppings
+                  ? "text-primary font-medium"
+                  : "text-muted-foreground"
+              }`}
+            >
+              {isMaxToppings ? "(Đã chọn tối đa 3)" : "(Tối đa 3)"}
+            </span>
+          </div>
 
-        <div className="flex flex-row flex-wrap gap-3 max-w-full">
-          {toppings?.map((topping) => {
-            const isSelected = selectedToppings.some(
-              (t) => t.topping_id === topping.topping_id,
-            );
-            const isMaxReached = selectedToppings.length >= 3 && !isSelected;
+          <div className="flex flex-row flex-wrap gap-3 max-w-full">
+            {toppings?.map((topping) => {
+              const isSelected = selectedToppings.some(
+                (t) => t.topping_id === topping.topping_id,
+              );
+              const isDisabled = isMaxToppings && !isSelected;
 
-            return (
-              <div
-                key={topping.topping_id}
-                onClick={() => !isMaxReached && setSelectedToppings(topping)}
-                className={`
-                  relative flex items-center px-4 py-3 rounded-xl border-2 transition-all duration-300
+              return (
+                <div
+                  key={topping.topping_id}
+                  onClick={() => !isDisabled && setSelectedToppings(topping)}
+                  className={`
+                  flex items-center px-4 py-3 rounded-xl border-2 transition-colors duration-200
                   ${
-                    !isMaxReached && !isSelected
-                      ? "cursor-pointer hover:scale-105 active:scale-95 group"
-                      : ""
-                  }
-                  ${
-                    isSelected
-                      ? "bg-orange-500 border-orange-500 text-white shadow-lg shadow-orange-200 scale-105"
-                      : isMaxReached
-                        ? "bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed opacity-60 grayscale"
-                        : "bg-white border-gray-200 text-gray-700 hover:border-orange-300 hover:bg-orange-50/50"
+                    isDisabled
+                      ? "bg-background border-border/50 text-muted-foreground/50 cursor-not-allowed"
+                      : isSelected
+                        ? "bg-primary border-primary text-primary-foreground shadow-sm cursor-pointer"
+                        : "bg-background border-border text-foreground hover:border-primary/40 hover:bg-primary/5 cursor-pointer"
                   }
                 `}
-              >
-                <div className="flex items-center gap-2">
-                  {isSelected && (
-                    <Check className="w-4 h-4 animate-in fade-in zoom-in" />
-                  )}
-                  <span className="text-sm font-semibold whitespace-nowrap">
-                    {topping.topping_name}
-                  </span>
-                  <span
-                    className={`text-xs font-medium px-1.5 py-0.5 rounded-full ${
-                      isSelected
-                        ? "bg-white/20 text-white"
-                        : isMaxReached
-                          ? "bg-gray-200 text-gray-500"
-                          : "bg-orange-100 text-orange-600"
-                    }`}
-                  >
-                    +{topping.topping_price.toLocaleString("vi-VN")}đ
-                  </span>
-                </div>
-
-                {/* Tooltip khi không thể chọn */}
-                {isMaxReached && (
-                  <div className="absolute -top-12 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-xs py-2 px-3 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none z-10">
-                    Đã đạt giới hạn 3 topping
-                    <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-gray-800 rotate-45"></div>
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-semibold whitespace-nowrap">
+                      {topping.topping_name}
+                    </span>
+                    <span className="text-xs font-medium">
+                      +{topping.topping_price.toLocaleString("vi-VN")}đ
+                    </span>
                   </div>
-                )}
-              </div>
-            );
-          })}
+                </div>
+              );
+            })}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

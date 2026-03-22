@@ -8,7 +8,8 @@ use Illuminate\Http\Request;
 class ToppingController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Lấy danh sách tất cả topping.
+     * @return \Illuminate\Http\JsonResponse
      */
     public function index()
     {

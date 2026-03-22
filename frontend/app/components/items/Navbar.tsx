@@ -1,17 +1,14 @@
 "use client";
 
-import { CategoryHook } from "@/app/hooks/CategoryHook";
 import { Button } from "../ui/button";
-import { ICategory } from "@/app/types/category";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { AnimatePresence } from "motion/react";
 import FormLogin from "./FormLogin";
-import { useEffect, useState } from "react";
 import FormRegister from "./FormRegister";
-import { useAuthStore } from "@/app/store/useAuthStore";
 import ProfileButton from "./ProfileButton";
 import { NavbarHook } from "@/app/hooks/NavbarHook";
+import { ShoppingCartIcon } from "lucide-react";
+import Cart from "./Cart/Cart";
 
 const Navbar = () => {
   const {
@@ -27,6 +24,11 @@ const Navbar = () => {
     logout,
     categories,
     isMounted,
+
+    // Cart
+    isOpenCart,
+    handleOpenCart,
+    handleCloseCart,
   } = NavbarHook();
 
   return (
@@ -41,10 +43,13 @@ const Navbar = () => {
           {categories.map((category) => (
             <span
               key={category.category_id}
-              className="font-medium text-md cursor-pointer hover:text-secondary-foreground transition-colors duration-300"
+              // Thêm relative và group vào class
+              className="relative group font-medium text-md cursor-pointer hover:text-secondary-foreground transition-colors duration-300"
               onClick={() => handleCategoryClick(category)}
             >
               {category.category_name}
+              {/* Thêm thẻ span này để làm đường gạch chân */}
+              <span className="absolute left-1/2 -bottom-1 h-0.5 w-0 -translate-x-1/2 bg-secondary-foreground transition-all duration-300 group-hover:w-full"></span>
             </span>
           ))}
         </div>
@@ -53,7 +58,22 @@ const Navbar = () => {
           {!isMounted ? (
             <div /> // Skeleton lúc đang load
           ) : isAuthenticated && user ? (
-            <ProfileButton user={user} logOut={logout} />
+            <div className="flex items-center justify-center gap-4">
+              {/* Vùng chứa Icon giỏ hàng có position relative */}
+              <div className="relative cursor-pointer hover:opacity-80 transition-opacity">
+                <ShoppingCartIcon
+                  width={24}
+                  height={24}
+                  className="text-foreground"
+                  onClick={handleOpenCart}
+                />
+                {/* Chấm tròn hiển thị số lượng (Badge) */}
+                <span className="absolute -top-1.5 -right-2 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[10px] font-bold text-destructive-foreground shadow-sm">
+                  2
+                </span>
+              </div>
+              <ProfileButton user={user} logOut={logout} />
+            </div>
           ) : (
             <div className="flex items-center gap-2">
               <Button onClick={handleOpenLogin}>Đăng nhập</Button>
@@ -76,6 +96,16 @@ const Navbar = () => {
           <FormRegister
             onClose={handleCloseRegister}
             onOpenLogin={handleOpenLogin}
+          />
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {isOpenCart && (
+          <Cart
+            onClose={handleCloseCart}
+            user={user}
+            isAuthenticated={isAuthenticated}
           />
         )}
       </AnimatePresence>

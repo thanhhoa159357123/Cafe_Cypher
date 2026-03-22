@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 class SizeController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Lấy toàn bộ kích cỡ sản phẩm có trong hệ thống.
      */
     public function index()
     {

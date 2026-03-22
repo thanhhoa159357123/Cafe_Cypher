@@ -10,6 +10,7 @@ export const NavbarHook = () => {
   const router = useRouter();
   const [isOpenLogin, setIsOpenLogin] = useState(false);
   const [isOpenRegister, setIsOpenRegister] = useState(false);
+  const [isOpenCart, setIsOpenCart] = useState(true);
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
@@ -32,6 +33,14 @@ export const NavbarHook = () => {
 
   const handleCloseRegister = () => {
     setIsOpenRegister(false);
+  };
+
+  const handleOpenCart = () => {
+    setIsOpenCart(true);
+  };
+
+  const handleCloseCart = () => {
+    setIsOpenCart(false);
   };
 
   const handleCategoryClick = (
@@ -69,5 +78,10 @@ export const NavbarHook = () => {
     logout,
     categories,
     isMounted,
+
+    // Cart
+    isOpenCart,
+    handleOpenCart,
+    handleCloseCart,
   };
 };
