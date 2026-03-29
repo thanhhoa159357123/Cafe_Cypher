@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { AuthState } from "../types/auth";
 import { login, register } from "@/app/services/authService";
+import { useCartStore } from "./useCartStore";
 
 export const useAuthStore = create<AuthState>()(
   persist(
@@ -24,6 +25,8 @@ export const useAuthStore = create<AuthState>()(
             token_type: response.token_type,
             isAuthenticated: true,
           });
+
+          useCartStore.getState().fetchCart();
         } catch (error) {
           console.error("Login failed:", error);
           throw error;

@@ -1,9 +1,15 @@
 import { useAuthStore } from "../store/useAuthStore";
 import { toast } from "sonner";
 import { LoginFormData, RegisterFormData } from "../types/auth";
+import { useState } from "react";
 
 export const AuthHook = () => {
   const { login, register } = useAuthStore();
+  const [isShowPassword, setIsShowPassword] = useState(false);
+
+  const handleShowPassword = () => {
+    setIsShowPassword((prev) => !prev);
+  };
 
   const handleRegister = async (
     data: RegisterFormData,
@@ -14,8 +20,10 @@ export const AuthHook = () => {
 
       toast.success("Đăng ký thành công! Mời bạn đăng nhập.");
       onSuccess();
-    } catch (error: any) {
-      const errorMsg = error.response?.data?.message || "Lỗi kết nối Server!";
+    } catch (error: unknown) {
+      const errorMsg =
+        (error as { response?: { data?: { message?: string } } }).response?.data
+          ?.message || "Lỗi kết nối Server!";
       toast.error(`❌ ${errorMsg}`);
     }
   };
@@ -28,9 +36,10 @@ export const AuthHook = () => {
       toast.success(`Chào mừng ${currentUser?.first_name}, quay trở lại quán!`);
 
       onSuccess();
-    } catch (error: any) {
+    } catch (error: unknown) {
       const errorMsg =
-        error.response?.data?.message || "Sai email hoặc mật khẩu!";
+        (error as { response?: { data?: { message?: string } } }).response?.data
+          ?.message || "Sai email hoặc mật khẩu!";
       toast.error(`❌ ${errorMsg}`);
     }
   };
@@ -38,5 +47,7 @@ export const AuthHook = () => {
   return {
     handleLogin,
     handleRegister,
+    isShowPassword,
+    handleShowPassword,
   };
 };

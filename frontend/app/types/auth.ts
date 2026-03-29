@@ -21,24 +21,39 @@ interface AuthState {
   logout: () => void;
 }
 
+const passwordRegex = /^[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]*$/;
+
 export const loginSchema = z.object({
   email: z
     .string()
+    .trim()
     .min(1, "Vui lòng nhập email")
     .email("Email không đúng định dạng"),
-  password: z.string().min(6, "Mật khẩu phải có ít nhất 6 ký tự"),
+  password: z
+    .string()
+    .trim()
+    .min(6, "Mật khẩu phải có ít nhất 6 ký tự")
+    .regex(passwordRegex, "Mật khẩu không được chứa Tiếng Việt có dấu"),
 });
 
 export type LoginFormData = z.infer<typeof loginSchema>;
 
 export const registerSchema = z.object({
-  lastName: z.string().min(1, "Họ là bắt buộc"),
-  firstName: z.string().min(1, "Tên là bắt buộc"),
+  lastName: z.string().trim().min(1, "Họ là bắt buộc"),
+  firstName: z.string().trim().min(1, "Tên là bắt buộc"),
   email: z
     .string()
+    .trim()
     .min(1, "Vui lòng nhập email")
     .email("Email không đúng định dạng"),
-  password: z.string().min(6, "Mật khẩu phải có ít nhất 6 ký tự"),
+  password: z
+    .string()
+    .trim()
+    .min(6, "Mật khẩu phải có ít nhất 6 ký tự")
+    .regex(
+      passwordRegex,
+      "Mật khẩu không được chứa Tiếng Việt có dấu hoặc khoảng trắng",
+    ),
 });
 
 export type RegisterFormData = z.infer<typeof registerSchema>;

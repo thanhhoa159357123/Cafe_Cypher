@@ -22,18 +22,6 @@ class CartItem extends Model
         ];
     }
 
-    // Gắn thêm field ảo 'toppings' vào kết quả trả về khi JSON hóa
-    protected $appends = ['toppings'];
-
-    // Accessor: Tự động lấy danh sách model Topping dựa trên mảng topping_ids
-    public function getToppingsAttribute()
-    {
-        if (empty($this->topping_ids)) {
-            return [];
-        }
-        return Topping::whereIn('id', $this->topping_ids)->get();
-    }
-
     // Thuộc về một giỏ hàng
     public function cart()
     {

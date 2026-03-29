@@ -6,8 +6,6 @@ import CategoryList from "./items/CategoryList";
 import ProductList from "./items/ProductList";
 import ProductDetail from "../ProductDetail/ProductDetail";
 import { AnimatePresence } from "motion/react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useRef } from "react";
 import { useMenuScroll } from "@/app/hooks/useMenuScroll";
 
 const MenuProduct = () => {

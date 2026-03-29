@@ -1,7 +1,11 @@
 import { useEffect, useRef } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { ICategory } from "../types/category";
 
-export const useMenuScroll = (categories: any, setSelectedCategory: any) => {
+export const useMenuScroll = (
+  categories: ICategory[],
+  setSelectedCategory: (category: ICategory | null) => void,
+) => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
@@ -45,7 +49,7 @@ export const useMenuScroll = (categories: any, setSelectedCategory: any) => {
       for (const parent of categories) {
         // Tìm trong đám con của parent hiện tại
         const targetCategory = parent.children?.find(
-          (c: any) => c.category_slug === targetSlug,
+          (c: ICategory) => c.category_slug === targetSlug,
         );
 
         if (targetCategory) {
@@ -85,7 +89,7 @@ export const useMenuScroll = (categories: any, setSelectedCategory: any) => {
 
       for (const parent of categories) {
         const child = parent.children?.find(
-          (c: any) => c.category_slug === activeSlug,
+          (c: ICategory) => c.category_slug === activeSlug,
         );
 
         if (child) {
@@ -113,8 +117,8 @@ export const useMenuScroll = (categories: any, setSelectedCategory: any) => {
       threshold: 0,
     });
 
-    categories.forEach((parent: any) => {
-      parent.children?.forEach((child: any) => {
+    categories.forEach((parent: ICategory) => {
+      parent.children?.forEach((child: ICategory) => {
         const el = document.getElementById(child.category_slug);
         if (el) observer.observe(el);
       });

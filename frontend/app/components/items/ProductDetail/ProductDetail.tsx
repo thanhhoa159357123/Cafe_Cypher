@@ -98,7 +98,11 @@ const ProductDetail = ({
             </div>
 
             {/* Các nút hành động */}
-            <ActionButton />
+            <ActionButton
+              product={product}
+              selectedSize={selectedSize}
+              selectedToppings={selectedToppings}
+            />
           </div>
         </div>
       </motion.div>

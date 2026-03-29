@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\CartResource;
 use App\Models\Cart;
 use App\Models\Topping;
 use Illuminate\Http\Request;
@@ -19,14 +20,10 @@ class CartController extends Controller
      */
     public function getCart(Request $request)
     {
-        $user = $request->user();
-
-        if (!$user) {
-            return response()->json(['message' => 'Bạn cần đăng nhập để xem giỏ hàng!'], 401);
-        }
+        $userId = $request->user()->id;
 
         $cart = Cart::with(['items.product', 'items.size'])
-            ->where('user_id', $user->id)
+            ->where('user_id', $userId)
             ->where('status', 'active')
             ->first();
 
@@ -35,7 +32,29 @@ class CartController extends Controller
             return response()->json(['message' => 'Giỏ hàng trống!'], 200);
         }
 
-        return response()->json($cart, 200);
+        // --- CHIÊU TỐI ƯU Topping BẰNG 1 QUERY DUY NHẤT ---
+        // 1. Gom tất cả ID topping của mọi mặt hàng thành 1 mảng dẹp (flatten)
+        $allToppingIds = $cart->items->flatMap(function ($item) {
+            return is_array($item->topping_ids) ? $item->topping_ids : [];
+        })->unique()->filter()->values();
+
+        // 2. Query lấy ngần ấy Topping 1 lần duy nhất, key theo ID để tra cứu nhanh bằng Array
+        $allToppingsData = Topping::whereIn('id', $allToppingIds)->get()->keyBy('id');
+
+        // 3. Gài tạm mảng dữ liệu topping xuống từng Item cho Resource xài
+        $cart->items->each(function ($item) use ($allToppingsData) {
+            $myToppings = [];
+            $ids = is_array($item->topping_ids) ? $item->topping_ids : [];
+            foreach ($ids as $tid) {
+                if (isset($allToppingsData[$tid])) {
+                    $myToppings[] = $allToppingsData[$tid];
+                }
+            }
+            // Gán dữ liệu vào 1 thuộc tính ảo để truyền sang Resource
+            $item->preloaded_toppings = $myToppings;
+        });
+
+        return new CartResource($cart);
     }
 
     /**
@@ -47,23 +66,22 @@ class CartController extends Controller
      */
     public function addToCart(Request $request)
     {
-        $user = $request->user();
+        $userId = $request->user()->id;
 
-        // Trả thông báo lỗi nếu không có user (token không hợp lệ hoặc không gửi token)
-        if (!$user) {
-            return response()->json(['message' => 'Bạn cần đăng nhập để thêm sản phẩm vào giỏ hàng!'], 401);
-        }
+        Log::info("=== THÊM SẢN PHẨM VÀO GIỎ HÀNG ===");
 
         $validated = $request->validate([
             'product_id' => 'required|exists:products,id',
-            'size_id' => 'required|exists:sizes,id',
+            'size_id' => 'nullable|exists:sizes,id',
             'topping_ids' => 'nullable|array',
             'topping_ids.*' => 'exists:toppings,id',
             'quantity' => 'required|integer|min:1',
         ]);
 
+        Log::info("Dữ liệu đã validate: " . json_encode($validated));
+
         $cart = Cart::firstOrCreate(
-            ['user_id' => $user->id, 'status' => 'active'],
+            ['user_id' => $userId, 'status' => 'active'],
             ['total_price' => 0]
         );
 
@@ -116,13 +134,9 @@ class CartController extends Controller
      */
     public function removeFromCart(Request $request, $itemId)
     {
-        $user = $request->user();
+        $userId = $request->user()->id;
 
-        if (!$user) {
-            return response()->json(['message' => 'Bạn cần đăng nhập để xóa sản phẩm khỏi giỏ hàng!'], 401);
-        }
-
-        $cart = Cart::where('user_id', $user->id)->where('status', 'active')->first();
+        $cart = Cart::where('user_id', $userId)->where('status', 'active')->first();
 
         if (!$cart) {
             return response()->json(['message' => 'Không tìm thấy giỏ hàng!'], 404);
@@ -153,17 +167,13 @@ class CartController extends Controller
      */
     public function updateCartItem(Request $request, $itemId)
     {
-        $user = $request->user();
-
-        if (!$user) {
-            return response()->json(['message' => 'Bạn cần đăng nhập để thay đổi số lượng sản phẩm!'], 401);
-        }
+        $userId = $request->user()->id;
 
         $validated = $request->validate([
             'quantity' => 'required|integer|min:1',
         ]);
 
-        $cart = Cart::where('user_id', $user->id)->where('status', 'active')->first();
+        $cart = Cart::where('user_id', $userId)->where('status', 'active')->first();
 
         if (!$cart) {
             return response()->json(['message' => 'Không tìm thấy giỏ hàng!'], 404);

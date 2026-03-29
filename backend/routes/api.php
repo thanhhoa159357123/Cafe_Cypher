@@ -5,6 +5,7 @@ use App\Http\Controllers\CartController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Auth;
 
@@ -29,7 +30,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::controller(CartController::class)->prefix('cart')->group(function () {
         Route::get('/', 'getCart');                      // GET /api/cart
         Route::post('/', 'addToCart');                   // POST /api/cart
-        Route::put('/items/{itemId}', 'updateCartItem'); // PUT /api/cart/items/{itemId}
-        Route::delete('/items/{itemId}', 'removeFromCart'); // DELETE /api/cart/items/{itemId}
+        Route::put('/{itemId}', 'updateCartItem'); // PUT /api/cart/{itemId}
+        Route::delete('/{itemId}', 'removeFromCart'); // DELETE /api/cart/{itemId}
+    });
+
+    // Gom nhóm Controller và Prefix cho Order
+    Route::controller(OrderController::class)->prefix('order')->group(function () {
+        Route::get('/', 'getOrder');                      // GET /api/order
+        Route::post('/', 'createOrder');                   // POST /api/order
     });
 });

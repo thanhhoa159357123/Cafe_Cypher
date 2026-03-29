@@ -3,15 +3,19 @@ import { useAuthStore } from "../store/useAuthStore";
 import { CategoryHook } from "./CategoryHook";
 import { useEffect, useState } from "react";
 import { ICategory } from "../types/category";
+import { CartHook } from "./CartHook";
 
 export const NavbarHook = () => {
   const { user, isAuthenticated, logout } = useAuthStore();
   const { categories } = CategoryHook();
+  const { cart } = CartHook();
   const router = useRouter();
   const [isOpenLogin, setIsOpenLogin] = useState(false);
   const [isOpenRegister, setIsOpenRegister] = useState(false);
-  const [isOpenCart, setIsOpenCart] = useState(true);
+  const [isOpenCart, setIsOpenCart] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
+
+  const totalItemsInCart = cart?.items.length || 0;
 
   useEffect(() => {
     setIsMounted(true);
@@ -83,5 +87,6 @@ export const NavbarHook = () => {
     isOpenCart,
     handleOpenCart,
     handleCloseCart,
+    totalItemsInCart,
   };
 };

@@ -1,15 +1,15 @@
 import { ICategory } from "./category";
 
 interface ISize {
-  size_id: string | number;
-  size_name: string;
-  size_price: number;
+  id: string | number;
+  name: string;
+  price: number;
 }
 
 interface ITopping {
-  topping_id: string | number;
-  topping_name: string;
-  topping_price: number;
+ id: string | number;
+ name: string;
+ price: number;
 }
 
 interface IProduct {

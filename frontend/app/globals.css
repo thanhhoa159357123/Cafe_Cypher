@@ -170,3 +170,18 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* ---------------------------------------------------- */
+/* Ẩn con mắt hiển thị mật khẩu mặc định của Edge/IE        */
+/* ---------------------------------------------------- */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+  display: none !important;
+}
+
+/* Ẩn trên một số trình duyệt Webkit nếu có hiển thị auto-fill */
+input::-webkit-credentials-auto-fill-button {
+  visibility: hidden;
+  position: absolute;
+  right: 0;
+}

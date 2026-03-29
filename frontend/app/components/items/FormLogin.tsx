@@ -3,6 +3,7 @@ import { motion } from "motion/react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema, LoginFormData } from "@/app/types/auth";
+import { Eye, EyeClosed } from "lucide-react";
 import { AuthHook } from "@/app/hooks/AuthHook";
 
 interface FormLoginProps {
@@ -11,7 +12,7 @@ interface FormLoginProps {
 }
 
 const FormLogin = ({ onClose, onOpenRegister }: FormLoginProps) => {
-  const { handleLogin } = AuthHook();
+  const { handleLogin, isShowPassword, handleShowPassword } = AuthHook();
 
   const {
     register,
@@ -70,7 +71,8 @@ const FormLogin = ({ onClose, onOpenRegister }: FormLoginProps) => {
                   ? "border-red-500 focus:border-red-500"
                   : "border-input focus:border-primary"
               }`}
-              placeholder="admin@gmail.com"
+              placeholder="client@gmail.com"
+              autoComplete="email"
             />
             {errors.email && (
               <p className="text-red-500 text-sm mt-1">
@@ -83,16 +85,35 @@ const FormLogin = ({ onClose, onOpenRegister }: FormLoginProps) => {
             <label className="block text-sm font-medium text-foreground/80 mb-1">
               Mật khẩu
             </label>
-            <input
-              type="password"
-              {...register("password")}
-              className={`w-full px-4 py-3 bg-background border rounded-xl focus:ring-2 focus:ring-primary/30 outline-none transition duration-200 placeholder:text-muted-foreground/50 ${
-                errors.password
-                  ? "border-red-500 focus:border-red-500"
-                  : "border-input focus:border-primary"
-              }`}
-              placeholder="••••••"
-            />
+            {/* THÊM position 'relative' vào thẻ bó khung ngoài */}
+            <div className="relative">
+              <input
+                // SỬ DỤNG STATE ĐỂ ĐỔI TYPE: password <-> text
+                type={isShowPassword ? "text" : "password"}
+                {...register("password")}
+                className={`w-full px-4 py-3 bg-background border rounded-xl focus:ring-2 focus:ring-primary/30 outline-none transition duration-200 placeholder:text-muted-foreground/50 pr-12 /* pr-12: Chừa chỗ trống cho con mắt chèn vô */ ${
+                    errors.password
+                      ? "border-red-500 focus:border-red-500"
+                      : "border-input focus:border-primary"
+                  }`}
+                placeholder="••••••"
+                autoComplete="current-password"
+              />
+
+              {/* NÚT BẤM CON MẮT */}
+              <button
+                type="button"
+                onClick={handleShowPassword}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+              >
+                {isShowPassword ? (
+                  <Eye className="w-5 h-5" />
+                ) : (
+                  <EyeClosed className="w-5 h-5" />
+                )}
+              </button>
+            </div>
+
             {errors.password && (
               <p className="text-red-500 text-sm mt-1">
                 {errors.password.message}

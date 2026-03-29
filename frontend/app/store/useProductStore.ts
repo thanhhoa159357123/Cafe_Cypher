@@ -15,9 +15,11 @@ export const useProductStore = create<ProductState>((set, get) => ({
     try {
       const res = await getProducts();
       set({ products: res.data, loading: false });
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (err: any) {
-      set({ error: "Không lấy được dữ liệu", loading: false });
+    } catch (error: unknown) {
+      const errorMessage =
+        (error as { response?: { data?: { message?: string } } }).response?.data
+          ?.message || "Không lấy được dữ liệu";
+      set({ error: errorMessage, loading: false });
     }
   },
 
@@ -26,15 +28,11 @@ export const useProductStore = create<ProductState>((set, get) => ({
   setSelectedToppings: (topping) => {
     const { selectedToppings } = get();
 
-    const isExistTopping = selectedToppings.some(
-      (t) => t.topping_id === topping.topping_id,
-    );
+    const isExistTopping = selectedToppings.some((t) => t.id === topping.id);
 
     if (isExistTopping) {
       set({
-        selectedToppings: selectedToppings.filter(
-          (t) => t.topping_id !== topping.topping_id,
-        ),
+        selectedToppings: selectedToppings.filter((t) => t.id !== topping.id),
       });
     } else {
       if (selectedToppings.length >= 3) {

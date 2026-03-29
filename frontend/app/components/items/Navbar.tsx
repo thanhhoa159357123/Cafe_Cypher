@@ -29,6 +29,7 @@ const Navbar = () => {
     isOpenCart,
     handleOpenCart,
     handleCloseCart,
+    totalItemsInCart,
   } = NavbarHook();
 
   return (
@@ -69,7 +70,7 @@ const Navbar = () => {
                 />
                 {/* Chấm tròn hiển thị số lượng (Badge) */}
                 <span className="absolute -top-1.5 -right-2 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[10px] font-bold text-destructive-foreground shadow-sm">
-                  2
+                  {totalItemsInCart}
                 </span>
               </div>
               <ProfileButton user={user} logOut={logout} />

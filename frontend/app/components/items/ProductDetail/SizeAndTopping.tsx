@@ -38,15 +38,15 @@ const SizeAndTopping = ({
 
           <div className="flex flex-row flex-wrap gap-3">
             {sizes?.map((size) => {
-              const isSelected = selectedSize?.size_id === size.size_id;
-              const priceDiff = size.size_price - product.price;
+              const isSelected = selectedSize?.id === size.id;
+              const priceDiff = size.price - product.price;
 
               return (
                 <div
-                  key={size.size_id}
+                  key={size.id}
                   onClick={() => setSelectedSize(size)}
                   className={`
-                  flex items-center px-4 py-3 rounded-xl border-2 transition-colors duration-200 cursor-pointer
+                  flex items-center px-3 py-2 rounded-xl border-2 transition-colors duration-200 cursor-pointer
                   ${
                     isSelected
                       ? "bg-primary border-primary text-primary-foreground shadow-sm"
@@ -54,18 +54,11 @@ const SizeAndTopping = ({
                   }
                 `}
                 >
-                  <div className="flex items-center gap-2">
-                    {isSelected && <Check className="w-4 h-4" />}
+                  <div className="flex items-center justify-center gap-2">
                     <span className="text-sm font-semibold whitespace-nowrap">
-                      {size.size_name}
+                      {size.name}
                     </span>
-                    <span
-                      className={`text-xs font-medium px-1.5 py-0.5 rounded-full bg-background/20 ${
-                        isSelected
-                          ? "text-primary-foreground"
-                          : "text-muted-foreground"
-                      }`}
-                    >
+                    <span className="text-xs font-medium">
                       +{priceDiff.toLocaleString("vi-VN")}đ
                     </span>
                   </div>
@@ -98,16 +91,16 @@ const SizeAndTopping = ({
           <div className="flex flex-row flex-wrap gap-3 max-w-full">
             {toppings?.map((topping) => {
               const isSelected = selectedToppings.some(
-                (t) => t.topping_id === topping.topping_id,
+                (t) => t.id === topping.id,
               );
               const isDisabled = isMaxToppings && !isSelected;
 
               return (
                 <div
-                  key={topping.topping_id}
+                  key={topping.id}
                   onClick={() => !isDisabled && setSelectedToppings(topping)}
                   className={`
-                  flex items-center px-4 py-3 rounded-xl border-2 transition-colors duration-200
+                  flex items-center px-3 py-2 rounded-xl border-2 transition-colors duration-200
                   ${
                     isDisabled
                       ? "bg-background border-border/50 text-muted-foreground/50 cursor-not-allowed"
@@ -117,12 +110,12 @@ const SizeAndTopping = ({
                   }
                 `}
                 >
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center justify-center gap-2">
                     <span className="text-sm font-semibold whitespace-nowrap">
-                      {topping.topping_name}
+                      {topping.name}
                     </span>
                     <span className="text-xs font-medium">
-                      +{topping.topping_price.toLocaleString("vi-VN")}đ
+                      +{topping.price.toLocaleString("vi-VN")}đ
                     </span>
                   </div>
                 </div>
