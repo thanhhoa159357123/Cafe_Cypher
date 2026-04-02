@@ -22,7 +22,7 @@ class CartController extends Controller
     {
         $userId = $request->user()->id;
 
-        $cart = Cart::with(['items.product', 'items.size'])
+        $cart = Cart::with(['items.product.sizes', 'items.size'])
             ->where('user_id', $userId)
             ->where('status', 'active')
             ->first();
@@ -203,6 +203,26 @@ class CartController extends Controller
         $total = 0;
         $items = $cart->items()->with(['product'])->get();
 
+        $allProductIds = $items->pluck('product_id')->toArray();
+        $allSizeIds = $items->pluck('size_id')->filter()->toArray();
+
+        $allProductSizes = DB::table('product_sizes')
+            ->whereIn('product_id', $allProductIds)
+            ->whereIn('size_id', $allSizeIds)
+            ->get();
+
+        // Lấy trước tất cả giá của các topping có trong giỏ hàng
+        $allToppingIds = [];
+        foreach ($items as $item) {
+            $tIds = is_string($item->topping_ids) ? json_decode($item->topping_ids, true) : $item->topping_ids;
+            if (is_array($tIds)) {
+                $allToppingIds = array_merge($allToppingIds, $tIds);
+            }
+        }
+
+        // Trả về 1 mảng [id_topping => giá_tiền]
+        $allToppingsPrice = Topping::whereIn('id', $allToppingIds)->pluck('price', 'id')->toArray();
+
         Log::info("=== TÍNH LẠI TỔNG TIỀN CART ID: {$cart->id} ===");
 
         Log::info("Item hiện tại: " . $items);
@@ -210,14 +230,12 @@ class CartController extends Controller
         foreach ($items as $item) {
             $itemPrice = 0;
             $hasSizePrice = false;
-
             // 1. Tìm giá theo size trước
             if ($item->product_id && $item->size_id) {
-                $productSize = DB::table('product_sizes')
+                $productSize = $allProductSizes
                     ->where('product_id', $item->product_id)
                     ->where('size_id', $item->size_id)
                     ->first();
-
                 if ($productSize && $productSize->price > 0) {
                     $itemPrice += $productSize->price;
                     $hasSizePrice = true;
@@ -234,11 +252,14 @@ class CartController extends Controller
             }
 
             // 3. Tiền Toppings
-            $toppingIds = $item->topping_ids ?? [];
+            $toppingIds = is_string($item->topping_ids) ? json_decode($item->topping_ids, true) : $item->topping_ids;
             if (!empty($toppingIds)) {
-                $toppingsTotal = Topping::whereIn('id', $toppingIds)->sum('price');
+                $toppingsTotal = 0;
+                foreach ((array)$toppingIds as $tId) {
+                    // Nếu tồn tại id trong mảng thì cộng tiền
+                    $toppingsTotal += $allToppingsPrice[$tId] ?? 0;
+                }
                 $itemPrice += $toppingsTotal;
-                Log::info("- Tổng tiền Toppings: {$toppingsTotal}");
             }
 
             Log::info("- Tổng giá 1 item (đã cộng topping): {$itemPrice} | Số lượng: {$item->quantity}");

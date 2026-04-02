@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\OrderResource;
+use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\Order;
 use App\Models\Product;
@@ -20,11 +22,18 @@ class OrderController extends Controller
     {
         $userId = $request->user()->id;
 
-        $order = Order::with(['items'])
+        // Lấy danh sách đơn hàng, kèm theo items
+        $orders = Order::with(['items'])
             ->where('user_id', $userId)
+            ->orderBy('created_at', 'desc')
             ->get();
 
-        return response()->json($order);
+        if ($orders->isEmpty()) {
+            return response()->json(['message' => 'Bạn chưa có đơn hàng nào!'], 200);
+        }
+
+        // Trả về qua Resource
+        return OrderResource::collection($orders);
     }
 
     /**
@@ -76,45 +85,92 @@ class OrderController extends Controller
             // ==== PHÂN LOẠI CÁCH MUA ====
 
             if ($request->checkout_type === 'cart') {
-                $cartItems = CartItem::with(['product', 'size'])->where('user_id', $userId)->get();
+                $cart = Cart::with(['items.product', 'items.size'])->where('user_id', $userId)->first();
+                $cartItems = $cart ? $cart->items : collect();
 
                 if ($cartItems->isEmpty()) {
                     DB::rollBack();
                     return response()->json(['message' => 'Giỏ hàng trống!'], 400);
                 }
 
-                foreach ($cartItems as $cartItem) {
-                    // Xử lý an toàn mảng Topping ID (vì DB lưu mảng json hoặc null)
-                    $tIds = is_string($cartItem->topping_ids) ? json_decode($cartItem->topping_ids, true) : $cartItem->topping_ids;
-                    $tIds = $tIds ?: [];
+                // Lấy toàn bộ giá Size
+                $allProductIds = $cartItems->pluck('product_id')->unique()->filter()->toArray();
+                $allSizeIds = $cartItems->pluck('size_id')->unique()->filter()->toArray();
 
-                    // SỬA LỖI 1: Truyền ID cẩn thận vào hàm
-                    $unitPrice = $this->calculateUnitPrice($cartItem->product_id, $cartItem->size_id, $tIds);
-                    $lineTotalPrice = $unitPrice * $cartItem->quantity;
+                $allProductSizes = DB::table('product_sizes')
+                    ->whereIn('product_id', $allProductIds)
+                    ->whereIn('size_id', $allSizeIds)
+                    ->get();
+
+                // Lấy toàn bộ Topping (Cả Giá và Tên để làm Snapshot)
+                $allToppingIds = [];
+                foreach ($cartItems as $item) {
+                    $tIds = is_string($item->topping_ids) ? json_decode($item->topping_ids, true) : $item->topping_ids;
+                    if (is_array($tIds)) {
+                        $allToppingIds = array_merge($allToppingIds, $tIds);
+                    }
+                }
+                // Query lấy 1 lần, lưu thành array object trên RAM: [id => {name, price}]
+                $allToppingsData = Topping::whereIn('id', $allToppingIds)->get()->keyBy('id');
+
+                foreach ($cartItems as $cartItem) {
+                    $itemPrice = 0;
+                    $hasSizePrice = false;
+
+                    // 1. Tính tiền Size
+                    if ($cartItem->product_id && $cartItem->size_id) {
+                        $productSize = $allProductSizes
+                            ->where('product_id', $cartItem->product_id)
+                            ->where('size_id', $cartItem->size_id)
+                            ->first();
+
+                        if ($productSize && $productSize->price > 0) {
+                            $itemPrice += $productSize->price;
+                            $hasSizePrice = true;
+                        }
+                    }
+
+                    // 2. Fallback giá gốc
+                    if (!$hasSizePrice && $cartItem->product) {
+                        $itemPrice += $cartItem->product->price;
+                    }
+
+                    // 3. Tính tiền Topping & Lấy Tên Snapshot
+                    $toppingNames = [];
+                    $tIds = is_string($cartItem->topping_ids) ? json_decode($cartItem->topping_ids, true) : $cartItem->topping_ids;
+
+                    if (is_array($tIds) && !empty($tIds)) {
+                        foreach ($tIds as $tId) {
+                            // Rút data từ mảng RAM $allToppingsData
+                            if ($allToppingsData->has($tId)) {
+                                $toppingObj = $allToppingsData->get($tId);
+                                $itemPrice += $toppingObj->price; // Cộng tiền
+                                $toppingNames[] = $toppingObj->name; // Lưu tên
+                            }
+                        }
+                    }
+
+                    $lineTotalPrice = $itemPrice * $cartItem->quantity;
                     $totalPrice += $lineTotalPrice;
 
-                    // Lấy TÊN topping để lưu Snapshot
-                    $toppingNames = !empty($tIds) ? Topping::whereIn('id', $tIds)->pluck('name')->toArray() : [];
-
-                    // SỬA LỖI 2: Đẩy dữ liệu theo đúng chuẩn Snapshot Table
                     $orderItemsData[] = [
                         'order_id' => $order->id,
                         'product_id' => $cartItem->product_id,
                         'product_name' => $cartItem->product ? $cartItem->product->name : 'SP Đã xóa',
+                        'image_url' => $cartItem->product ? $cartItem->product->image_url : null,
                         'size_name' => $cartItem->size ? $cartItem->size->name : 'Mặc định',
                         'toppings' => json_encode($toppingNames, JSON_UNESCAPED_UNICODE),
                         'quantity' => $cartItem->quantity,
-                        'unit_price' => $unitPrice,
-                        'total_price' => $lineTotalPrice, // Tính tổng theo dòng luôn cho sướng
+                        'unit_price' => $itemPrice,
+                        'total_price' => $lineTotalPrice,
                         'created_at' => now(),
                         'updated_at' => now()
                     ];
                 }
 
-                // Xoá giỏ hàng sau khi tính xong
-                CartItem::where('user_id', $userId)->delete();
+                // Xoá giỏ hàng sau khi tạo đơn xong
+                CartItem::where('cart_id', $cart->id)->delete();
             } elseif ($request->checkout_type === "buy_now") {
-                // Nhánh mua thẳng bỏ qua cart
                 $validatedBuyNow = $request->validate([
                     'product_id' => 'required|exists:products,id',
                     'size_id' => 'nullable|exists:sizes,id',
@@ -128,22 +184,52 @@ class OrderController extends Controller
                 $tIds = $validatedBuyNow['topping_ids'] ?? [];
                 $qty = $validatedBuyNow['quantity'];
 
-                $unitPrice = $this->calculateUnitPrice($pId, $sId, $tIds);
-                $lineTotalPrice = $unitPrice * $qty;
-                $totalPrice += $lineTotalPrice;
-
+                // Query lấy thẳng cục Product và Size
                 $product = Product::find($pId);
                 $size = $sId ? Size::find($sId) : null;
-                $toppingNames = !empty($tIds) ? Topping::whereIn('id', $tIds)->pluck('name')->toArray() : [];
+
+                $itemPrice = 0;
+                $hasSizePrice = false;
+
+                // Tính tiền Size (Query 1 phát)
+                if ($sId) {
+                    $productSizePrice = DB::table('product_sizes')
+                        ->where('product_id', $pId)
+                        ->where('size_id', $sId)
+                        ->value('price');
+
+                    if ($productSizePrice > 0) {
+                        $itemPrice += $productSizePrice;
+                        $hasSizePrice = true;
+                    }
+                }
+
+                if (!$hasSizePrice) {
+                    $itemPrice += $product->price;
+                }
+
+                // Tính tiền Topping & Lấy Tên (Query thêm 1 phát nữa là dứt điểm)
+                $toppingNames = [];
+                if (!empty($tIds)) {
+                    $toppings = Topping::whereIn('id', $tIds)->get(); // Lấy cả cục Topping thay vì pluck
+                    foreach ($toppings as $topping) {
+                        $itemPrice += $topping->price; // Cộng tiền
+                        $toppingNames[] = $topping->name; // Lưu tên
+                    }
+                }
+
+                $lineTotalPrice = $itemPrice * $qty;
+                $totalPrice += $lineTotalPrice;
 
                 $orderItemsData[] = [
                     'order_id' => $order->id,
                     'product_id' => $pId,
                     'product_name' => $product->name,
+                    'image_url' => $product->image_url,
                     'size_name' => $size ? $size->name : 'Mặc định',
                     'toppings' => json_encode($toppingNames, JSON_UNESCAPED_UNICODE),
                     'quantity' => $qty,
-                    'unit_price' => $unitPrice,
+                    'unit_price' => $itemPrice,
                     'total_price' => $lineTotalPrice,
                     'created_at' => now(),
                     'updated_at' => now()
@@ -153,10 +239,10 @@ class OrderController extends Controller
                 return response()->json(['message' => 'Loại thanh toán không hợp lệ!'], 400);
             }
 
-            // Lưu order items vào DB
+            // Lưu order items vào DB (Dùng insert là cực nhanh)
             DB::table('order_items')->insert($orderItemsData);
 
-            // Cập nhật tổng tiền cho đơn hàng
+            // Cập nhật tổng tiền
             $order->total_price = $totalPrice;
             $order->save();
 
@@ -168,44 +254,5 @@ class OrderController extends Controller
             Log::error("Lỗi khi tạo đơn hàng: " . $e->getMessage());
             return response()->json(['message' => 'Tạo đơn hàng thất bại!'], 500);
         }
-    }
-
-    private function calculateUnitPrice($productId, $sizeId = null, $toppingIds = [])
-    {
-        $product = Product::find($productId);
-
-        if (!$product) {
-            return 0;
-        }
-
-        $finalPrice = 0;
-
-        if ($sizeId) {
-            $productsizePrice = DB::table('product_sizes')
-                ->where('product_id', $productId)
-                ->where('size_id', $sizeId)
-                ->value('price');
-
-            $finalPrice += $productsizePrice ?: $product->price;
-        } else {
-            $finalPrice += $product->price;
-        }
-
-        if (!empty($toppingIds)) {
-            // Đảm bảo ép chuẩn mọi kiêu dữ liệu truyền vào thành mảng thật
-            $toppingArray = is_string($toppingIds) ? json_decode($toppingIds, true) : $toppingIds;
-            $toppingArray = (array) $toppingArray;
-
-            // Đếm số lượng ID bên trong mới truy vấn (Chống SQL nổ do mảng rỗng)
-            if (count($toppingArray) > 0) {
-                $toppingsPrice = DB::table('toppings')
-                    ->whereIn('id', $toppingArray) // DÙNG BIẾN ĐÃ ÉP KIỂU
-                    ->sum('price');
-
-                $finalPrice += $toppingsPrice;
-            }
-        }
-
-        return $finalPrice;
     }
 }

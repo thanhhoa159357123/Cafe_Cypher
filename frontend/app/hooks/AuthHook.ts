@@ -1,11 +1,16 @@
 import { useAuthStore } from "../store/useAuthStore";
 import { toast } from "sonner";
 import { LoginFormData, RegisterFormData } from "../types/auth";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { updateInformation } from "../services/authService";
 
 export const AuthHook = () => {
-  const { login, register } = useAuthStore();
+  const { login, register, updateUser, fetchUser } = useAuthStore();
   const [isShowPassword, setIsShowPassword] = useState(false);
+
+  useEffect(() => {
+    fetchUser();
+  }, [fetchUser]);
 
   const handleShowPassword = () => {
     setIsShowPassword((prev) => !prev);
@@ -44,10 +49,32 @@ export const AuthHook = () => {
     }
   };
 
+  const handleUpdateUser = async (data: {
+    first_name: string;
+    last_name: string;
+    email: string;
+  }) => {
+    const toastId = toast.loading("Đang lưu thay đổi...");
+    try {
+      // Gọi thẳng action từ Store
+      await updateUser(data);
+
+      toast.success("Cập nhật thông tin thành công!", { id: toastId });
+      return true;
+    } catch (error: unknown) {
+      const errorMsg =
+        (error as { response?: { data?: { message?: string } } }).response?.data
+          ?.message || "Lỗi khi cập nhật thông tin!";
+      toast.error(`❌ ${errorMsg}`, { id: toastId });
+      return false;
+    }
+  };
+
   return {
     handleLogin,
     handleRegister,
     isShowPassword,
     handleShowPassword,
+    handleUpdateUser,
   };
 };

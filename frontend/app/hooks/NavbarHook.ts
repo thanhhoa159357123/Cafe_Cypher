@@ -4,6 +4,7 @@ import { CategoryHook } from "./CategoryHook";
 import { useEffect, useState } from "react";
 import { ICategory } from "../types/category";
 import { CartHook } from "./CartHook";
+import { AuthHook } from "./AuthHook";
 
 export const NavbarHook = () => {
   const { user, isAuthenticated, logout } = useAuthStore();

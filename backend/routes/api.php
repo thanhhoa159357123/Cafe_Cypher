@@ -25,6 +25,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/me', function (Request $request) {
         return $request->user();
     });
+    Route::put('/user/update-info', [AuthController::class, 'updateInformation']);
+    Route::put('/user/change-password', [AuthController::class, 'changePassword']);
 
     // Gom nhóm Controller và Prefix cho Cart
     Route::controller(CartController::class)->prefix('cart')->group(function () {

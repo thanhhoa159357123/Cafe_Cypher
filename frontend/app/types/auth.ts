@@ -11,6 +11,7 @@ interface AuthState {
   access_token: string | null;
   token_type: string | null;
   isAuthenticated: boolean;
+  fetchUser: () => Promise<void>;
   login: (email: string, password: string) => Promise<void>;
   register: (
     last_name: string,
@@ -19,6 +20,11 @@ interface AuthState {
     password: string,
   ) => Promise<void>;
   logout: () => void;
+  updateUser: (data: {
+    first_name: string;
+    last_name: string;
+    email: string;
+  }) => Promise<void>; // Thêm hàm updateUser để cập nhật thông tin người dùng sau khi chỉnh sửa
 }
 
 const passwordRegex = /^[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]*$/;

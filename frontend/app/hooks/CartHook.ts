@@ -1,7 +1,4 @@
-import { useEffect } from "react";
 import { useCartStore } from "../store/useCartStore";
-import { toast } from "sonner";
-import { ICartItem } from "../types/cart";
 
 export const CartHook = () => {
   const { cart, addToCart, updateCartItem, removeCartItem } = useCartStore();

@@ -21,22 +21,22 @@ class ProductResource extends JsonResource
             'description' => $this->description,
             'price' => (float) $this->price,
             'category' => CategoryResource::make($this->whenLoaded('category')) ?? null,
-            
+
             'sizes' => $this->whenLoaded('sizes', function () {
                 return $this->sizes->map(function ($size) {
                     return [
-                        'size_id' => $size->id,
-                        'size_name' => $size->name,
-                        'size_price' => (float) $size->pivot->price,
+                        'id' => $size->id,
+                        'name' => $size->name,
+                        'price' => (float) $size->pivot->price,
                     ];
                 });
             }) ?? [],
             'toppings' => $this->whenLoaded('toppings', function () {
                 return $this->toppings->map(function ($tp) {
                     return [
-                        'topping_id' => $tp->id,
-                        'topping_name' => $tp->name,
-                        'topping_price' => (float) $tp->price,
+                        'id' => $tp->id,
+                        'name' => $tp->name,
+                        'price' => (float) $tp->price,
                     ];
                 });
             }) ?? [],
