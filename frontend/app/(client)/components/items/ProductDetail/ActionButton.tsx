@@ -1,5 +1,5 @@
-import { CartHook } from "@/app/hooks/CartHook";
-import { useOrderHook } from "@/app/hooks/OrderHook";
+import { CartHook } from "@/app/hooks/client/CartHook";
+import { useOrderHook } from "@/app/hooks/client/OrderHook";
 import { ISize } from "@/app/types/product";
 import { useRouter } from "next/navigation";
 import React from "react";

@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { registerSchema, RegisterFormData } from "@/app/types/auth";
 import { Eye, EyeClosed } from "lucide-react";
-import { AuthHook } from "@/app/hooks/AuthHook";
+import { AuthHook } from "@/app/hooks/client/AuthHook";
 
 interface FormRegisterProps {
   onClose: () => void;
@@ -130,16 +130,16 @@ const FormRegister = ({ onClose, onOpenLogin }: FormRegisterProps) => {
             </label>
             {/* THÊM position 'relative' vào thẻ bó khung ngoài */}
             <div className="relative">
-            <input
+              <input
                 // SỬ DỤNG STATE ĐỂ ĐỔI TYPE: password <-> text
                 type={isShowPassword ? "text" : "password"}
-              {...register("password")}
+                {...register("password")}
                 className={`w-full px-4 py-3 bg-background border rounded-xl focus:ring-2 focus:ring-primary/30 outline-none transition duration-200 placeholder:text-muted-foreground/50 pr-12 /* pr-12: Chừa chỗ trống cho con mắt chèn vô */ ${
-                errors.password
-                  ? "border-red-500 focus:border-red-500"
-                  : "border-input focus:border-primary"
-              }`}
-              placeholder="••••••"
+                  errors.password
+                    ? "border-red-500 focus:border-red-500"
+                    : "border-input focus:border-primary"
+                }`}
+                placeholder="••••••"
                 autoComplete="current-password"
               />
 

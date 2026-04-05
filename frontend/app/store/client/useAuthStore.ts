@@ -1,14 +1,15 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-import { AuthState } from "../types/auth";
+import { AuthState } from "../../types/auth";
 import {
   login,
   register,
   logout,
   updateInformation,
   getMe,
-} from "@/app/services/authService";
+} from "@/app/services/client/authService";
 import { useCartStore } from "./useCartStore";
+import Cookie from "js-cookie";
 
 export const useAuthStore = create<AuthState>()(
   persist(
@@ -26,12 +27,18 @@ export const useAuthStore = create<AuthState>()(
               last_name: response.last_name,
               first_name: response.first_name,
               email: response.email,
+              role: response.role,
             },
             isAuthenticated: true,
           });
+
+          Cookie.set("user_role", response.role, { expires: 7 });
         } catch (error) {
           console.error("Fetch user failed:", error);
           // Nếu lỗi (ví dụ: token hết hạn), thì xóa luôn thông tin đăng nhập để tránh trạng thái lỗi lặp lại
+          // XÓA COOKIE khi token hết hạn hoặc lỗi xác thực
+          Cookie.remove("auth_token");
+          Cookie.remove("user_role");
           set({
             user: null,
             access_token: null,
@@ -44,18 +51,24 @@ export const useAuthStore = create<AuthState>()(
       login: async (email, password) => {
         try {
           const response = await login({ email, password });
+          Cookie.set("auth_token", response.access_token, { expires: 7 });
+          Cookie.set("user_role", response.user.role, { expires: 7 });
           set({
             user: {
               last_name: response.user.last_name,
               first_name: response.user.first_name,
               email: response.user.email,
+              role: response.user.role,
             },
             access_token: response.access_token,
             token_type: response.token_type,
             isAuthenticated: true,
           });
-
-          useCartStore.getState().fetchCart();
+          if (response.user.role === "client") {
+            useCartStore.getState().fetchCart();
+          } else {
+            window.location.href = "/admin-dashboard"; // Chuyển hướng admin sau khi login thành công
+          }
         } catch (error) {
           console.error("Login failed:", error);
           throw error;
@@ -89,6 +102,10 @@ export const useAuthStore = create<AuthState>()(
             );
           }
         }
+
+        // DỌN SẠCH COOKIE KHI LOGOUT
+        Cookie.remove("auth_token");
+        Cookie.remove("user_role");
 
         // 2. LUÔN LUÔN dọn dẹp State ở Client (Dù BE có lỗi hay không)
         set({

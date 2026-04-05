@@ -1,6 +1,6 @@
-@import 'tailwindcss';
-@import 'tw-animate-css';
-@import 'shadcn/tailwind.css';
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -168,6 +168,50 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+
+  /* Ép toàn bộ trang web luôn có thanh cuộn để tránh nhảy giao diện khi nội dung thay đổi */
+  html {
+    overflow-y: scroll;
+    scrollbar-gutter: stable;
+    /* Giữ khoảng trống cố định cho thanh cuộn */
+    scroll-behavior: smooth;
+  }
+
+  /* Tùy chỉnh giao diện Scrollbar cho các trình duyệt Webkit (Chrome, Edge, Safari) */
+  ::-webkit-scrollbar {
+    width: 10px;
+    /* Độ rộng thanh cuộn */
+    height: 10px;
+    /* Độ cao thanh cuộn ngang */
+  }
+
+  /* Nền của thanh cuộn */
+  ::-webkit-scrollbar-track {
+    background: var(--secondary);
+    /* Dùng màu nâu nhạt sữa bác đã định nghĩa */
+    border-radius: var(--radius);
+  }
+
+  /* Tay kéo thanh cuộn (Thumb) */
+  ::-webkit-scrollbar-thumb {
+    background: var(--primary);
+    /* Màu nâu cà phê hạt */
+    border-radius: var(--radius);
+    border: 2px solid var(--secondary);
+    /* Tạo khoảng cách cho đẹp */
+  }
+
+  /* Khi di chuột vào tay kéo */
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-light);
+    /* Màu cà phê sáng hơn khi hover */
+  }
+
+  /* Hỗ trợ cho Firefox (chuẩn mới) */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--primary) var(--secondary);
   }
 }
 

@@ -1,12 +1,12 @@
 "use client";
 
-import { CategoryHook } from "@/app/hooks/CategoryHook";
-import { ProductHook } from "@/app/hooks/ProductHook";
+import { CategoryHook } from "@/app/hooks/client/CategoryHook";
+import { ProductHook } from "@/app/hooks/client/ProductHook";
 import CategoryList from "./items/CategoryList";
 import ProductList from "./items/ProductList";
 import ProductDetail from "../ProductDetail/ProductDetail";
 import { AnimatePresence } from "motion/react";
-import { useMenuScroll } from "@/app/hooks/useMenuScroll";
+import { useMenuScroll } from "@/app/hooks/client/useMenuScroll";
 
 const MenuProduct = () => {
   const { categories, selectedCategory, setSelectedCategory } = CategoryHook();

@@ -1,8 +1,8 @@
 import { useRouter } from "next/navigation";
-import { useAuthStore } from "../store/useAuthStore";
+import { useAuthStore } from "../../store/client/useAuthStore";
 import { CategoryHook } from "./CategoryHook";
 import { useEffect, useState } from "react";
-import { ICategory } from "../types/category";
+import { ICategory } from "../../types/category";
 import { CartHook } from "./CartHook";
 import { AuthHook } from "./AuthHook";
 

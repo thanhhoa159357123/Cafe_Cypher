@@ -1,15 +1,15 @@
-'use client'
+"use client";
 
-import { useEffect } from 'react'
-import { useCategoryStore } from '../store/useCategoryStore'
+import { useEffect } from "react";
+import { useCategoryStore } from "../../store/client/useCategoryStore";
 
 export const CategoryHook = () => {
   const { categories, selectedCategory, setSelectedCategory } =
-    useCategoryStore()
+    useCategoryStore();
 
   return {
     categories,
     selectedCategory,
     setSelectedCategory,
-  }
-}
+  };
+};

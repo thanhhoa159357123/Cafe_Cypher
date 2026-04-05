@@ -3,8 +3,8 @@ import {
   IBuyNowItemState,
   ICreateOrderPayload,
   IOrderState,
-} from "../types/order";
-import { createOrder, getOrders } from "../services/orderService";
+} from "../../types/order";
+import { createOrder, getOrders } from "../../services/client/orderService";
 
 export const useOrderStore = create<IOrderState>((set, get) => ({
   selectedOrder: null,

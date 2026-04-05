@@ -2,10 +2,10 @@
 import React, { use, useEffect } from "react";
 // 1. Import motion và AnimatePresence từ framer-motion
 import { motion, AnimatePresence } from "motion/react";
-import { useAuthStore } from "../../store/useAuthStore";
+import { useAuthStore } from "../../store/client/useAuthStore";
 import AccountInformation from "./items/AccountInformation";
 import HistoryOrder from "./items/HistoryOrder";
-import { useOrderHook } from "../../hooks/OrderHook";
+import { useOrderHook } from "../../hooks/client/OrderHook";
 import PopUpDetailOrder from "./items/PopUpDetailOrder";
 
 const AccountPage = () => {

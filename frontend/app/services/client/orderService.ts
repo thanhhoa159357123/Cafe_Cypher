@@ -1,5 +1,5 @@
 import axiosClient from "@/lib/axios";
-import { ICreateOrderPayload } from "../types/order";
+import { ICreateOrderPayload } from "../../types/order";
 
 export const getOrders = async () => {
   const response = await axiosClient.get("/order");

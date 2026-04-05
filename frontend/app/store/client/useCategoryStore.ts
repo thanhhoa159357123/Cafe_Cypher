@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { getCategories } from "../services/categoryService";
+import { getCategories } from "../../services/client/categoryService";
 import type { CategoryState, ICategory } from "@/app/types/category";
 
 export const useCategoryStore = create<CategoryState>((set) => ({

@@ -2,9 +2,9 @@
 
 import { useEffect, useRef } from "react";
 import Navbar from "./components/items/Navbar";
-import { useCartStore } from "../store/useCartStore";
-import { useCategoryStore } from "../store/useCategoryStore";
-import { useProductStore } from "../store/useProductStore";
+import { useCartStore } from "../store/client/useCartStore";
+import { useCategoryStore } from "../store/client/useCategoryStore";
+import { useProductStore } from "../store/client/useProductStore";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { fetchCategories } = useCategoryStore();

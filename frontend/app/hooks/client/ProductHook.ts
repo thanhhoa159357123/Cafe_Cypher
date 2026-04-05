@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { useProductStore } from "../store/useProductStore";
+import { useProductStore } from "../../store/client/useProductStore";
 
 export const ProductHook = () => {
   const {

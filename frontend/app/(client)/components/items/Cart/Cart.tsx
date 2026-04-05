@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react"; // Bạn nên dùng "framer-motion"
 import { ShoppingBag, X, UserX, Coffee } from "lucide-react";
 import { User } from "@/app/types/auth";
-import { CartHook } from "@/app/hooks/CartHook";
+import { CartHook } from "@/app/hooks/client/CartHook";
 import CartItem from "./CartItem";
 import ButtonPayment from "./ButtonPayment";
 import Link from "next/link"; // Để điều hướng Login
@@ -25,19 +25,11 @@ const Cart = ({ onClose, user, isAuthenticated }: CartProps) => {
 
   // Chặn scroll body VÀ chống lỗi giật trang khi mở Giỏ hàng
   useEffect(() => {
-    // 1. Tính toán độ rộng của thanh cuộn máy tính người dùng (VD: Windows thường 15px)
-    const scrollbarWidth =
-      window.innerWidth - document.documentElement.clientWidth;
-
-    // 2. Chèn 15px độ rộng vào bên lề phải của web để bù cho không gian thanh cuộn đã biến mất
-    if (scrollbarWidth > 0) {
-      document.body.style.paddingRight = `${scrollbarWidth}px`;
-    }
+    // Chỉ cần ẩn scrollbar đi, không cần bù padding vì đã có `scrollbar-gutter: stable` trong CSS
     document.body.style.overflow = "hidden";
 
-    // 3. Khi đóng Cart, gỡ bỏ tất cả để quay về như cũ
+    // Khi đóng Cart, gỡ bỏ khóa cuộn
     return () => {
-      document.body.style.paddingRight = "0px";
       document.body.style.overflow = "unset";
     };
   }, []);

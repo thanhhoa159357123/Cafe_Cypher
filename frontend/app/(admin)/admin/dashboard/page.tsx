@@ -62,10 +62,10 @@ const AdminDashboard = () => {
 
       {/* Placeholder cho Biểu đồ */}
       <div className="grid gap-6 lg:grid-cols-7">
-        <div className="lg:col-span-4 p-6 bg-card rounded-2xl border border-border h-[400px] flex items-center justify-center text-muted-foreground italic">
+        <div className="lg:col-span-4 p-6 bg-card rounded-2xl border border-border h-100 flex items-center justify-center text-muted-foreground italic">
           [Biểu đồ doanh thu 7 ngày qua]
         </div>
-        <div className="lg:col-span-3 p-6 bg-card rounded-2xl border border-border h-[400px] flex items-center justify-center text-muted-foreground italic">
+        <div className="lg:col-span-3 p-6 bg-card rounded-2xl border border-border h-100 flex items-center justify-center text-muted-foreground italic">
           [Đơn hàng mới nhất]
         </div>
       </div>

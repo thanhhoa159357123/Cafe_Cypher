@@ -3,7 +3,7 @@ import { User } from "@/app/types/auth";
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { X } from "lucide-react";
-import { AuthHook } from "@/app/hooks/AuthHook";
+import { AuthHook } from "@/app/hooks/client/AuthHook";
 
 interface AccountInformationProps {
   user: User | null;

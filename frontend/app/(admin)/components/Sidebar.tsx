@@ -15,32 +15,32 @@ const Sidebar = () => {
   const menuItems = [
     {
       label: "Tổng quan",
-      href: "/admin-dashboard",
+      href: "/admin/dashboard", // Hoặc giữ /admin-dashboard đều được
       icon: <LayoutDashboard size={20} />,
     },
     {
       label: "Đơn hàng",
-      href: "/order",
+      href: "/admin/order", // Bắt buộc có /admin/...
       icon: <ShoppingCart size={20} />,
     },
     {
       label: "Sản phẩm",
-      href: "/product",
+      href: "/admin/product",
       icon: <Coffee size={20} />,
     },
     {
       label: "Danh mục",
-      href: "/category",
+      href: "/admin/category",
       icon: <Tags size={20} />,
     },
     {
       label: "Topping & Size",
-      href: "/topping_size",
+      href: "/admin/topping_size",
       icon: <PlusSquare size={20} />,
     },
     {
       label: "Khách hàng",
-      href: "/user",
+      href: "/admin/user",
       icon: <Users size={20} />,
     },
   ];

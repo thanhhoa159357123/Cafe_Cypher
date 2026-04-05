@@ -1,4 +1,4 @@
-import { useAuthStore } from "@/app/store/useAuthStore";
+import { useAuthStore } from "@/app/store/client/useAuthStore";
 import axios from "axios";
 import { toast } from "sonner";
 
@@ -46,12 +46,14 @@ axiosClient.interceptors.request.use(
 axiosClient.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response && error.response.status === 401) {
+    if (
+      error.response &&
+      (error.response.status === 401 || error.response.status === 403)
+    ) {
       toast.error("Phiên làm việc đã hết hạn. Vui lòng đăng nhập lại.");
       // Xóa store của Zustand để app tự log out và không bị lặp loop 401
       localStorage.removeItem("auth-storage");
       useAuthStore.getState().logout();
-
 
       console.warn("Lỗi 401: Token không hợp lệ hoặc đã hết hạn!");
     }

@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { getProducts } from "../services/productService";
+import { getProducts } from "../../services/client/productService";
 import type { ProductState } from "@/app/types/product";
 
 export const useProductStore = create<ProductState>((set, get) => ({

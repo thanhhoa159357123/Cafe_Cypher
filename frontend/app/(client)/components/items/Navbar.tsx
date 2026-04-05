@@ -6,7 +6,7 @@ import { AnimatePresence } from "motion/react";
 import FormLogin from "./FormLogin";
 import FormRegister from "./FormRegister";
 import ProfileButton from "./ProfileButton";
-import { NavbarHook } from "@/app/hooks/NavbarHook";
+import { NavbarHook } from "@/app/hooks/client/NavbarHook";
 import { ShoppingCartIcon } from "lucide-react";
 import Cart from "./Cart/Cart";
 

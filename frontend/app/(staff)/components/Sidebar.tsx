@@ -7,17 +7,17 @@ const Sidebar = () => {
   const menuItems = [
     {
       label: "Đơn hàng chờ pha",
-      href: "/staff-dashboard", // Đổi thành /staff-dashboard thay vì /dashboard
+      href: "/staff/dashboard", // Đổi thành /staff-dashboard thay vì /dashboard
       icon: <Coffee size={20} />,
     },
     {
       label: "Lịch sử đơn",
-      href: "/staff-dashboard/#",
+      href: "/staff/#",
       icon: <CheckSquare size={20} />,
     },
     {
       label: "Tình trạng món", // Nơi để nhân viên gạt nút báo "Hết hàng"
-      href: "/staff-dashboard/#",
+      href: "/staff/#",
       icon: <PackageOpen size={20} />,
     },
   ];

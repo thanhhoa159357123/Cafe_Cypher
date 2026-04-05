@@ -1,12 +1,12 @@
 import { create } from "zustand";
-import { CartState } from "../types/cart";
+import { CartState } from "../../types/cart";
 // Đổi tên các hàm import từ service để tránh bị trùng tên với action của store
 import {
   addToCart as apiAddToCart,
   getCart as apiGetCart,
   removeCartItem as apiRemoveCartItem,
   updateCartItem as apiUpdateCartItem,
-} from "../services/cartService";
+} from "../../services/client/cartService";
 import { toast } from "sonner";
 
 export const useCartStore = create<CartState>((set, get) => ({
