@@ -27,6 +27,7 @@ class RegisterRequest extends FormRequest
             'first_name' => 'required|string|max:255',
             'email'      => 'required|email|unique:users,email', // Cực quan trọng: Bắt buộc không được trùng email trong bảng users
             'password'   => 'required|string|min:6',
+            'role'       => 'required|in:client,staff,admin', // Chỉ cho phép 3 role này
         ];
     }
     /**

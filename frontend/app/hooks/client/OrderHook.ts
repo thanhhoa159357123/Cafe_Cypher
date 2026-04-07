@@ -2,7 +2,7 @@
 
 import { useOrderStore } from "../../store/client/useOrderStore";
 import { useCartStore } from "../../store/client/useCartStore";
-import { ICreateOrderPayload } from "../../types/order";
+import { ICreateOrderPayload } from "../../types/client/order";
 import { toast } from "sonner";
 import { useEffect } from "react";
 

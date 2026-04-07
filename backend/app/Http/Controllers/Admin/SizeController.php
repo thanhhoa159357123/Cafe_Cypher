@@ -1,18 +1,18 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use App\Models\Size;
 use Illuminate\Http\Request;
 
 class SizeController extends Controller
 {
     /**
-     * Lấy toàn bộ kích cỡ sản phẩm có trong hệ thống.
+     * Lấy danh sách tất cả các size
      */
-    public function index()
+    public function getSizes()
     {
-        //
         $sizes = Size::all();
         return response()->json($sizes);
     }

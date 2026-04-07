@@ -1,7 +1,9 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Client;
 
+// 2. Thêm dòng này để nó nhận diện được file Controller gốc ở ngoài
+use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Models\User;
@@ -23,6 +25,7 @@ class AuthController extends Controller
     {
         $validatedData = $request->validated();
         $validatedData['password'] = bcrypt($validatedData['password']);
+        $validatedData['role'] = 'client'; // Mặc định role là client khi đăng ký từ Client App
 
         $user = User::create($validatedData);
 

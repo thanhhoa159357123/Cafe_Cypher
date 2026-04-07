@@ -1,5 +1,5 @@
 import React from "react";
-import { IProduct, ISize, ITopping } from "@/app/types/product";
+import { IProduct, ISize, ITopping } from "@/app/types/base/product";
 import { Coffee, Candy, Check } from "lucide-react";
 
 interface SizeAndToppingProps {

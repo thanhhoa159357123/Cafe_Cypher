@@ -2,7 +2,7 @@
 import React from "react";
 import { motion } from "motion/react";
 import Image from "next/image";
-import { IProduct, ISize, ITopping } from "@/app/types/product";
+import { IProduct, ISize, ITopping } from "@/app/types/base/product";
 import SizeAndTopping from "./SizeAndTopping";
 import ActionButton from "./ActionButton";
 

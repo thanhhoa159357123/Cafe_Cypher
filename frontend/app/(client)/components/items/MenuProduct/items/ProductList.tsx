@@ -1,5 +1,5 @@
-import { ICategory } from "@/app/types/category";
-import { IProduct } from "@/app/types/product";
+import { ICategory } from "@/app/types/base/category";
+import { IProduct } from "@/app/types/base/product";
 import Image from "next/image";
 
 interface ProductListProps {
@@ -21,16 +21,16 @@ const ProductList = ({
     <div className="px-2 py-1">
       {childItems.map((child) => {
         const filteredProducts = products.filter(
-          (p) => p.category?.category_id === child.category_id,
+          (p) => p.category?.id === child.id,
         );
         return (
           <div
-            key={child.category_id}
-            id={child.category_slug}
+            key={child.id}
+            id={child.slug}
             className="flex flex-col mb-6 gap-4 scroll-mt-32"
           >
             <h2 className="text-xl font-semibold text-gray-800">
-              {child.category_name}
+              {child.name}
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {filteredProducts.map((product) => (

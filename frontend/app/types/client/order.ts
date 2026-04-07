@@ -1,41 +1,4 @@
-import { IProduct, ISize } from "./product";
-
-// 1. Giao diện cho TỪNG MÓN trong 1 Đơn hàng (Khớp với bảng order_items)
-export interface IOrderItem {
-  id: number;
-  product_id: number | null;
-  name: string; // Quan trọng: lưu tên cứng lỡ SP có bị xoá
-  image: string | null; // Thêm trường ảnh để hiển thị trong order history
-  size: string | null;
-  toppings: string[]; // Backend trả về mảng TÊN topping (string), không phải Object ITopping
-  quantity: number;
-  unit_price: number;
-  total: number;
-}
-
-// 2. Giao diện cho 1 ĐƠN HÀNG hoàn chỉnh (Khớp với bảng orders)
-export interface IOrder {
-  id: number;
-  order_code: string;
-  total_price: number;
-  status: string;
-  created_at: string;
-
-  // Khớp với Object lồng trong Log
-  payment: {
-    method: string;
-    status: string;
-    paid_at: string | null;
-  };
-
-  shipping: {
-    address: string;
-    phone: string;
-    note: string | null;
-  };
-
-  items: IOrderItem[];
-}
+import { IOrder } from "../base/order";
 
 // Dữ liệu tạm thời cho "Mua ngay" trước khi tạo đơn hàng, sẽ được lưu trong Zustand Store
 export interface IBuyNowItemState {
@@ -46,7 +9,7 @@ export interface IBuyNowItemState {
   size_id?: number | null;
   size_name?: string | null;
   quantity: number;
-  topping_ids?: number[] | string[]; // Có thể là số hoặc chuỗi tuỳ vào cách lưu trữ ID của bạn
+  topping_ids?: number[] | string[];
   topping_names?: string[]; // Mảng tên topping hiển thị
   unit_price: number;
   total_price: number;

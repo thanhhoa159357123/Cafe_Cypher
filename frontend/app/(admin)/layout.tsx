@@ -4,9 +4,8 @@
 import React, { useEffect, useRef } from "react";
 import Sidebar from "./components/Sidebar"; // Chỉnh lại đường dẫn import cho đúng thư mục của bác
 import Navbar from "./components/Navbar";
-import { useCategoryStore } from "../store/client/useCategoryStore";
-import { useCartStore } from "../store/client/useCartStore";
-import { useProductStore } from "../store/client/useProductStore";
+import { useCategoryStore } from "../store/admin/useCategoryStore";
+import { useProductStore } from "../store/admin/useProductStore";
 
 export default function AdminLayout({
   children,
@@ -14,7 +13,6 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   const { fetchCategories } = useCategoryStore();
-  const { fetchProducts } = useProductStore();
 
   const isFetched = useRef(false);
 
@@ -23,9 +21,7 @@ export default function AdminLayout({
     isFetched.current = true;
 
     // Gộp 3 API vào chạy cùng lúc
-    Promise.all([fetchCategories(), fetchProducts()]).catch((err) =>
-      console.error(err),
-    );
+    Promise.all([fetchCategories()]).catch((err) => console.error(err));
   }, []);
   return (
     <div className="flex min-h-screen bg-muted/30">

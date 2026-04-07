@@ -1,5 +1,5 @@
 // frontend/lib/cartUtils.ts
-import { ICartItem } from "@/app/types/cart";
+import { ICartItem } from "@/app/types/client/cart";
 
 export const calculateToppingsPrice = (toppings: ICartItem["toppings"]) => {
   return toppings.reduce((total, topping) => total + topping.price, 0);

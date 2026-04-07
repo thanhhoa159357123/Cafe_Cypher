@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react"; // Bạn nên dùng "framer-motion"
 import { ShoppingBag, X, UserX, Coffee } from "lucide-react";
-import { User } from "@/app/types/auth";
+import { User } from "@/app/types/client/auth";
 import { CartHook } from "@/app/hooks/client/CartHook";
 import CartItem from "./CartItem";
 import ButtonPayment from "./ButtonPayment";
@@ -26,7 +26,7 @@ const Cart = ({ onClose, user, isAuthenticated }: CartProps) => {
   // Chặn scroll body VÀ chống lỗi giật trang khi mở Giỏ hàng
   useEffect(() => {
     // Chỉ cần ẩn scrollbar đi, không cần bù padding vì đã có `scrollbar-gutter: stable` trong CSS
-    document.body.style.overflow = "hidden";
+    document.body.style.overflow = "clip";
 
     // Khi đóng Cart, gỡ bỏ khóa cuộn
     return () => {
@@ -43,7 +43,7 @@ const Cart = ({ onClose, user, isAuthenticated }: CartProps) => {
         exit={{ opacity: 0 }}
         transition={{ duration: 0.3 }}
         onClick={onClose}
-        className="fixed inset-0 bg-black/60] z-90 pointer-events-auto"
+        className="fixed inset-0 bg-black/60 z-90 pointer-events-auto"
       />
 
       {/* SIDEBAR CHÍNH */}

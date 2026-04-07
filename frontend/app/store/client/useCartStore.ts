@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { CartState } from "../../types/cart";
+import { CartState } from "../../types/client/cart";
 // Đổi tên các hàm import từ service để tránh bị trùng tên với action của store
 import {
   addToCart as apiAddToCart,

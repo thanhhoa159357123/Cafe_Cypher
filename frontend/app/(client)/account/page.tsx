@@ -1,5 +1,5 @@
 "use client";
-import React, { use, useEffect } from "react";
+import React, { useEffect } from "react";
 // 1. Import motion và AnimatePresence từ framer-motion
 import { motion, AnimatePresence } from "motion/react";
 import { useAuthStore } from "../../store/client/useAuthStore";

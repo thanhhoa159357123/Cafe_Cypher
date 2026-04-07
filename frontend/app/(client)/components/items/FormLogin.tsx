@@ -2,7 +2,7 @@ import React from "react";
 import { motion } from "motion/react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { loginSchema, LoginFormData } from "@/app/types/auth";
+import { loginSchema, LoginFormData } from "@/app/types/client/auth";
 import { Eye, EyeClosed } from "lucide-react";
 import { AuthHook } from "@/app/hooks/client/AuthHook";
 

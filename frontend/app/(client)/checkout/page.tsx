@@ -1,7 +1,7 @@
 "use client";
 
 import { CreditCard, MapPin, Phone, Wallet, Loader2 } from "lucide-react";
-import React, { useState, useEffect, Suspense, useRef } from "react"; // 👇 Thêm Suspense ở đây
+import { useState, useEffect, Suspense, useRef } from "react"; // 👇 Thêm Suspense ở đây
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCartStore } from "../../store/client/useCartStore";
 import { useOrderHook } from "../../hooks/client/OrderHook";

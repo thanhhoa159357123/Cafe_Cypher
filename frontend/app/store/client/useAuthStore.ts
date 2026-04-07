@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-import { AuthState } from "../../types/auth";
+import { AuthState } from "../../types/client/auth";
 import {
   login,
   register,
@@ -67,7 +67,7 @@ export const useAuthStore = create<AuthState>()(
           if (response.user.role === "client") {
             useCartStore.getState().fetchCart();
           } else {
-            window.location.href = "/admin-dashboard"; // Chuyển hướng admin sau khi login thành công
+            window.location.href = "/admin/dashboard"; // Chuyển hướng admin sau khi login thành công
           }
         } catch (error) {
           console.error("Login failed:", error);

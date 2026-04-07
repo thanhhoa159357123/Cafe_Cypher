@@ -31,7 +31,7 @@ export async function middleware(request: NextRequest) {
     // ... (Code chặn quyền phía dưới giữ nguyên)
     if (
       pathname.startsWith("/admin") ||
-      pathname.startsWith("/admin-dashboard")
+      pathname.startsWith("/admin/dashboard")
     ) {
       if (realRole !== "admin") {
         return NextResponse.redirect(new URL("/", request.url));
@@ -40,7 +40,7 @@ export async function middleware(request: NextRequest) {
 
     if (
       pathname.startsWith("/staff") ||
-      pathname.startsWith("/staff-dashboard")
+      pathname.startsWith("/staff/dashboard")
     ) {
       if (realRole !== "staff" && realRole !== "admin") {
         return NextResponse.redirect(new URL("/", request.url));

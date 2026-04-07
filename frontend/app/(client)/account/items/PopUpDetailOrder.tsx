@@ -1,6 +1,5 @@
 // PopUpDetailOrder.tsx
 "use client";
-import React from "react";
 import { useOrderStore } from "@/app/store/client/useOrderStore";
 
 const PopUpDetailOrder = () => {

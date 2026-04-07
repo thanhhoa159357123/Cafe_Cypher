@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { ICategory } from "../../types/category";
-import { IProduct } from "../../types/product";
+import { ICategory } from "../../types/base/category";
+import { IProduct } from "../../types/base/product";
 
 export const useMenuScroll = (
   categories: ICategory[],

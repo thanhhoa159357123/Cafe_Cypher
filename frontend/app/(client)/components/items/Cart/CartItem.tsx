@@ -1,4 +1,4 @@
-import { ICartItem } from "@/app/types/cart";
+import { ICartItem } from "@/app/types/client/cart";
 import { Trash2 } from "lucide-react";
 import Image from "next/image";
 import React from "react";
@@ -46,6 +46,7 @@ const CartItem = ({
                 <Image
                   src={item.product.image ?? "/placeholder.png"}
                   alt={item.product.name}
+                  sizes="(max-width: 768px) 100px, 150px"
                   fill
                   className="object-cover rounded-lg"
                 />

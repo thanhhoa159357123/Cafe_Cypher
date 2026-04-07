@@ -1,11 +1,5 @@
 import { z } from "zod";
-
-interface User {
-  first_name: string;
-  last_name: string;
-  email: string;
-  role: string;
-}
+import { User } from "../base/auth";
 
 interface AuthState {
   user: User | null;

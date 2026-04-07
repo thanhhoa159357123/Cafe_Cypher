@@ -1,27 +1,5 @@
-import { ICategory } from "./category";
-
-interface ISize {
-  id: string | number;
-  name: string;
-  price: number;
-}
-
-interface ITopping {
- id: string | number;
- name: string;
- price: number;
-}
-
-interface IProduct {
-  id: number | string;
-  name: string;
-  image: string | null;
-  description: string;
-  price: number;
-  category?: ICategory | null;
-  sizes: ISize[];
-  toppings: ITopping[];
-}
+import { ICategory } from "../base/category";
+import { ISize, ITopping, IProduct } from "../base/product";
 
 interface ProductState {
   loading: boolean;

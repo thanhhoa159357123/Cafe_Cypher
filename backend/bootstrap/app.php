@@ -12,7 +12,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        // Đăng ký middleware CheckRole với alias 'role' để dễ sử dụng trong route
+        $middleware->alias([
+            'role' => \App\Http\Middleware\CheckRole::class,
+        ]);
         // Tắt khiên CSRF cho toàn bộ hệ thống (Chỉ dùng lúc test Postman thôi nhé!)
         // $middleware->validateCsrfTokens(except: [
         //     '*' // Dấu * nghĩa là tha cho tất cả các đường dẫn. Bác có thể đổi thành ['login', 'register'] cho an toàn hơn.

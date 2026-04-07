@@ -1,5 +1,5 @@
 // HistoryOrder.tsx
-import { IOrder } from "@/app/types/order";
+import { IOrder } from "@/app/types/base/order";
 import { useOrderStore } from "@/app/store/client/useOrderStore";
 
 interface HistoryOrderProps {

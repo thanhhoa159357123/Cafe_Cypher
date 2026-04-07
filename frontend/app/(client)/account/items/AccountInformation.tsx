@@ -1,5 +1,5 @@
 "use client";
-import { User } from "@/app/types/auth";
+import { User } from "@/app/types/base/auth";
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { X } from "lucide-react";

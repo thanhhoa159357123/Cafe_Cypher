@@ -1,4 +1,4 @@
-import { User } from "@/app/types/auth";
+import { User } from "@/app/types/client/auth";
 import { LogOut, Settings } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useRouter } from "next/navigation";

@@ -37,15 +37,15 @@ const MenuProduct = () => {
 
         {categories.map((category) => {
           const children = category.children || [];
-          const category_child = children.map((child) => child.category_id);
+          const child = children.map((child) => child.id);
           const filteredProducts = products.filter((product) =>
-            category_child.includes(product.category?.category_id || 0),
+            child.includes(product.category?.id || 0),
           );
 
           return (
             <section
-              key={category.category_id}
-              id={category.category_slug}
+              key={category.id}
+              id={category.slug}
               className="scroll-mt-32"
             >
               <div className="flex gap-8">

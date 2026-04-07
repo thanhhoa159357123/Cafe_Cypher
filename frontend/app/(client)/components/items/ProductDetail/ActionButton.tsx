@@ -1,8 +1,7 @@
 import { CartHook } from "@/app/hooks/client/CartHook";
 import { useOrderHook } from "@/app/hooks/client/OrderHook";
-import { ISize } from "@/app/types/product";
+import { ISize } from "@/app/types/base/product";
 import { useRouter } from "next/navigation";
-import React from "react";
 
 interface ActionButtonProps {
   onClose: () => void;

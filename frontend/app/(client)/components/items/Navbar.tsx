@@ -43,12 +43,12 @@ const Navbar = () => {
         <div className="flex gap-6">
           {categories.map((category) => (
             <span
-              key={category.category_id}
+              key={category.id}
               // Thêm relative và group vào class
               className="relative group font-medium text-md cursor-pointer hover:text-secondary-foreground transition-colors duration-300"
               onClick={() => handleCategoryClick(category)}
             >
-              {category.category_name}
+              {category.name}
               {/* Thêm thẻ span này để làm đường gạch chân */}
               <span className="absolute left-1/2 -bottom-1 h-0.5 w-0 -translate-x-1/2 bg-secondary-foreground transition-all duration-300 group-hover:w-full"></span>
             </span>

@@ -1,9 +1,9 @@
 import { Loader2 } from "lucide-react";
 import React from "react";
 import Image from "next/image";
-import { ICartItem } from "@/app/types/cart";
-import { IBuyNowItemState } from "@/app/types/order";
-import { ITopping } from "@/app/types/product";
+import { ICartItem } from "@/app/types/client/cart";
+import { IBuyNowItemState } from "@/app/types/client/order";
+import { ITopping } from "@/app/types/client/product";
 
 interface OrderSummaryProps {
   items?: (ICartItem | IBuyNowItemState | any)[];

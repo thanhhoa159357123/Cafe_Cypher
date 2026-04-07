@@ -1,4 +1,4 @@
-import { ICartItem } from "@/app/types/cart";
+import { ICartItem } from "@/app/types/client/cart";
 import { ArrowRight, ShoppingBag } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React from "react";

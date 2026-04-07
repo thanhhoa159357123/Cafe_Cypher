@@ -1,8 +1,7 @@
 import { useAuthStore } from "../../store/client/useAuthStore";
 import { toast } from "sonner";
-import { LoginFormData, RegisterFormData } from "../../types/auth";
+import { LoginFormData, RegisterFormData } from "../../types/client/auth";
 import { useEffect, useState } from "react";
-import { updateInformation } from "../../services/client/authService";
 
 export const AuthHook = () => {
   const { login, register, updateUser, fetchUser } = useAuthStore();
