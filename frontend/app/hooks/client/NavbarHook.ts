@@ -56,12 +56,12 @@ export const NavbarHook = () => {
     // 🚀 THÊM &t=${Date.now()} VÀO 2 CÁI URL NÀY:
     if (selectChild) {
       router.push(
-        `/?parent_categories=${parentCategory.category_slug}&child_categories=${selectChild.category_slug}&t=${Date.now()}`,
+        `/?parent_categories=${parentCategory.slug}&child_categories=${selectChild.slug}&t=${Date.now()}`,
         { scroll: false },
       );
     } else {
       router.push(
-        `/?parent_categories=${parentCategory.category_slug}&t=${Date.now()}`,
+        `/?parent_categories=${parentCategory.slug}&t=${Date.now()}`,
         {
           scroll: false,
         },

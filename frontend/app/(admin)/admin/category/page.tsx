@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/table";
 import { PlusCircle, Edit, Trash2, FolderTree } from "lucide-react";
 import { CategoryHook } from "@/app/hooks/admin/CategoryHook";
-import CategoryFormDrawer from "../../components/CategoryFormDrawer";
+import CategoryFormDrawer from "../../components/FormDrawer/CategoryFormDrawer";
 
 const CategoryPage = () => {
   const {
@@ -26,7 +26,7 @@ const CategoryPage = () => {
     handleDelete,
     handleDrawerSubmit,
   } = CategoryHook();
-  
+
   return (
     <div className="space-y-6">
       {/* Header */}

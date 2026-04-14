@@ -13,7 +13,7 @@ class OrderItemResource extends JsonResource
             'id'           => $this->id,
             'product_id'   => $this->product_id,
             'name'         => $this->product_name, // Lấy tên đã lưu trong đơn hàng
-            'image'        => $this->image_url,
+            'image_url'        => $this->image_url,
             'size'         => $this->size_name,
             'toppings'     => $this->toppings ?? [], // Đảm bảo là mảng
             'quantity'     => (int) $this->quantity,

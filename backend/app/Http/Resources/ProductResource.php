@@ -40,7 +40,8 @@ class ProductResource extends JsonResource
                     ];
                 });
             }) ?? [],
-            // 'toppings' => ToppingResource::collection($this->whenLoaded('toppings')) ?? null,
+            "status" => $this->status,
+            "deleted_at" => $this->deleted_at,
         ];
     }
 }

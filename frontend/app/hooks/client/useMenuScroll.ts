@@ -46,7 +46,7 @@ export const useMenuScroll = (
 
       for (const parent of categories) {
         const targetCategory = parent.children?.find(
-          (c: ICategory) => c.category_slug === targetSlug,
+          (c: ICategory) => c.slug === targetSlug,
         );
 
         if (targetCategory) {
@@ -86,7 +86,7 @@ export const useMenuScroll = (
 
       for (const parent of categories) {
         const child = parent.children?.find(
-          (c: ICategory) => c.category_slug === activeSlug,
+          (c: ICategory) => c.slug === activeSlug,
         );
 
         if (child) {
@@ -94,8 +94,8 @@ export const useMenuScroll = (
           setSelectedCategory(child);
 
           const params = new URLSearchParams(window.location.search);
-          params.set("parent_categories", parent.category_slug);
-          params.set("child_categories", child.category_slug);
+          params.set("parent_categories", parent.slug);
+          params.set("child_categories", child.slug);
           params.delete("t");
 
           window.history.replaceState(
@@ -115,7 +115,7 @@ export const useMenuScroll = (
 
     categories.forEach((parent: ICategory) => {
       parent.children?.forEach((child: ICategory) => {
-        const el = document.getElementById(child.category_slug);
+        const el = document.getElementById(child.slug);
         if (el) observer.observe(el);
       });
     });

@@ -4,4 +4,5 @@ export interface ICategory {
   slug: string;
   parent_id?: number | string | null;
   children?: ICategory[];
+  status: "active" | "inactive";
 }

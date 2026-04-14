@@ -1,6 +1,12 @@
 import { z } from "zod";
 import { User } from "../base/auth";
 
+// Định nghĩa danh sách role
+export const ROLES = ["client", "admin", "staff"] as const;
+
+// Tạo kiểu dữ liệu từ danh sách role
+export type Role = (typeof ROLES)[number];
+
 interface AuthState {
   user: User | null;
   access_token: string | null;
@@ -13,6 +19,7 @@ interface AuthState {
     first_name: string,
     email: string,
     password: string,
+    role: Role,
   ) => Promise<void>;
   logout: () => void;
   updateUser: (data: {
@@ -55,6 +62,7 @@ export const registerSchema = z.object({
       passwordRegex,
       "Mật khẩu không được chứa Tiếng Việt có dấu hoặc khoảng trắng",
     ),
+  role: z.enum(ROLES).default("client").optional(),
 });
 
 export type RegisterFormData = z.infer<typeof registerSchema>;

@@ -12,7 +12,7 @@ use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\SizeController as AdminSizeController;
 use App\Http\Controllers\Admin\ToppingController as AdminToppingController;
-
+use App\Http\Controllers\Admin\DashBoardController as AdminDashBoardController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -23,6 +23,7 @@ Route::get('/categories', [CategoryController::class, 'getCategories'])->name('c
 Route::get('/products', [ProductController::class, 'getProducts'])->name('products');
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+
 
 
 // ==========================================
@@ -75,11 +76,14 @@ Route::middleware('auth:sanctum')->group(function () {
         });
 
         // Quản lý Sản phẩm (Thêm, Sửa, Xóa)
+
         Route::controller(AdminProductController::class)->prefix('products')->group(function () {
-            Route::get('/', 'getProducts'); // <- THÊM GET DANH SÁCH CHO ADMIN CŨNG TỐT NÈ
-            // Route::post('/', 'createProduct');
-            // Route::put('/{product}', 'updateProduct'); // Dùng {product}
-            // Route::delete('/{product}', 'deleteProduct'); // Dùng {product}
+            Route::get('/', 'getProducts'); // <- THÊM GET DANH SÁCH
+            Route::post('/', 'createProduct');
+            Route::put('/{product}', 'updateProduct'); // Dùng {product}
+            Route::delete('/{product}', 'deleteProduct'); // Dùng {product}
+            Route::put('/{product}/toggle-status', 'toggleStatus'); // Route mới để chuyển đổi trạng thái sản phẩm
+            Route::put('/{product}/restore', 'restoreProduct'); // Route mới để khôi phục sản phẩm đã xóa mềm
         });
 
         // Quan lý Size (Xem TẤT CẢ size)
@@ -95,7 +99,11 @@ Route::middleware('auth:sanctum')->group(function () {
         // Quản lý Đơn hàng (Xem TẤT CẢ đơn hàng, duyệt đơn)
         Route::controller(AdminOrderController::class)->prefix('orders')->group(function () {
             Route::get('/', 'getAllOrders'); // Khác với getOrder của Client nhé
-            Route::put('/{id}/status', 'updateOrderStatus');
+            Route::get('/{id}', 'getOrder'); // Xem chi tiết đơn hàng
+            Route::put('/{id}/status', 'updateOrderStatus'); // Cập nhật trạng thái đơn hàng (Admin & Staff mới có quyền này)
         });
+
+        // Quản lý Dashboard (Chỉ Admin mới có quyền này)
+        Route::get('/dashboard', [AdminDashBoardController::class, 'getDashboard'])->middleware('role:admin');
     });
 });

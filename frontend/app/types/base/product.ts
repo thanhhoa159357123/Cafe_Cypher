@@ -1,7 +1,7 @@
 import { ICategory } from "./category";
 
 export interface ISize {
-  id: string | number;
+  id: number | string;
   name: string;
   price: number;
 }
@@ -21,4 +21,6 @@ export interface IProduct {
   category?: ICategory | null;
   sizes: ISize[];
   toppings: ITopping[];
+  status: "active" | "inactive";
+  deleted_at?: string | null; // Thêm trường này để biết sản phẩm đã bị xóa mềm hay chưa
 }

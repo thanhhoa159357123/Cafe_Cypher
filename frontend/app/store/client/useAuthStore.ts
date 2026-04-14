@@ -82,6 +82,7 @@ export const useAuthStore = create<AuthState>()(
             first_name,
             email,
             password,
+            role: "client",
           });
           return response;
         } catch (error) {

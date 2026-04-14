@@ -17,4 +17,9 @@ export interface ProductState {
 
   setSelectedProduct: (product: IProduct | null) => void;
   fetchProducts: (page?: number) => Promise<void>;
+  createProduct: (data: IProduct) => Promise<void>;
+  updateProduct: (id: number | string, data: IProduct) => Promise<void>;
+  deleteProduct: (id: number | string) => Promise<void>;
+  toggleProductStatus: (id: number | string) => Promise<void>;
+  restoreProduct: (id: number | string) => Promise<void>;
 }

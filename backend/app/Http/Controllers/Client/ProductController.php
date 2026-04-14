@@ -16,8 +16,22 @@ class ProductController extends Controller
      */
     public function getProducts()
     {
-        // Eager loading 'category' và 'toppings' để tránh lỗi N+1 (lag database)
-        $products = Product::with(['category', 'sizes', 'toppings'])->get();
+        // Thêm ->where('status', 'active') để chỉ lấy sản phẩm đã kích hoạt
+        $products = Product::with(['category', 'sizes', 'toppings'])
+            ->where('status', 'active')
+            ->whereHas('category', function ($query) {
+                // 2. Danh mục trực tiếp phải active
+                $query->where('status', 'active')
+                    // 3. VÀ Danh mục cha (nếu có) cũng phải active
+                    ->where(function ($q) {
+                        $q->whereNull('parent_id') // Nếu không có cha thì thôi
+                            ->orWhereHas('parent', function ($subQ) {
+                                $subQ->where('status', 'active'); // Nếu có cha thì cha phải active
+                            });
+                    });
+            })
+            ->get();
+
         return ProductResource::collection($products);
     }
 }

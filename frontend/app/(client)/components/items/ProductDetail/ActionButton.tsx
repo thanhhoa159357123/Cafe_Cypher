@@ -67,12 +67,18 @@ const ActionButton = ({
         disabled={isRequireSizeButNotSelected}
         onClick={() => {
           // 1. Tính toán giá tiền cơ bản
-          const sizePrice = selectedSize ? Number(selectedSize.price) : 0;
+          const basePrice =
+            selectedSize && Number(selectedSize.price) > 0
+              ? Number(selectedSize.price)
+              : Number(product.price);
+
           const toppingsPrice = selectedToppings.reduce(
             (total, t) => total + Number(t.price),
             0,
           );
-          const unitPrice = Number(product.price) + sizePrice + toppingsPrice;
+
+          // Cộng giá cơ bản + tiền các topping
+          const unitPrice = basePrice + toppingsPrice;
 
           setBuyNowItem({
             checkout_type: "buy_now",

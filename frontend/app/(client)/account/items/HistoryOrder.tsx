@@ -40,7 +40,7 @@ const HistoryOrder = ({ orders }: HistoryOrderProps) => {
                 >
                   <td className="py-5">
                     <span className="font-mono text-sm font-bold text-primary hover:underline cursor-pointer">
-                      {order.order_code}
+                      {order.order_number}
                     </span>
                   </td>
                   <td className="py-5 text-sm text-muted-foreground">
@@ -52,9 +52,6 @@ const HistoryOrder = ({ orders }: HistoryOrderProps) => {
                         <span className="bg-secondary text-secondary-foreground px-1.5 py-0.5 rounded mr-1.5">
                           {order.created_at.split(" ")[1]}
                         </span>
-                        <span className="uppercase tracking-tighter opacity-70 italic">
-                          Thời gian
-                        </span>
                       </div>
                     </div>
                   </td>
@@ -63,7 +60,7 @@ const HistoryOrder = ({ orders }: HistoryOrderProps) => {
                       {order.items.map((item, idx) => (
                         <img
                           key={idx}
-                          src={item.image || "/placeholder.png"}
+                          src={item.image_url || "/placeholder.png"}
                           className="h-16 w-16 rounded-lg border-2 border-card object-cover shadow-sm"
                           alt="product"
                         />

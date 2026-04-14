@@ -2,7 +2,7 @@ export interface IOrderItem {
   id: number;
   product_id: number | null;
   name: string; // Quan trọng: lưu tên cứng lỡ SP có bị xoá
-  image: string | null; // Thêm trường ảnh để hiển thị trong order history
+  image_url: string | null; // Thêm trường ảnh để hiển thị trong order history
   size: string | null;
   toppings: string[]; // Backend trả về mảng TÊN topping (string), không phải Object ITopping
   quantity: number;
@@ -13,7 +13,7 @@ export interface IOrderItem {
 // 2. Giao diện cho 1 ĐƠN HÀNG hoàn chỉnh (Khớp với bảng orders)
 export interface IOrder {
   id: number;
-  order_code: string;
+  order_number: string;
   total_price: number;
   status: string;
   created_at: string;

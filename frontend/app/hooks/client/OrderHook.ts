@@ -45,11 +45,17 @@ export const useOrderHook = () => {
             result?.orderId || result?.data?.orderId || result?.id || "N/A",
         },
       };
-    } catch (err: unknown) {
+    } catch (err: any) {
+      // 👇 Thêm case bắt đích danh lỗi 401 (chưa đăng nhập / mất session)
+      if (err.response?.status === 401) {
+        toast.error("Hãy đăng nhập để tiếp tục thanh toán!", { id: toastId });
+        return { success: false };
+      }
+
       // Bắt lỗi từ Backend trả về (nếu có)
       const errorMsg =
-        (err as { response?: { data?: { message?: string } } }).response?.data
-          ?.message || "Thanh toán thất bại, vui lòng kiểm tra lại!";
+        err.response?.data?.message ||
+        "Thanh toán thất bại, vui lòng kiểm tra lại!";
       toast.error(errorMsg, { id: toastId });
 
       // 👇 Sửa chỗ này thành return Object

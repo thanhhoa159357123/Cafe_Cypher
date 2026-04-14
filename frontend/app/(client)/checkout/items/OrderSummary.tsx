@@ -18,6 +18,7 @@ const OrderSummary = ({
   displayTotalPrice,
   handlePlaceOrder,
 }: OrderSummaryProps) => {
+  console.log("item hiện tại: ", items);
   return (
     <div className="space-y-6">
       <div className="bg-card p-6 rounded-xl border border-border shadow-sm sticky top-4">

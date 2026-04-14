@@ -7,9 +7,9 @@ export const AuthHook = () => {
   const { login, register, updateUser, fetchUser } = useAuthStore();
   const [isShowPassword, setIsShowPassword] = useState(false);
 
-  useEffect(() => {
-    fetchUser();
-  }, [fetchUser]);
+  // useEffect(() => {
+  //   fetchUser();
+  // }, []);
 
   const handleShowPassword = () => {
     setIsShowPassword((prev) => !prev);
@@ -20,7 +20,13 @@ export const AuthHook = () => {
     onSuccess: () => void,
   ) => {
     try {
-      await register(data.lastName, data.firstName, data.email, data.password);
+      await register(
+        data.lastName,
+        data.firstName,
+        data.email,
+        data.password,
+        "client",
+      );
 
       toast.success("Đăng ký thành công! Mời bạn đăng nhập.");
       onSuccess();

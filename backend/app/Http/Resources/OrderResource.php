@@ -12,7 +12,8 @@ class OrderResource extends JsonResource
     {
         return [
             'id'               => $this->id,
-            'order_code'       => $this->order_number,
+            // Sửa lại thành order_number cho khớp frontend
+            'order_number'     => $this->order_number,
             'total_price'      => (float) $this->total_price,
             'status'           => $this->status,
             'payment' => [
@@ -25,8 +26,14 @@ class OrderResource extends JsonResource
                 'phone'   => $this->shipping_phone,
                 'note'    => $this->note,
             ],
+            // Các trường riêng cho Admin
+            'cancel_reason'    => $this->cancel_reason,
+            'cancelled_by'     => $this->cancelled_by,
+
+            // Các quan hệ
+            'user'             => $this->whenLoaded('user'), // Tự động load nếu có With
             'items'            => OrderItemResource::collection($this->whenLoaded('items')),
-            'created_at'       => Carbon::parse($this->created_at)->format('d/m/Y H:i'),
+            'created_at'       => $this->created_at->toIso8601String(),
         ];
     }
 }

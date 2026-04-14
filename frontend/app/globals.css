@@ -215,6 +215,11 @@
   }
 }
 
+body[data-scroll-locked] {
+  padding-right: 0px !important;
+  margin-right: 0px !important;
+}
+
 /* ---------------------------------------------------- */
 /* Ẩn con mắt hiển thị mật khẩu mặc định của Edge/IE        */
 /* ---------------------------------------------------- */

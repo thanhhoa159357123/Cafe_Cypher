@@ -7,15 +7,16 @@ import { toast } from "sonner";
 
 interface ProfileButtonProps {
   user: User;
-  logOut: () => void;
+  logOut: () => void | Promise<void>;
 }
 
 const ProfileButton = ({ user, logOut }: ProfileButtonProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
 
-  const handleLogOut = () => {
-    logOut();
+  const handleLogOut = async () => {
+    await logOut();
+    router.push("/");
     toast.success("Hẹn gặp lại bạn sau nhé!");
   };
   return (

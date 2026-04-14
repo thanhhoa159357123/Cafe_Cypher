@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Order extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'order_number',
@@ -20,6 +21,8 @@ class Order extends Model
         'shipping_address',
         'shipping_phone',
         'note',
+        'cancelled_by',
+        'cancel_reason',
     ];
 
     // Một đơn hàng thuộc về một User

@@ -54,7 +54,7 @@ const CheckOutContent = () => {
     : cart?.items || [];
 
   const displayTotalPrice = isBuyNowFlow
-    ? Number(buyNowItem?.total_price || 0)
+    ? Number(buyNowItem?.unit_price || 0)
     : Number(cart?.total_price || 0);
 
   const onSubmitOrder = async () => {

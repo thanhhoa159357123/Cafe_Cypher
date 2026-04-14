@@ -25,6 +25,7 @@ export const register = async (data: {
   first_name: string;
   email: string;
   password: string;
+  role: "client" | "admin" | "staff";
 }) => {
   try {
     const response = await axiosClient.post("/register", data);

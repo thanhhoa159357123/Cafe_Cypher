@@ -50,7 +50,11 @@ axiosClient.interceptors.response.use(
       error.response &&
       (error.response.status === 401 || error.response.status === 403)
     ) {
-      toast.error("Phiên làm việc đã hết hạn. Vui lòng đăng nhập lại.");
+      // ✅ CHỈ hiển thị Toast "hết hạn" nếu trong Store đánh dấu là ĐÃ ĐĂNG NHẬP
+      const authState = useAuthStore.getState();
+      if (authState.isAuthenticated) {
+        toast.error("Phiên làm việc đã hết hạn. Vui lòng đăng nhập lại.");
+      }
       // Xóa store của Zustand để app tự log out và không bị lặp loop 401
       localStorage.removeItem("auth-storage");
       useAuthStore.getState().logout();

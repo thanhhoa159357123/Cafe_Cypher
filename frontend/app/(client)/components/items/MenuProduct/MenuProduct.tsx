@@ -20,6 +20,7 @@ const MenuProduct = () => {
     setSelectedToppings,
     resetSelect,
   } = ProductHook();
+  console.log("Sản phẩm hiện có: ", products);
 
   const { handleChildCategoryClick } = useMenuScroll(
     categories,
@@ -38,9 +39,13 @@ const MenuProduct = () => {
         {categories.map((category) => {
           const children = category.children || [];
           const child = children.map((child) => child.id);
-          const filteredProducts = products.filter((product) =>
-            child.includes(product.category?.id || 0),
+          const filteredProducts = products.filter(
+            (product) =>
+              child.includes(product.category?.id || 0) &&
+              product.status === "active",
           );
+
+          if (filteredProducts.length === 0) return null;
 
           return (
             <section
