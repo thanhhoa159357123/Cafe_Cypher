@@ -118,4 +118,33 @@ class CategoryController extends Controller
 
         return new CategoryResource($category);
     }
+
+    /**
+     * Ẩn danh mục
+     */
+    public function toggleStatus(Category $category)
+    {
+        try {
+            $category->status = ($category->status === 'active') ? 'inactive' : 'active';
+            $category->save();
+
+            return response()->json([
+                'message' => 'Cập nhật trạng thái thành công!',
+                'data' => $category // Trả về để FE cập nhật UI ngay lập tức
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Có lỗi xảy ra, vui lòng thử lại!'], 500);
+        }
+    }
+
+    /**
+     * Khôi phục danh mục đã xóa mềm
+     */
+    public function restoreCategory($id)
+    {
+        // Tìm cả trong thùng rác và khôi phục (đưa deleted_at về null)
+        $category = Category::withTrashed()->findOrFail($id);
+        $category->restore();
+        return response()->json(['message' => 'Danh mục đã được khôi phục thành công.']);
+    }
 }

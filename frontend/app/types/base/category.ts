@@ -5,4 +5,5 @@ export interface ICategory {
   parent_id?: number | string | null;
   children?: ICategory[];
   status: "active" | "inactive";
+  deleted_at: string | null;
 }

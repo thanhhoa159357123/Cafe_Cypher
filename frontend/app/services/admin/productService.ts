@@ -51,7 +51,7 @@ export const updateProduct = async (id: number | string, data: any) => {
     // Lưu ý update form truyền category là null/object, tùy chỉnh lấy id:
     if (data.category?.id) {
       formData.append("category_id", String(data.category.id));
-    } else if (data.category_id) {
+    } else if (data.category.id) {
       formData.append("category_id", String(data.category_id));
     }
 
@@ -93,5 +93,12 @@ export const toggleProductStatus = async (id: number | string) => {
 
 export const restoreProduct = async (id: number | string) => {
   const response = await axiosClient.put(`/admin/products/${id}/restore`);
+  return response.data;
+};
+
+export const filterProduct = async (data: any) => {
+  const response = await axiosClient.get(`/admin/products/filtered`, {
+    params: data,
+  });
   return response.data;
 };

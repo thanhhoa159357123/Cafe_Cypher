@@ -1,7 +1,7 @@
 // frontend/app/(admin)/admin/product/page.tsx
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import {
   Table,
   TableBody,
@@ -11,7 +11,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { PlusCircle, Edit, Trash2, Coffee } from "lucide-react";
+import {
+  PlusCircle,
+  Edit,
+  Trash2,
+  Coffee,
+  FilterX,
+  Search,
+} from "lucide-react";
 import { ProductHook } from "@/app/hooks/admin/ProductHook";
 import ProductFormDrawer from "../../components/FormDrawer/Product/ProductFormDrawer";
 import { SizeToppingHook } from "@/app/hooks/admin/SizeToppingHook";
@@ -19,6 +26,7 @@ import { useCategoryStore } from "@/app/store/admin/useCategoryStore";
 import TitleHeader from "./items/TitleHeader";
 import ButtonPagination from "./items/ButtonPagination";
 import ProductBody from "./items/ProductBody";
+import FilterProduct from "./items/FilterProduct";
 
 const ProductPage = () => {
   const {
@@ -37,10 +45,33 @@ const ProductPage = () => {
     handleOpenEdit,
     handleDrawerSubmit,
     handleDrawerDelete,
+
+    handleFilter,
+    handleResetFilter,
   } = ProductHook();
   const { sizes, toppings } = SizeToppingHook();
   const { categories } = useCategoryStore();
 
+  const [search, setSearch] = useState("");
+  const [status, setStatus] = useState("");
+  const [categoryId, setCategoryId] = useState("");
+
+  // 3. Hàm gọi khi bấm nút Lọc
+  const onApplyFilter = () => {
+    handleFilter({
+      search: search,
+      status: status,
+      category_id: categoryId,
+    });
+  };
+
+  // 4. Hàm gọi khi bấm Xóa Lọc
+  const onClearFilter = () => {
+    setSearch("");
+    setStatus("");
+    setCategoryId("");
+    handleResetFilter();
+  };
   return (
     <div className="space-y-6">
       {/* Header & Nút thêm mới */}
@@ -68,6 +99,18 @@ const ProductPage = () => {
           Thêm món mới
         </button>
       </div>
+
+      <FilterProduct
+        search={search}
+        setSearch={setSearch}
+        status={status}
+        setStatus={setStatus}
+        categoryId={categoryId}
+        setCategoryId={setCategoryId}
+        categories={categories}
+        onApplyFilter={onApplyFilter}
+        onClearFilter={onClearFilter}
+      />
 
       {/* Bảng hiển thị dữ liệu */}
       <div

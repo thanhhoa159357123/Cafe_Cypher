@@ -12,6 +12,8 @@ export const CategoryHook = () => {
     createCategory,
     updateCategory,
     deleteCategory,
+    toggleCategoryStatus,
+    restoreCategory,
 
     loading,
     error,
@@ -68,6 +70,18 @@ export const CategoryHook = () => {
     }
   };
 
+  const handleToggleStatus = async (id: number | string) => {
+    await toggleCategoryStatus(id);
+    toast.success("Trạng thái danh mục đã được cập nhật!");
+  };
+
+  const handleRestoreCategory = async (id: number | string) => {
+    await restoreCategory(id);
+    toast.success("Danh mục đã được khôi phục!");
+
+    await fetchCategories();
+  };
+
   return {
     categories,
     loading,
@@ -82,5 +96,7 @@ export const CategoryHook = () => {
     handleOpenEdit,
     handleDelete,
     handleDrawerSubmit,
+    handleRestoreCategory,
+    handleToggleStatus,
   };
 };

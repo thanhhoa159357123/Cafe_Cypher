@@ -18,6 +18,8 @@ interface CategoryState {
     data: { name: string; parent_id?: number | null },
   ) => Promise<void>;
   deleteCategory: (id: number | string) => Promise<void>;
+  toggleCategoryStatus: (id: number | string) => Promise<void>;
+  restoreCategory: (id: number | string) => Promise<void>;
 }
 
 export type { ICategory, CategoryState };

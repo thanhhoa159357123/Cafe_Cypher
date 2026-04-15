@@ -3,11 +3,12 @@ import {
   createCategory,
   deleteCategory,
   getCategories,
+  restoreCategory,
+  toggleCategoryStatus,
   updateCategory,
 } from "../../services/admin/categoryService";
 import type { CategoryState } from "@/app/types/admin/category";
 import type { ICategory } from "@/app/types/base/category";
-import { toast } from "sonner";
 
 export const useCategoryStore = create<CategoryState>((set, get) => ({
   loading: false,
@@ -95,6 +96,32 @@ export const useCategoryStore = create<CategoryState>((set, get) => ({
           ?.message || "Đã có lỗi xảy ra khi xóa danh mục.";
       set({ error: errorMessage, loading: false });
       throw new Error(errorMessage);
+    }
+  },
+
+  toggleCategoryStatus: async (id) => {
+    set({ loading: true, error: null });
+    try {
+      await toggleCategoryStatus(id);
+      await get().fetchCategories();
+    } catch (error) {
+      const errorMessage =
+        (error as { response?: { data?: { message?: string } } }).response?.data
+          ?.message || "Không thay đổi được trạng thái danh mục";
+      set({ error: errorMessage, loading: false });
+    }
+  },
+
+  restoreCategory: async (id) => {
+    set({ loading: true, error: null });
+    try {
+      await restoreCategory(id);
+      await get().fetchCategories();
+    } catch (error) {
+      const errorMessage =
+        (error as { response?: { data?: { message?: string } } }).response?.data
+          ?.message || "Không khôi phục được sản phẩm";
+      set({ error: errorMessage, loading: false });
     }
   },
 }));

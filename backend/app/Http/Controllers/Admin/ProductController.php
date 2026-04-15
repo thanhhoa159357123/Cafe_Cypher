@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreProductRequest;
 use App\Http\Resources\ProductResource;
 use App\Models\Product;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
@@ -194,5 +195,29 @@ class ProductController extends Controller
         $product = Product::withTrashed()->findOrFail($id);
         $product->restore();
         return response()->json(['message' => 'Sản phẩm đã được khôi phục thành công.']);
+    }
+
+    /**
+     * Lọc sản phẩm
+     */
+    public function filterProducts(Request $request)
+    {
+        $query = Product::with(['category', 'sizes', 'toppings']);
+
+        $products = $query
+            ->when($request->search, function ($q, $search) {
+                $q->where('name', 'like', "%$search%");
+            })
+            ->when($request->category_id, function ($q, $categoryId) {
+                $q->where('category_id', $categoryId);
+            })
+            ->when($request->status, function ($q, $status) {
+                $q->where('status', $status);
+            })
+            ->when($request->only_trashed == 'true', function ($q) {
+                $q->onlyTrashed();
+            })->paginate(10);
+
+        return ProductResource::collection($products);
     }
 }

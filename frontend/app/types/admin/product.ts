@@ -1,3 +1,4 @@
+import { filterProduct } from "./../../services/admin/productService";
 import { ICategory } from "../base/category";
 import { ISize, ITopping, IProduct } from "../base/product";
 
@@ -22,4 +23,5 @@ export interface ProductState {
   deleteProduct: (id: number | string) => Promise<void>;
   toggleProductStatus: (id: number | string) => Promise<void>;
   restoreProduct: (id: number | string) => Promise<void>;
+  filterProduct: (data: any) => Promise<void>;
 }

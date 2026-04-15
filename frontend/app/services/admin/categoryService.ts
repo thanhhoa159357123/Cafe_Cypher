@@ -39,3 +39,15 @@ export const deleteCategory = async (id: number | string) => {
     throw error;
   }
 };
+
+export const toggleCategoryStatus = async (id: number | string) => {
+  const response = await axiosClient.put(
+    `/admin/categories/${id}/toggle-status`,
+  );
+  return response.data;
+};
+
+export const restoreCategory = async (id: number | string) => {
+  const response = await axiosClient.put(`/admin/categories/${id}/restore`);
+  return response.data;
+};

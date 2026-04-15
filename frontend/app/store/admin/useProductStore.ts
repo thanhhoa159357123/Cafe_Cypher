@@ -2,6 +2,7 @@ import { create } from "zustand";
 import {
   createProduct,
   deleteProduct,
+  filterProduct,
   getProducts,
   restoreProduct,
   toggleProductStatus,
@@ -95,6 +96,24 @@ export const useProductStore = create<ProductState>((set, get) => ({
       const errorMessage =
         (error as { response?: { data?: { message?: string } } }).response?.data
           ?.message || "Không khôi phục được sản phẩm";
+      set({ error: errorMessage, loading: false });
+    }
+  },
+
+  filterProduct: async (data) => {
+    set({ loading: true, error: null });
+    try {
+      const res = await filterProduct(data);
+
+      set({
+        products: res.data,
+        meta: res.meta || res,
+        loading: false,
+      });
+    } catch (error) {
+      const errorMessage =
+        (error as { response?: { data?: { message?: string } } }).response?.data
+          ?.message || "Không lọc được sản phẩm";
       set({ error: errorMessage, loading: false });
     }
   },

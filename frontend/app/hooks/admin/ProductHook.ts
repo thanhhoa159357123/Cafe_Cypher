@@ -19,8 +19,10 @@ export const ProductHook = () => {
     updateProduct,
     deleteProduct,
     toggleProductStatus,
+    filterProduct,
   } = useProductStore();
   const [currentPage, setCurrentPage] = useState(1);
+  const [filterParams, setFilterParams] = useState<any>(null);
 
   // Thêm 2 state vào export:
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -36,6 +38,20 @@ export const ProductHook = () => {
     setDrawerMode("edit");
     setSelectedProduct(product);
     setIsDrawerOpen(true);
+  };
+
+  const handleFilter = async (data: any) => {
+    try {
+      setFilterParams(data); // Lưu điều kiện lọc
+      setCurrentPage(1); // Reset về trang 1
+    } catch (error) {
+      toast.error("Có lỗi xảy ra khi lọc dữ liệu");
+    }
+  };
+
+  const handleResetFilter = async () => {
+    setFilterParams(null); // Xóa điều kiện
+    setCurrentPage(1); // Reset trang 1
   };
 
   const handleToggleStatus = async (id: number | string) => {
@@ -133,8 +149,14 @@ export const ProductHook = () => {
 
   // Lấy dữ liệu mỗi khi currentPage thay đổi
   useEffect(() => {
-    fetchProducts(currentPage);
-  }, [currentPage, fetchProducts]);
+    if (filterParams) {
+      // Nếu đang có điều kiện lọc -> Chuyển trang kết hợp lọc
+      filterProduct({ ...filterParams, page: currentPage });
+    } else {
+      // Nếu không lọc -> Chuyển trang bình thường
+      fetchProducts(currentPage);
+    }
+  }, [currentPage, fetchProducts, filterProduct, filterParams]);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -157,5 +179,9 @@ export const ProductHook = () => {
     handleOpenEdit,
     handleDrawerSubmit,
     handleDrawerDelete,
+
+    handleFilter,
+    handleResetFilter,
+    filterParams,
   };
 };

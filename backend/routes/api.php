@@ -73,6 +73,8 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('/', 'createCategory');
             Route::put('/{category}', 'updateCategory'); // Dùng {category}
             Route::delete('/{category}', 'deleteCategory'); // Dùng {category}
+            Route::put('/{category}/toggle-status', 'toggleStatus'); // Route mới để chuyển đổi trạng thái sản phẩm
+            Route::put('/{category}/restore', 'restoreProduct'); // Route mới để khôi phục sản phẩm đã xóa mềm
         });
 
         // Quản lý Sản phẩm (Thêm, Sửa, Xóa)
@@ -84,6 +86,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::delete('/{product}', 'deleteProduct'); // Dùng {product}
             Route::put('/{product}/toggle-status', 'toggleStatus'); // Route mới để chuyển đổi trạng thái sản phẩm
             Route::put('/{product}/restore', 'restoreProduct'); // Route mới để khôi phục sản phẩm đã xóa mềm
+            Route::get('/filtered', 'filterProducts'); // Route để lọc sản phẩm
         });
 
         // Quan lý Size (Xem TẤT CẢ size)
