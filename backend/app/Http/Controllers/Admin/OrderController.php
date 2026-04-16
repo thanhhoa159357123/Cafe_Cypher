@@ -76,4 +76,42 @@ class OrderController extends Controller
             'order' => $order
         ]);
     }
+
+    /**
+     * Lọc đơn hàng theo tên, thời gian và trạng thái
+     */
+    public function filterOrders(Request $request)
+    {
+        $query = Order::with(['user', 'items.product']);
+
+        if ($request->has('search')) {
+            $search = $request->input('search');
+            $query->whereHas('user', function ($q) use ($search) {
+                $q->where('first_name', 'like', "%$search%")
+                    ->orWhere('last_name', 'like', "%$search%")
+                    ->orWhere('id', $search);
+            });
+        }
+
+        if ($request->has('user_id')) {
+            $query->where('user_id', $request->input('user_id'));
+        }
+
+        if ($request->has('status')) {
+            $query->where('status', $request->input('status'));
+        }
+
+        if ($request->has('date_from') && $request->input('date_from') != '') {
+            $query->whereDate('created_at', '>=', $request->input('date_from'));
+        }
+
+        if ($request->has('date_to') && $request->input('date_to') != '') {
+            // Thêm <= để tính đến hết ngày đó
+            $query->whereDate('created_at', '<=', $request->input('date_to'));
+        }
+
+        $orders = $query->paginate(10);
+
+        return OrderResource::collection($orders);
+    }
 }

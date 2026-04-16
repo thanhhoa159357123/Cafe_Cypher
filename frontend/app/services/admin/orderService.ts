@@ -1,7 +1,7 @@
 import axiosClient from "@/lib/axios";
 
-export const getAllOrders = async () => {
-  const response = await axiosClient.get("/admin/orders");
+export const getAllOrders = async (page: number = 1) => {
+  const response = await axiosClient.get(`/admin/orders?page=${page}`);
   return response.data;
 };
 
@@ -18,6 +18,13 @@ export const updateOrderStatus = async (data: {
   const response = await axiosClient.put(`/admin/orders/${data.id}/status`, {
     status: data.status,
     cancel_reason: data.cancel_reason,
+  });
+  return response.data;
+};
+
+export const filterOrders = async (data: any) => {
+  const response = await axiosClient.get(`/admin/orders/filtered`, {
+    params: data,
   });
   return response.data;
 };

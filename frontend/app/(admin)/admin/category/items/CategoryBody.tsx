@@ -8,7 +8,6 @@ interface CategoryBodyProps {
   categories: ICategory[];
   handleOpenEdit: (category: ICategory) => void;
   handleDelete: (id: number | string) => Promise<void>;
-
   handleToggleStatus: (id: number | string) => Promise<void>;
 }
 
@@ -23,45 +22,61 @@ const CategoryBody = ({
       {categories.map((category) => (
         <React.Fragment key={category.id}>
           {/* Hàng danh mục cha */}
-          <TableRow className="bg-muted/20 hover:bg-muted/40 transition-colors">
-            <TableCell className="font-semibold text-muted-foreground italic">
+          <TableRow className="bg-muted/10 hover:bg-muted/30 transition-colors">
+            {/* Mã DM - cố định độ rộng */}
+            <TableCell className="w-24 font-mono text-xs font-semibold text-muted-foreground">
               #{category.id}
             </TableCell>
-            <TableCell className="font-black text-card-foreground uppercase flex items-center gap-2">
-              <FolderTree size={16} className="text-primary" />
-              {category.name}
+
+            {/* Tên danh mục */}
+            <TableCell className="font-bold text-card-foreground">
+              <div className="flex items-center gap-2">
+                <FolderTree size={16} className="text-primary shrink-0" />
+                <span className="truncate">{category.name}</span>
+              </div>
             </TableCell>
-            <TableCell className="text-center">
-              <span className="px-2 py-1 bg-primary/10 text-primary text-[10px] font-bold rounded-full">
+
+            {/* Phân cấp */}
+            <TableCell className="w-32">
+              <span className="inline-block px-2.5 py-1 bg-primary/10 text-primary text-[10px] font-bold rounded-full whitespace-nowrap">
                 DANH MỤC CHA
               </span>
             </TableCell>
 
-            <TableCell>
+            {/* Trạng thái */}
+            <TableCell className="w-36">
               <div className="flex items-center gap-2">
                 <Switch
                   checked={category.status === "active"}
-                  onCheckedChange={() => handleToggleStatus(category.id)} // Hàm toggle nãy anh em mình bàn
+                  onCheckedChange={() => handleToggleStatus(category.id)}
+                  className="data-[state=checked]:bg-primary"
                 />
                 <span
-                  className={`text-[11px] font-bold uppercase ${category.status === "active" ? "text-green-600" : "text-muted-foreground"}`}
+                  className={`text-[11px] font-semibold whitespace-nowrap ${
+                    category.status === "active"
+                      ? "text-emerald-600"
+                      : "text-muted-foreground"
+                  }`}
                 >
                   {category.status === "active" ? "Đang bán" : "Tạm ẩn"}
                 </span>
               </div>
             </TableCell>
 
-            <TableCell className="text-right">
-              <div className="flex justify-end gap-1.5 transition-opacity">
+            {/* Thao tác */}
+            <TableCell className="w-24 text-right">
+              <div className="flex justify-end gap-1">
                 <button
                   onClick={() => handleOpenEdit(category)}
-                  className="text-muted-foreground hover:text-primary hover:bg-primary/10 p-1.5 rounded-lg transition-colors cursor-pointer"
+                  className="p-1.5 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-lg transition-all cursor-pointer"
+                  title="Chỉnh sửa"
                 >
                   <Edit size={18} />
                 </button>
                 <button
                   onClick={() => handleDelete(category.id)}
-                  className="text-muted-foreground hover:text-destructive hover:bg-destructive/10 p-1.5 rounded-lg transition-colors cursor-pointer"
+                  className="p-1.5 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg transition-all cursor-pointer"
+                  title="Xóa"
                 >
                   <Trash2 size={18} />
                 </button>
@@ -74,46 +89,66 @@ const CategoryBody = ({
             category.children.map((child) => (
               <TableRow
                 key={child.id}
-                className="hover:bg-muted/20 transition-colors"
+                className="hover:bg-muted/20 transition-colors border-t border-border/50"
               >
-                <TableCell className="pl-8 text-muted-foreground text-xs font-medium">
+                {/* Mã DM con - thụt lề */}
+                <TableCell className="w-24 pl-6 font-mono text-xs font-medium text-muted-foreground">
                   #{child.id}
                 </TableCell>
-                <TableCell className="pl-12 font-semibold text-card-foreground flex items-center gap-2">
-                  <div className="w-2 h-2 border-l border-b border-border mr-1 mb-1"></div>
-                  {child.name}
+
+                {/* Tên DM con - thụt lề */}
+                <TableCell>
+                  <div className="flex items-center gap-2 pl-4">
+                    <div className="w-3 h-3 flex items-center justify-center">
+                      <div className="w-1.5 h-1.5 rounded-full bg-border"></div>
+                    </div>
+                    <span className="font-medium text-card-foreground">
+                      {child.name}
+                    </span>
+                  </div>
                 </TableCell>
-                <TableCell className="text-center">
-                  <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-medium bg-muted text-muted-foreground border border-border">
+
+                {/* Phân cấp */}
+                <TableCell className="w-32">
+                  <span className="inline-block px-2 py-0.5 rounded-md text-[10px] font-medium bg-muted text-muted-foreground border border-border whitespace-nowrap">
                     Con của {category.name}
                   </span>
                 </TableCell>
 
-                <TableCell>
+                {/* Trạng thái */}
+                <TableCell className="w-36">
                   <div className="flex items-center gap-2">
                     <Switch
                       checked={child.status === "active"}
                       onCheckedChange={() => handleToggleStatus(child.id)}
-                      className="cursor-pointer"
+                      className="data-[state=checked]:bg-primary"
                     />
                     <span
-                      className={`text-[11px] font-bold uppercase ${child.status === "active" ? "text-green-600" : "text-muted-foreground"}`}
+                      className={`text-[11px] font-semibold whitespace-nowrap ${
+                        child.status === "active"
+                          ? "text-emerald-600"
+                          : "text-muted-foreground"
+                      }`}
                     >
                       {child.status === "active" ? "Đang bán" : "Tạm ẩn"}
                     </span>
                   </div>
                 </TableCell>
-                <TableCell className="text-right">
-                  <div className="flex justify-end gap-1.5 opacity-60 hover:opacity-100 transition-opacity">
+
+                {/* Thao tác */}
+                <TableCell className="w-24 text-right">
+                  <div className="flex justify-end gap-1">
                     <button
                       onClick={() => handleOpenEdit(child)}
-                      className="text-muted-foreground hover:text-primary p-1.5 transition-colors cursor-pointer rounded-lg hover:bg-primary/10"
+                      className="p-1.5 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-lg transition-all cursor-pointer"
+                      title="Chỉnh sửa"
                     >
                       <Edit size={16} />
                     </button>
                     <button
                       onClick={() => handleDelete(child.id)}
-                      className="text-muted-foreground hover:text-destructive p-1.5 transition-colors cursor-pointer rounded-lg hover:bg-destructive/10"
+                      className="p-1.5 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg transition-all cursor-pointer"
+                      title="Xóa"
                     >
                       <Trash2 size={16} />
                     </button>

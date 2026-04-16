@@ -56,4 +56,10 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    // Quan hệ với Order
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
 }

@@ -1,5 +1,5 @@
 import { ICategory } from "@/app/types/base/category";
-import { FilterX, Search } from "lucide-react";
+import { Filter, FilterX, Search } from "lucide-react";
 import React from "react";
 
 interface FilterProductProps {
@@ -26,7 +26,13 @@ const FilterProduct = ({
   onClearFilter,
 }: FilterProductProps) => {
   return (
-    <div className="bg-card p-4 rounded-xl border border-border shadow-sm flex flex-col md:flex-row gap-4 items-end">
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        onApplyFilter();
+      }}
+      className="bg-card p-4 rounded-xl border border-border shadow-sm flex flex-col md:flex-row gap-4 items-end"
+    >
       {/* Ô tìm kiếm */}
       <div className="flex-1 w-full flex flex-col gap-1.5">
         <label className="text-sm font-medium text-muted-foreground">
@@ -40,7 +46,6 @@ const FilterProduct = ({
             className="pl-9 pr-4 py-2 w-full rounded-lg border border-input bg-background focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm transition-all"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && onApplyFilter()} // Cho phép enter để lọc ngây
           />
         </div>
       </div>
@@ -81,25 +86,25 @@ const FilterProduct = ({
       </div>
 
       {/* Nút hành động */}
-      <div className="flex gap-2 w-full md:w-auto mt-4 md:mt-0">
+      <div className="flex gap-2 w-full sm:w-auto mt-2 sm:mt-0">
         <button
-          onClick={onApplyFilter}
-          className="flex-1 md:flex-none px-4 py-2 bg-zinc-800 text-white hover:bg-zinc-700 rounded-lg text-sm font-medium transition-colors cursor-pointer"
+          type="submit"
+          className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-slate-900 text-white px-5 py-2 rounded-lg hover:bg-slate-800 transition-all text-sm font-bold shadow-md"
         >
-          Lọc dữ liệu
+          <Filter size={16} /> Lọc
         </button>
 
-        {(search || status || categoryId) && (
-          <button
-            onClick={onClearFilter}
-            className="px-3 py-2 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg text-sm font-medium transition-colors flex items-center justify-center cursor-pointer"
-            title="Xóa bộ lọc"
-          >
-            <FilterX size={18} />
-          </button>
-        )}
+        {/* Nút hủy bộ lọc (Chỉ hiện khi có dữ liệu lọc) */}
+        <button
+          type="button"
+          onClick={onClearFilter}
+          className="px-3 py-2 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg text-sm font-medium transition-colors flex items-center justify-center cursor-pointer"
+          title="Xóa bộ lọc"
+        >
+          <FilterX size={18} />
+        </button>
       </div>
-    </div>
+    </form>
   );
 };
 

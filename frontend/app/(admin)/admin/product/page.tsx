@@ -24,7 +24,7 @@ import ProductFormDrawer from "../../components/FormDrawer/Product/ProductFormDr
 import { SizeToppingHook } from "@/app/hooks/admin/SizeToppingHook";
 import { useCategoryStore } from "@/app/store/admin/useCategoryStore";
 import TitleHeader from "./items/TitleHeader";
-import ButtonPagination from "./items/ButtonPagination";
+import ButtonPagination from "../../components/ButtonPagination";
 import ProductBody from "./items/ProductBody";
 import FilterProduct from "./items/FilterProduct";
 

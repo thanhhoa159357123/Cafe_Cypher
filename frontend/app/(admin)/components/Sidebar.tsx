@@ -40,7 +40,12 @@ const Sidebar = () => {
     },
     {
       label: "Khách hàng",
-      href: "/admin/user",
+      href: "/admin/customers",
+      icon: <Users size={20} />,
+    },
+    {
+      label: "Nhân viên",
+      href: "/admin/employees",
       icon: <Users size={20} />,
     },
   ];

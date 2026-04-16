@@ -2,6 +2,7 @@
 
 import { useOrderStore } from "@/app/store/admin/useOrderStore";
 import { IAdminOrder } from "@/app/types/admin/order";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 // Thêm toast để báo lỗi mượt mà
 import { toast } from "sonner";
@@ -9,21 +10,38 @@ import { toast } from "sonner";
 export const OrderHook = () => {
   const {
     orders,
+    meta,
     loading: isFetchingOrders, // Rename để dễ biết đây là loading của cái bảng danh sách
     error,
     fetchOrders,
     fetchOrderById,
     updateOrderStatus,
+    filterOrders,
   } = useOrderStore();
-  console.log("Ỏder", orders);
+  const [currentPage, setCurrentPage] = useState(1);
+  const searchParams = useSearchParams();
+  const userIdFromURL = searchParams.get("user_id");
 
   const [selectedOrder, setSelectedOrder] = useState<IAdminOrder | null>(null);
   // Khai báo loading CỤC BỘ chỉ dành riêng cho việc lấy chi tiết / update
   const [isActionLoading, setIsActionLoading] = useState(false);
+  const [filterParams, setFilterParams] = useState<any>(null); // Lưu điều kiện lọc để có thể tái sử dụng khi cần
 
   useEffect(() => {
-    fetchOrders();
-  }, []);
+    // Nếu có truyền user_id lên URL (từ UserPage qua)
+    if (userIdFromURL && !filterParams) {
+      setFilterParams({ user_id: userIdFromURL });
+      filterOrders({ user_id: userIdFromURL, page: currentPage });
+    }
+    // Nếu đang xài bộ lọc
+    else if (filterParams) {
+      filterOrders({ ...filterParams, page: currentPage });
+    }
+    // Mặc định thì get ALL
+    else {
+      fetchOrders(currentPage);
+    }
+  }, [userIdFromURL, filterParams, currentPage, fetchOrders, filterOrders]);
 
   const handleViewOrderDetails = async (orderId: number) => {
     setIsActionLoading(true); // Chỉ bật loading cục bộ
@@ -82,14 +100,39 @@ export const OrderHook = () => {
     }
   };
 
+  const handleFilter = async (data: any) => {
+    try {
+      setFilterParams(data); // Lưu điều kiện lọc
+      setCurrentPage(1); // Reset về trang 1
+    } catch (error) {
+      toast.error("Có lỗi xảy ra khi lọc dữ liệu");
+    }
+  };
+
+  const handleResetFilter = async () => {
+    setFilterParams(null); // Xóa điều kiện
+    setCurrentPage(1); // Reset trang 1
+  };
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
   return {
     orders,
     selectedOrder,
-    isFetchingOrders, // Trả ra để quay spinner ở bảng
+    isFetchingOrders,
     error,
-    isActionLoading, // Trả ra để quay spinner ở nút bấm "Xem" hoặc trong Modal
+    isActionLoading,
     handleViewOrderDetails,
     handleCloseDetails,
-    updateOrderStatus,
+    updateOrderStatus: handleUpdateOrderStatus,
+    meta,
+    currentPage,
+    handleFilter,
+    handleResetFilter,
+    handlePageChange,
+
+    // Xuất cái giá trị khơi mào cho ô input search hiển thị
+    initialSearchValue: userIdFromURL || "",
   };
 };

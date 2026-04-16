@@ -1,4 +1,5 @@
 import {
+  filterOrders,
   getAllOrders,
   getOrder,
   updateOrderStatus,
@@ -10,12 +11,17 @@ export const useOrderStore = create<IAdminOrderState>((set, get) => ({
   orders: [],
   loading: false,
   error: null,
+  meta: null,
 
-  fetchOrders: async () => {
+  fetchOrders: async (page = 1) => {
     set({ loading: true, error: null });
     try {
-      const response = await getAllOrders();
-      set({ orders: response.data });
+      const response = await getAllOrders(page);
+      set({
+        orders: response.data,
+        meta: response.meta || response,
+        loading: false,
+      });
     } catch (error) {
       console.error("Failed to fetch orders:", error);
       set({ error: "Failed to fetch orders" });
@@ -51,6 +57,23 @@ export const useOrderStore = create<IAdminOrderState>((set, get) => ({
       console.error(`Failed to update order ${orderId} status:`, error);
       set({ error: `Failed to update order ${orderId} status` });
       throw error;
+    }
+  },
+
+  filterOrders: async (data) => {
+    set({ loading: true, error: null });
+    try {
+      const response = await filterOrders(data);
+      set({
+        orders: response.data,
+        meta: response.meta || response,
+        loading: false,
+      });
+    } catch (error) {
+      console.error("Failed to filter orders:", error);
+      set({ error: "Failed to filter orders" });
+    } finally {
+      set({ loading: false });
     }
   },
 }));

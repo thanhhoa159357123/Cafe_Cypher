@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\SizeController as AdminSizeController;
 use App\Http\Controllers\Admin\ToppingController as AdminToppingController;
 use App\Http\Controllers\Admin\DashBoardController as AdminDashBoardController;
+use App\Http\Controllers\Admin\UserController as AdminUserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -67,6 +68,12 @@ Route::middleware('auth:sanctum')->group(function () {
     // ==========================================
     Route::middleware('role:admin,staff')->prefix('admin')->group(function () {
 
+        // Quản lý Người dùng (Xem danh sách khách hàng, nhân viên)
+        Route::controller(AdminUserController::class)->prefix('users')->group(function () {
+            Route::get('/', 'getUser'); // Xem danh sách user (có thể lọc theo role)
+            Route::get('/{id}', 'getUserById')->where('id', '[0-9]+'); // Xem chi tiết user theo ID
+        });
+
         // Quản lý Danh mục (Thêm, Sửa, Xóa)
         Route::controller(AdminCategoryController::class)->prefix('categories')->group(function () {
             Route::get('/', 'getCategories'); // <- THÊM GET DANH SÁCH CHO ADMIN CŨNG TỐT NÈ
@@ -102,8 +109,9 @@ Route::middleware('auth:sanctum')->group(function () {
         // Quản lý Đơn hàng (Xem TẤT CẢ đơn hàng, duyệt đơn)
         Route::controller(AdminOrderController::class)->prefix('orders')->group(function () {
             Route::get('/', 'getAllOrders'); // Khác với getOrder của Client nhé
-            Route::get('/{id}', 'getOrder'); // Xem chi tiết đơn hàng
+            Route::get('/{id}', 'getOrder')->where('id', '[0-9]+'); // Xem chi tiết đơn hàng
             Route::put('/{id}/status', 'updateOrderStatus'); // Cập nhật trạng thái đơn hàng (Admin & Staff mới có quyền này)
+            Route::get('/filtered', 'filterOrders'); // Route để lọc đơn hàng theo trạng thái, ngày tháng, v.v.
         });
 
         // Quản lý Dashboard (Chỉ Admin mới có quyền này)

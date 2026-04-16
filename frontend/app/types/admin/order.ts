@@ -1,4 +1,6 @@
+import { filterOrders } from "./../../services/admin/orderService";
 import { IOrder } from "../base/order";
+import { PaginationMeta } from "./product";
 
 export interface IAdminOrder extends IOrder {
   cancel_reason: string | null; // Lý do hủy đơn (nếu có)
@@ -19,11 +21,14 @@ export interface IAdminOrderState {
   orders: IAdminOrder[];
   loading: boolean;
   error: string | null;
-  fetchOrders: () => Promise<void>;
+  meta: PaginationMeta | null;
+
+  fetchOrders: (page?: number) => Promise<void>;
   fetchOrderById: (orderId: number) => Promise<IAdminOrder | null>;
   updateOrderStatus: (
     orderId: number,
     newStatus: string,
     cancelReason?: string,
   ) => Promise<void>;
+  filterOrders: (data: any) => Promise<void>;
 }
