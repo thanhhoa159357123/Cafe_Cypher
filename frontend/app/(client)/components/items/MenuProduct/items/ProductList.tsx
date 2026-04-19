@@ -23,6 +23,9 @@ const ProductList = ({
         const filteredProducts = products.filter(
           (p) => p.category?.id === child.id,
         );
+
+        if (filteredProducts.length === 0) return null;
+
         return (
           <div
             key={child.id}

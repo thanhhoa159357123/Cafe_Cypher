@@ -1,3 +1,4 @@
+import { IAdminFormDataProduct } from "@/app/types/admin/product";
 import { IProduct } from "@/app/types/base/product";
 import axiosClient from "@/lib/axios";
 
@@ -6,7 +7,7 @@ export const getProducts = async (page: number = 1) => {
   return response.data;
 };
 
-export const createProduct = async (data: any) => {
+export const createProduct = async (data: IAdminFormDataProduct) => {
   const formData = new FormData();
 
   formData.append("name", data.name);
@@ -37,7 +38,10 @@ export const createProduct = async (data: any) => {
   return response.data;
 };
 
-export const updateProduct = async (id: number | string, data: any) => {
+export const updateProduct = async (
+  id: number | string,
+  data: IAdminFormDataProduct,
+) => {
   try {
     const formData = new FormData();
 
@@ -48,10 +52,8 @@ export const updateProduct = async (id: number | string, data: any) => {
     formData.append("price", String(data.price));
     if (data.description) formData.append("description", data.description);
 
-    // Lưu ý update form truyền category là null/object, tùy chỉnh lấy id:
-    if (data.category?.id) {
-      formData.append("category_id", String(data.category.id));
-    } else if (data.category.id) {
+    // Đã được xử lý category_id ở ProductHook
+    if (data.category_id) {
       formData.append("category_id", String(data.category_id));
     }
 

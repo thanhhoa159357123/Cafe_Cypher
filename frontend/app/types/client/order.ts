@@ -61,4 +61,5 @@ export interface IOrderState {
   setBuyNowItem: (item: IBuyNowItemState | null) => void;
   fetchOrders: () => Promise<void>;
   createOrder: (data: ICreateOrderPayload) => Promise<any>; // Nhận đúng cái rule ở trên
+  cancelOrder: (id: number, reason?: string) => Promise<any>; // Hủy đơn
 }

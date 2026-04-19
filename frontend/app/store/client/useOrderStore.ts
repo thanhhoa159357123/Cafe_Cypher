@@ -4,7 +4,7 @@ import {
   ICreateOrderPayload,
   IOrderState,
 } from "../../types/client/order";
-import { createOrder, getOrders } from "../../services/client/orderService";
+import { cancelOrderService, createOrder, getOrders } from "../../services/client/orderService";
 
 export const useOrderStore = create<IOrderState>((set, get) => ({
   selectedOrder: null,
@@ -51,4 +51,32 @@ export const useOrderStore = create<IOrderState>((set, get) => ({
       throw error; // Nên throw lỗi để phía UI component catch được và báo Toast lỗi
     }
   },
+
+  cancelOrder: async (id: number, reason?: string) => {
+    set({ loading: true, error: null });
+    try {
+      const response = await cancelOrderService(id, { cancel_reason: reason || '' });
+      
+      const currentOrders = get().orders;
+      const updatedOrders = currentOrders ? currentOrders.map(order => 
+        order.id === id ? { ...order, status: 'cancelled', cancel_reason: reason } : order
+      ) : null;
+      
+      const currentSelectedOrder = get().selectedOrder;
+      const updatedSelectedOrder = currentSelectedOrder?.id === id 
+        ? { ...currentSelectedOrder, status: 'cancelled', cancel_reason: reason }
+        : currentSelectedOrder;
+
+      set({
+        loading: false,
+        orders: updatedOrders,
+        selectedOrder: updatedSelectedOrder
+      });
+
+      return response;
+    } catch (error) {
+      set({ loading: false, error: "Failed to cancel order" });
+      throw error;
+    }
+  }
 }));

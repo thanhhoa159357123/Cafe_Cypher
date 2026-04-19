@@ -14,8 +14,8 @@ export const useCartStore = create<CartState>((set, get) => ({
   error: null,
   cart: null,
 
-  fetchCart: async () => {
-    set({ loading: true, error: null });
+  fetchCart: async (silent = false) => {
+    if (!silent) set({ loading: true, error: null });
     try {
       const response = await apiGetCart();
       set({ loading: false, cart: response.data });
@@ -38,14 +38,9 @@ export const useCartStore = create<CartState>((set, get) => ({
     try {
       await apiAddToCart(data);
       await get().fetchCart();
-
-      // Update lại toast với trạng thái thành công
-      toast.success("Thêm sản phẩm thành công!", { id: toastId });
     } catch (error) {
       set({ loading: false, error: "Failed to add item to cart" });
-
-      // Update lại toast với trạng thái thất bại
-      toast.error("Thêm thất bại! Vui lòng thử lại.", { id: toastId });
+      throw error; // Ném lỗi để CartHook bắt và hiển thị Toast
     }
   },
 

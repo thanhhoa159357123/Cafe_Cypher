@@ -3,7 +3,7 @@ import { User } from "../base/auth";
 export interface IAdminUser extends User {
   id: number; // ID người dùng
   orders_count: number; // Số lượng đơn hàng đã đặt
-  status: "active" | "inactive"; // Trạng thái hoạt động của người dùng
+  status: "active" | "inactive" | "banned"; // Trạng thái hoạt động của người dùng
   deleted_at: string | null; // Thời gian xóa (nếu có)
 }
 
@@ -14,4 +14,7 @@ export interface IAdminUserState {
 
   fetchUsers: (role?: string) => Promise<void>; // Hàm lấy danh sách người dùng, có thể lọc theo vai trò
   fetchUserById: (id: number) => Promise<IAdminUser | null>; // Hàm lấy chi tiết người dùng theo ID
+  toggleUserStatus: (id: number | string) => Promise<void>; // Thay đổi trạng thái baneo
+  deleteUser: (id: number | string) => Promise<void>; // Xóa mềm user
+  restoreUser: (id: number | string) => Promise<void>; // Khôi phục user
 }

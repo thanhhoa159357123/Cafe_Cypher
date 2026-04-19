@@ -31,6 +31,7 @@ export const useOrderStore = create<IAdminOrderState>((set, get) => ({
   },
 
   fetchOrderById: async (orderId) => {
+    set({ loading: true, error: null });
     try {
       const response = await getOrder(orderId);
       return response.data;
@@ -55,7 +56,7 @@ export const useOrderStore = create<IAdminOrderState>((set, get) => ({
       await get().fetchOrders();
     } catch (error) {
       console.error(`Failed to update order ${orderId} status:`, error);
-      set({ error: `Failed to update order ${orderId} status` });
+      set({ error: `Failed to update order ${orderId} status`, loading: false });
       throw error;
     }
   },

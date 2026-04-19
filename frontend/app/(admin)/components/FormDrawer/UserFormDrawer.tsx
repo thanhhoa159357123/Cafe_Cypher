@@ -14,11 +14,46 @@ import {
   Phone,
   Calendar,
   ShoppingCart,
-  MapPin,
   ShieldCheck,
+  Package,
+  CreditCard,
+  Hash,
+  ExternalLink,
 } from "lucide-react";
 import { IOrder } from "@/app/types/base/order";
 import { useRouter } from "next/navigation";
+
+// Helper: Map trạng thái đơn hàng → style
+const statusConfig: Record<string, { label: string; className: string }> = {
+  pending: {
+    label: "Chờ xác nhận",
+    className: "bg-amber-100 text-amber-700",
+  },
+  processing: {
+    label: "Đang xử lý",
+    className: "bg-blue-100 text-blue-700",
+  },
+  shipping: {
+    label: "Đang giao",
+    className: "bg-indigo-100 text-indigo-700",
+  },
+  completed: {
+    label: "Hoàn thành",
+    className: "bg-emerald-100 text-emerald-700",
+  },
+  cancelled: {
+    label: "Đã hủy",
+    className: "bg-red-100 text-red-700",
+  },
+};
+
+// Helper: Map phương thức thanh toán → label
+const paymentMethodLabel: Record<string, string> = {
+  cash: "Tiền mặt",
+  momo: "MoMo",
+  bank_transfer: "Chuyển khoản",
+  credit_card: "Thẻ tín dụng",
+};
 
 interface UserFormDrawerProps {
   isOpen: boolean;
@@ -40,7 +75,6 @@ export default function UserFormDrawer({
     }
   };
 
-  console.log("us", user);
   // Giữ data để tạo hiệu ứng đóng mượt mà
   useEffect(() => {
     if (user) setLocalUser(user);
@@ -48,7 +82,12 @@ export default function UserFormDrawer({
 
   const displayUser = user || localUser;
   if (!displayUser) return null;
-  console.log("dis", displayUser);
+
+  // Chỉ lấy 5 đơn gần nhất để preview
+  const recentOrders: IOrder[] = displayUser.orders
+    ? displayUser.orders.slice(0, 5)
+    : [];
+
   return (
     <Sheet
       modal={false}
@@ -144,53 +183,116 @@ export default function UserFormDrawer({
           <div>
             <div className="flex justify-between items-center mb-3">
               <h3 className="font-bold text-foreground flex items-center gap-2">
-                <ShoppingCart size={18} className="text-primary" /> Lịch sử đơn
-                hàng
+                <ShoppingCart size={18} className="text-primary" /> Đơn hàng gần
+                đây
               </h3>
               <span className="text-xs font-bold bg-primary/10 text-primary px-2 py-1 rounded-md">
                 Tổng: {displayUser.orders_count || 0} đơn
               </span>
             </div>
 
-            <div className="bg-muted/30 border border-border rounded-xl p-4">
-              {displayUser.orders_count > 0 ? (
-                <div className="text-center py-6 space-y-2">
-                  {displayUser.orders.map((order: IOrder) => (
-                    <div
-                      key={order.id}
-                      className="flex items-center gap-4 border border-border rounded-lg p-3"
-                    >
-                      <div className="shrink-0">
-                        <ShoppingCart size={20} className="text-primary" />
+            <div className="bg-muted/30 border border-border rounded-xl overflow-hidden">
+              {recentOrders.length > 0 ? (
+                <div className="divide-y divide-border/50">
+                  {recentOrders.map((order: IOrder) => {
+                    console.log("or", order);
+                    const status = statusConfig[order.status] || {
+                      label: order.status,
+                      className: "bg-slate-100 text-slate-700",
+                    };
+
+                    return (
+                      <div
+                        key={order.id}
+                        className="p-4 hover:bg-muted/40 transition-colors"
+                      >
+                        {/* Dòng 1: Mã đơn + Trạng thái */}
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="flex items-center gap-2">
+                            <Hash size={14} className="text-muted-foreground" />
+                            <span className="text-sm font-bold text-foreground">
+                              {order.order_number}
+                            </span>
+                          </div>
+                          <span
+                            className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md ${status.className}`}
+                          >
+                            {status.label}
+                          </span>
+                        </div>
+
+                        {/* Dòng 2: Chi tiết nhanh */}
+                        <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                          {/* Phương thức thanh toán */}
+                          <span className="flex items-center gap-1">
+                            <CreditCard size={12} />
+                            {paymentMethodLabel[order.payment.method] ||
+                              order.payment.method ||
+                              "---"}
+                          </span>
+
+                          {/* Ngày đặt */}
+                          <span className="flex items-center gap-1">
+                            <Calendar size={12} />
+                            {new Date(order.created_at).toLocaleDateString(
+                              "vi-VN",
+                              {
+                                day: "2-digit",
+                                month: "2-digit",
+                                year: "numeric",
+                              },
+                            )}
+                          </span>
+                        </div>
+
+                        {/* Dòng 3: Tổng tiền */}
+                        <div className="flex items-center justify-between mt-2.5">
+                          <span className="text-xs text-muted-foreground">
+                            Thanh toán:{" "}
+                            <span
+                              className={`font-bold ${
+                                order.payment.status === "paid"
+                                  ? "text-emerald-600"
+                                  : "text-amber-600"
+                              }`}
+                            >
+                              {order.payment.status === "paid"
+                                ? "Đã thanh toán"
+                                : "Chưa thanh toán"}
+                            </span>
+                          </span>
+                          <span className="text-sm font-black text-primary">
+                            {order.total_price.toLocaleString("vi-VN")}đ
+                          </span>
+                        </div>
                       </div>
-                      <div className="flex-1">
-                        <p className="text-sm font-medium text-foreground">
-                          Đơn hàng #{order.id}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          {new Date(order.created_at).toLocaleDateString(
-                            "vi-VN",
-                          )}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               ) : (
-                <div className="text-center py-6">
+                <div className="text-center py-8">
+                  <ShoppingCart
+                    size={32}
+                    className="text-muted-foreground/40 mx-auto mb-2"
+                  />
                   <p className="text-sm text-muted-foreground italic">
                     Khách hàng chưa có đơn hàng nào.
                   </p>
                 </div>
               )}
             </div>
+
+            {/* Nút xem tất cả đơn hàng */}
+            {displayUser.orders_count > 0 && (
+              <button
+                onClick={handleViewOrders}
+                className="mt-3 w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-border bg-card text-foreground hover:bg-muted/50 transition-colors text-sm font-bold"
+              >
+                <ExternalLink size={16} />
+                Xem tất cả đơn hàng ({displayUser.orders_count})
+              </button>
+            )}
           </div>
-          <button
-            onClick={handleViewOrders}
-            className="px-3 py-2 bg-primary rounded-md cursor-pointer"
-          >
-            Xem danh sách đơn hàng
-          </button>
         </div>
       </SheetContent>
     </Sheet>

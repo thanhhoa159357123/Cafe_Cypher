@@ -1,3 +1,4 @@
+import { toast } from "sonner";
 import { useCartStore } from "../../store/client/useCartStore";
 
 export const CartHook = () => {
@@ -9,7 +10,12 @@ export const CartHook = () => {
     topping_ids: number | string[];
     quantity: number;
   }) => {
-    await addToCart(data);
+    try {
+      await addToCart(data);
+      toast.success("Thêm sản phẩm thành công!");
+    } catch (error) {
+      toast.error("Thêm thất bại! Vui lòng thử lại.");
+    }
   };
 
   return {

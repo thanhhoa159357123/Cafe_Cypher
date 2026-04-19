@@ -4,9 +4,10 @@ interface ICartItem {
   product: {
     id: number | string;
     name: string;
-    image: string | null;
     price: number;
-  };
+    image: string | null;
+    description: string;
+  } | null;
   size: {
     id: number | string;
     name: string;

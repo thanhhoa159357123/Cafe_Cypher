@@ -1,9 +1,28 @@
 // PopUpDetailOrder.tsx
 "use client";
 import { useOrderStore } from "@/app/store/client/useOrderStore";
+import { useOrderHook } from "@/app/hooks/client/OrderHook";
+import { useState } from "react";
 
 const PopUpDetailOrder = () => {
   const { isOpen, selectedOrder, closeDrawer } = useOrderStore();
+  const { handleCancelOrder } = useOrderHook();
+  const [isCanceling, setIsCanceling] = useState(false);
+
+  const onCancel = async () => {
+    if (!selectedOrder) return;
+    const confirmCancel = window.confirm(
+      "Bạn có chắc chắn muốn hủy đơn hàng này không?",
+    );
+    if (!confirmCancel) return;
+
+    setIsCanceling(true);
+    const res = await handleCancelOrder(selectedOrder.id, "Khách hàng tự hủy");
+    setIsCanceling(false);
+    if (res.success) {
+      closeDrawer();
+    }
+  };
 
   if (!selectedOrder) return null;
 
@@ -29,7 +48,22 @@ const PopUpDetailOrder = () => {
                 Chi tiết đơn hàng
               </h2>
               <p className="text-sm text-muted-foreground mt-1">
-                Mã đơn: #{selectedOrder.order_code}
+                Mã đơn: #{selectedOrder.order_number} -{" "}
+                <span
+                  className={`font-semibold ${
+                    selectedOrder.status === "pending"
+                      ? "text-yellow-500"
+                      : selectedOrder.status === "cancelled"
+                        ? "text-red-500"
+                        : "text-green-500"
+                  }`}
+                >
+                  {selectedOrder.status === "pending"
+                    ? "Chờ xác nhận"
+                    : selectedOrder.status === "cancelled"
+                      ? "Đã hủy"
+                      : selectedOrder.status}
+                </span>
               </p>
             </div>
             <button
@@ -53,16 +87,16 @@ const PopUpDetailOrder = () => {
                     📍 Địa chỉ:
                   </span>
                   <span className="font-semibold text-right max-w-[70%] wrap-break-word">
-                    {selectedOrder.shipping?.address || "Chưa cập nhật"}
+                    {selectedOrder.shipping.address || "Chưa cập nhật"}
                   </span>
                 </div>
                 <div className="flex justify-between text-base">
                   <span className="text-muted-foreground">📞 SĐT:</span>
                   <span className="font-semibold">
-                    {selectedOrder.shipping?.phone || "Chưa cập nhật"}
+                    {selectedOrder.shipping.phone || "Chưa cập nhật"}
                   </span>
                 </div>
-                {selectedOrder.shipping?.note && (
+                {selectedOrder.shipping.note && (
                   <p className="text-sm text-destructive mt-2 italic bg-destructive/5 p-2 rounded">
                     💬 Ghi chú: {selectedOrder.shipping.note}
                   </p>
@@ -83,7 +117,7 @@ const PopUpDetailOrder = () => {
                   >
                     <div className="flex gap-5">
                       <img
-                        src={item.image || "/placeholder.png"}
+                        src={item.image_url || "/placeholder.png"}
                         className="w-24 h-24 rounded-xl object-cover shadow-sm"
                         alt=""
                       />
@@ -131,23 +165,23 @@ const PopUpDetailOrder = () => {
                 <div className="bg-muted/50 p-4 rounded-lg border border-border">
                   <p className="text-muted-foreground mb-1">Phương thức</p>
                   <p className="font-bold">
-                    {selectedOrder.payment?.method === "qr_code"
+                    {selectedOrder.payment.method === "qr_code"
                       ? "💳 CHUYỂN KHOẢN QR"
-                      : selectedOrder.payment?.method === "cash"
+                      : selectedOrder.payment.method === "cash"
                         ? "💵 TIỀN MẶT"
                         : "Chưa xác định"}
                   </p>
                 </div>
                 <div
                   className={`p-4 rounded-lg border ${
-                    selectedOrder.payment?.status === "paid"
+                    selectedOrder.payment.status === "paid"
                       ? "bg-green-100 border-green-200 text-green-700"
                       : "bg-red-50 border-red-100 text-red-600"
                   }`}
                 >
                   <p className="opacity-70 mb-1">Tình trạng</p>
                   <p className="font-bold">
-                    {selectedOrder.payment?.status === "paid"
+                    {selectedOrder.payment.status === "paid"
                       ? "✅ ĐÃ THANH TOÁN"
                       : "⏳ CHƯA THANH TOÁN"}
                   </p>
@@ -170,7 +204,16 @@ const PopUpDetailOrder = () => {
           </div>
 
           {/* Footer */}
-          <div className="p-6 border-t border-border">
+          <div className="p-6 border-t border-border flex gap-4">
+            {selectedOrder.status === "pending" && (
+              <button
+                onClick={onCancel}
+                disabled={isCanceling}
+                className="w-full py-4 bg-red-50 text-red-500 border border-red-200 font-bold rounded-xl hover:bg-red-100 transition-colors cursor-pointer text-lg disabled:opacity-50"
+              >
+                {isCanceling ? "Đang hủy..." : "Hủy đơn hàng"}
+              </button>
+            )}
             <button
               onClick={closeDrawer}
               className="w-full py-4 bg-primary text-primary-foreground font-bold rounded-xl hover:bg-primary/90 transition-colors cursor-pointer text-lg"

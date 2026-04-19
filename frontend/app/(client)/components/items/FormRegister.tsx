@@ -45,11 +45,11 @@ const FormRegister = ({ onClose, onOpenLogin }: FormRegisterProps) => {
       {/* Modal Content */}
       <motion.div
         key="register-modal-content"
-        initial={{ opacity: 0, y: -100 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -100 }}
+        initial={{ opacity: 0, y: -10, scale: 0.95 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: -10, scale: 0.95 }}
         transition={{ duration: 0.2, ease: "easeOut" }}
-        className="fixed top-50 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-md p-8 bg-background rounded-2xl shadow-2xl border border-border/50"
+        className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 w-[calc(100%-2rem)] max-w-md p-8 bg-background rounded-2xl shadow-2xl border border-border/50 max-h-[90vh] overflow-y-auto custom-scrollbar"
       >
         <div className="text-center">
           <h1 className="text-3xl font-black text-primary mb-2">CAFE CYPHER</h1>

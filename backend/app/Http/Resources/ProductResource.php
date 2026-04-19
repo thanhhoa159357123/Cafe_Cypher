@@ -20,7 +20,7 @@ class ProductResource extends JsonResource
             'image' => $this->image_url ?? null,
             'description' => $this->description,
             'price' => (float) $this->price,
-            'category' => CategoryResource::make($this->whenLoaded('category')) ?? null,
+            'category' => new CategoryResource($this->whenLoaded('category')),
 
             'sizes' => $this->whenLoaded('sizes', function () {
                 return $this->sizes->map(function ($size) {
@@ -30,7 +30,7 @@ class ProductResource extends JsonResource
                         'price' => (float) $size->pivot->price,
                     ];
                 });
-            }) ?? [],
+            }),
             'toppings' => $this->whenLoaded('toppings', function () {
                 return $this->toppings->map(function ($tp) {
                     return [
@@ -39,7 +39,7 @@ class ProductResource extends JsonResource
                         'price' => (float) $tp->price,
                     ];
                 });
-            }) ?? [],
+            }),
             "status" => $this->status,
             "deleted_at" => $this->deleted_at,
         ];

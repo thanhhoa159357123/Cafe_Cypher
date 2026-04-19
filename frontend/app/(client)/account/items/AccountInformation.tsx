@@ -20,6 +20,16 @@ const AccountInformation = ({ user }: AccountInformationProps) => {
     email: user?.email || "",
   });
 
+  React.useEffect(() => {
+    if (user) {
+      setFormData({
+        last_name: user.last_name || "",
+        first_name: user.first_name || "",
+        email: user.email || "",
+      });
+    }
+  }, [user]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 

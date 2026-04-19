@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { getProducts } from "../../services/client/productService";
 import type { ProductState } from "@/app/types/client/product";
+import { extractErrorMessage } from "@/lib/errorHandler";
 
 export const useProductStore = create<ProductState>((set, get) => ({
   loading: false,
@@ -16,10 +17,9 @@ export const useProductStore = create<ProductState>((set, get) => ({
       const res = await getProducts();
       set({ products: res.data, loading: false });
     } catch (error: unknown) {
-      const errorMessage =
-        (error as { response?: { data?: { message?: string } } }).response?.data
-          ?.message || "Không lấy được dữ liệu";
+      const errorMessage = extractErrorMessage(error, "Không lấy được dữ liệu");
       set({ error: errorMessage, loading: false });
+      throw new Error(errorMessage);
     }
   },
 
@@ -36,7 +36,6 @@ export const useProductStore = create<ProductState>((set, get) => ({
       });
     } else {
       if (selectedToppings.length >= 3) {
-        console.warn("Chỉ được chọn tối đa 3 topping!!!");
         return;
       }
       set({

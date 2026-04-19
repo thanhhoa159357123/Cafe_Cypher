@@ -11,7 +11,6 @@ export const useDashboardStore = create<IDashboardState>((set) => ({
     set({ loading: true, error: null });
     try {
       const response = await getDashboardData();
-      console.log("res", response);
       set({ dashboard: response, loading: false });
     } catch (error) {
       set({ error: "Failed to fetch dashboard data", loading: false });

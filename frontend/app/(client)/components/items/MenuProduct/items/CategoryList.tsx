@@ -35,10 +35,7 @@ const CategoryList = ({
               key={child.id}
               onClick={() => {
                 onSelectCategory(child);
-                handleChildCategoryClick(
-                  categories.slug,
-                  child.slug,
-                );
+                handleChildCategoryClick(categories.slug, child.slug);
               }}
               className={`ml-4 px-3 py-2.5 border-l-2 border-primary-lighter hover:border-secondary-foreground hover:bg-secondary-foreground/50 transition-all duration-300 cursor-pointer group rounded-md ${selectedCategory?.id === child.id ? "border-secondary-foreground text-background bg-secondary-foreground/50" : ""}`}
             >
@@ -48,12 +45,6 @@ const CategoryList = ({
             </div>
           ))}
         </div>
-      )}
-
-      {childItems.length === 0 && (
-        <p className="ml-4 text-gray-400 text-sm italic">
-          Không có danh mục con
-        </p>
       )}
     </div>
   );

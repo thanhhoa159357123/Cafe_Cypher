@@ -23,13 +23,6 @@ const ButtonPayment = ({ totalPrice, onClose }: ButtonPaymentProps) => {
         </span>
       </div>
 
-      {/* Thông báo Freeship (Optional - tạo cảm giác kích thích mua hàng) */}
-      {/* {totalPrice > 0 && (
-        <div className="mb-5 text-sm text-center text-muted-foreground bg-accent/30 py-2 rounded-lg border border-accent/50">
-          Chưa bao gồm phí vận chuyển
-        </div>
-      )} */}
-
       {/* Cụm Nút bấm */}
       <div className="flex gap-3">
         {/* Nút Tiếp tục mua sắm */}
@@ -41,7 +34,6 @@ const ButtonPayment = ({ totalPrice, onClose }: ButtonPaymentProps) => {
           Tiếp tục mua sắm
         </button>
 
-        {/* Nút Thanh Toán */}
         <button
           disabled={totalPrice === 0}
           onClick={() => {

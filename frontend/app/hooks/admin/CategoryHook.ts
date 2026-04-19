@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { useCategoryStore } from "../../store/admin/useCategoryStore";
+import { useCategoryStore } from "@/app/store/admin/useCategoryStore";
 import { ICategory } from "@/app/types/base/category";
 import { toast } from "sonner";
+
 
 export const CategoryHook = () => {
   const {
@@ -48,7 +49,12 @@ export const CategoryHook = () => {
       }
     } else {
       try {
-        await updateCategory(selectedCategory?.id || "", {
+        if (!selectedCategory?.id) {
+          toast.error("Không tìm thấy ID danh mục để cập nhật!");
+          return;
+        }
+
+        await updateCategory(selectedCategory.id, {
           name: data.name,
           parent_id: data.parent_id,
         });

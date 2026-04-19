@@ -15,6 +15,7 @@ export const useOrderHook = () => {
     createOrder,
     buyNowItem,
     setBuyNowItem,
+    cancelOrder,
   } = useOrderStore();
   const { fetchCart } = useCartStore(); // Import quản lý giỏ hàng
 
@@ -63,12 +64,28 @@ export const useOrderHook = () => {
     }
   };
 
+  const handleCancelOrder = async (orderId: number, reason?: string) => {
+    const toastId = toast.loading("Đang xử lý hủy đơn hàng...");
+    try {
+      await cancelOrder(orderId, reason);
+      toast.success("Hủy đơn hàng thành công!", { id: toastId });
+      return { success: true };
+    } catch (err: any) {
+      const errorMsg =
+        err.response?.data?.message ||
+        "Hủy đơn hàng thất bại, vui lòng hệ quản trị viên!";
+      toast.error(errorMsg, { id: toastId });
+      return { success: false };
+    }
+  };
+
   return {
     orders,
     loading,
     error,
     fetchOrders,
     handleCreateOrder,
+    handleCancelOrder,
 
     buyNowItem,
     setBuyNowItem,

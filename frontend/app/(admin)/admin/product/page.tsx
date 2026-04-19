@@ -129,6 +129,7 @@ const ProductPage = () => {
               handleToggleStatus={handleToggleStatus}
               handleOpenEdit={handleOpenEdit}
               handleDrawerDelete={handleDrawerDelete}
+              handleRestore={handleRestoreProduct}
             />
           </Table>
         </div>

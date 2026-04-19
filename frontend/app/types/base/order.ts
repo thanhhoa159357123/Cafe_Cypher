@@ -18,7 +18,6 @@ export interface IOrder {
   status: string;
   created_at: string;
 
-  // Khớp với Object lồng trong Log
   payment: {
     method: string;
     status: string;
@@ -30,6 +29,9 @@ export interface IOrder {
     phone: string;
     note: string | null;
   };
+
+  cancel_reason?: string | null;
+  cancelled_by?: number | null;
 
   items: IOrderItem[];
 }

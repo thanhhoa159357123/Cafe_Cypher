@@ -15,9 +15,9 @@ class ToppingResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'topping_id' => $this->id,
-            'topping_name' => $this->name,
-            'topping_price' => (float) $this->price,
+            'id' => $this->id,
+            'name' => $this->name,
+            'price' => (float) $this->price,
         ];
     }
 }

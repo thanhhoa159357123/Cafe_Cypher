@@ -48,6 +48,7 @@ const ActionButton = ({
             topping_ids: selectedToppings.map((t) => String(t.id)),
             quantity: 1,
           });
+          onClose(); // Đóng modal ngay khi bấm thêm vào giỏ hàng
         }}
         disabled={isRequireSizeButNotSelected} // Khoá nút nếu chưa chọn size
         className={`flex-1 py-3.5 px-4 rounded-xl font-semibold transition-colors duration-200 shadow-sm

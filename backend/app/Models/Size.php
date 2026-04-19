@@ -11,7 +11,7 @@ class Size extends Model
     /** @use HasFactory<\Database\Factories\SizeFactory> */
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['name'];
+    protected $fillable = ['name', 'status'];
 
     // Tạo cầu nối tới sản phẩm (nhiều-nhiều)
     public function product()

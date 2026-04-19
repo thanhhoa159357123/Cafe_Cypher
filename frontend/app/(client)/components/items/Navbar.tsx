@@ -57,7 +57,7 @@ const Navbar = () => {
         {/* Left */}
         <div>
           {!isMounted ? (
-            <div /> // Skeleton lúc đang load
+            <div className="w-37.5 h-10 bg-muted animate-pulse rounded-md" /> // Skeleton lúc đang load
           ) : isAuthenticated && user ? (
             <div className="flex items-center justify-center gap-4">
               {/* Vùng chứa Icon giỏ hàng có position relative */}

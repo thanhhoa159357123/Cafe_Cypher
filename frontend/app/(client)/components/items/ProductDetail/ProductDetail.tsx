@@ -39,13 +39,13 @@ const ProductDetail = ({
       {/* Modal Content */}
       <motion.div
         key="modal-content"
-        initial={{ opacity: 0, y: -100 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -100 }}
+        initial={{ opacity: 0, y: -20, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: -20, scale: 0.98 }}
         transition={{ duration: 0.2, ease: "easeOut" }}
-        className="fixed top-20 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-6xl px-4 pointer-events-auto max-h-[calc(100vh-120px)] overflow-y-auto"
+        className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 w-[calc(100%-2rem)] max-w-6xl pointer-events-auto max-h-[90vh] overflow-y-auto custom-scrollbar rounded-xl bg-background shadow-2xl"
       >
-        <div className="max-w-6xl mx-auto h-auto bg-linear-to-br from-background via-card to-background rounded-xl border border-border shadow-sm relative">
+        <div className="mx-auto h-auto bg-linear-to-br from-background via-card to-background border border-border relative">
           <div className="flex flex-col p-4">
             <div className="flex flex-col md:flex-row justify-center mt-4 mb-4 items-center md:items-start gap-8">
               {/* Ảnh sản phẩm bên trái */}

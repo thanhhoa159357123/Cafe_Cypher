@@ -1,6 +1,7 @@
 // HistoryOrder.tsx
 import { IOrder } from "@/app/types/base/order";
 import { useOrderStore } from "@/app/store/client/useOrderStore";
+import { useOrderHook } from "@/app/hooks/client/OrderHook";
 
 interface HistoryOrderProps {
   orders: IOrder[] | null;
@@ -8,6 +9,7 @@ interface HistoryOrderProps {
 
 const HistoryOrder = ({ orders }: HistoryOrderProps) => {
   const openDrawer = useOrderStore((state) => state.openDrawer);
+  const { handleCancelOrder } = useOrderHook();
   return (
     <div className="bg-card rounded-xl shadow-lg p-6 space-y-6">
       <div className="flex items-center justify-between border-b border-border pb-4">
@@ -71,8 +73,20 @@ const HistoryOrder = ({ orders }: HistoryOrderProps) => {
                     {order.total_price.toLocaleString()}đ
                   </td>
                   <td className="py-5 text-center">
-                    <span className="inline-block px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter bg-primary/10 text-primary">
-                      {order.status}
+                    <span
+                      className={`inline-block px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter ${
+                        order.status === "pending"
+                          ? "bg-yellow-100 text-yellow-600"
+                          : order.status === "cancelled"
+                            ? "bg-red-100 text-red-600"
+                            : "bg-primary/10 text-primary"
+                      }`}
+                    >
+                      {order.status === "pending"
+                        ? "Chờ xác nhận"
+                        : order.status === "cancelled"
+                          ? "Đã hủy"
+                          : order.status}
                     </span>
                   </td>
                   <td className="py-5">
@@ -80,11 +94,24 @@ const HistoryOrder = ({ orders }: HistoryOrderProps) => {
                       onClick={() => openDrawer(order)}
                       className="px-3 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors font-medium cursor-pointer"
                     >
-                      <span>Xem chi tiết</span>
+                      Chi tiết
                     </button>
-                    <button className="px-3 py-2 bg-destructive text-destructive-foreground rounded-md hover:bg-destructive/90 transition-colors font-medium ml-2 cursor-pointer">
-                      Hủy đơn hàng
-                    </button>
+                    {order.status === "pending" && (
+                      <button
+                        onClick={() => {
+                          if (
+                            window.confirm(
+                              "Bạn có chắc chắn muốn hủy đơn hàng này không?",
+                            )
+                          ) {
+                            handleCancelOrder(order.id, "Khách hàng tự hủy");
+                          }
+                        }}
+                        className="px-3 py-2 bg-destructive text-destructive-foreground rounded-md hover:bg-destructive/90 transition-colors font-medium ml-2 cursor-pointer"
+                      >
+                        Hủy
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))

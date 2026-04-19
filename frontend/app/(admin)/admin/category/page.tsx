@@ -74,6 +74,7 @@ const CategoryPage = () => {
             handleOpenEdit={handleOpenEdit}
             handleDelete={handleDelete}
             handleToggleStatus={handleToggleStatus}
+            handleRestore={handleRestoreCategory}
           />
         </Table>
       </div>

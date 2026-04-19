@@ -1,11 +1,7 @@
-import { filterOrders } from "./../../services/admin/orderService";
 import { IOrder } from "../base/order";
 import { PaginationMeta } from "./product";
 
 export interface IAdminOrder extends IOrder {
-  cancel_reason: string | null; // Lý do hủy đơn (nếu có)
-  cancelled_by: string | null;
-
   // Ở Admin OrderController, bạn có gọi Order::with(['user'])->...
   // Nên data sẽ có thêm thông tin định danh người dùng:
   user: {

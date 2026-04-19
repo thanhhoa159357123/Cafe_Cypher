@@ -44,8 +44,8 @@ const CartItem = ({
               {/* Product Image */}
               <div className="relative w-20 h-20 shrink-0 mt-1">
                 <Image
-                  src={item.product.image ?? "/placeholder.png"}
-                  alt={item.product.name}
+                  src={item.product?.image ?? "/placeholder.png"}
+                  alt={item.product?.name ?? "Sản phẩm"}
                   sizes="(max-width: 768px) 100px, 150px"
                   fill
                   className="object-cover rounded-lg"
@@ -58,7 +58,7 @@ const CartItem = ({
                   {/* Tên Món Chính Gốc */}
                   <div className="flex justify-between items-start gap-2 mb-1.5">
                     <h3 className="font-bold text-foreground text-base">
-                      {item.product.name}
+                      {item.product?.name}
                     </h3>
                   </div>
 
@@ -68,7 +68,7 @@ const CartItem = ({
                       {/* Dòng giá gốc */}
                       <div className="flex justify-between items-center bg-transparent">
                         <span>• Giá gốc</span>
-                        <span>{item.product.price.toLocaleString()}₫</span>
+                        <span>{item.product?.price.toLocaleString()}₫</span>
                       </div>
 
                       {/* Dòng Size */}
@@ -76,9 +76,13 @@ const CartItem = ({
                         <div className="flex justify-between items-center text-primary/80">
                           <span>• Size {item.size.name}</span>
                           <span>
-                            {item.size.price > item.product.price ? "+" : ""}
+                            {Number(item.size.price) >
+                            Number(item.product?.price)
+                              ? "+"
+                              : ""}
                             {(
-                              item.size.price - item.product.price
+                              Number(item.size.price) -
+                              Number(item.product?.price)
                             ).toLocaleString()}
                             ₫
                           </span>

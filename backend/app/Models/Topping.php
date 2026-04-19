@@ -11,7 +11,7 @@ class Topping extends Model
     /** @use HasFactory<\Database\Factories\ToppingFactory> */
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['name', 'price'];
+    protected $fillable = ['name', 'price', 'status'];
 
     // Tạo cầu nối tới sản phẩm (nhiều-nhiều)
     public function product()

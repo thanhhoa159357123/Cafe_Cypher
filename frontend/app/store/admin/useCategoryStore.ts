@@ -9,6 +9,7 @@ import {
 } from "../../services/admin/categoryService";
 import type { CategoryState } from "@/app/types/admin/category";
 import type { ICategory } from "@/app/types/base/category";
+import { extractErrorMessage } from "@/lib/errorHandler";
 
 export const useCategoryStore = create<CategoryState>((set, get) => ({
   loading: false,
@@ -26,9 +27,10 @@ export const useCategoryStore = create<CategoryState>((set, get) => ({
       const res = await getCategories();
       set({ categories: res.data, loading: false });
     } catch (error: unknown) {
-      const errorMessage =
-        (error as { response?: { data?: { message?: string } } }).response?.data
-          ?.message || "Đã có lỗi xảy ra khi tải danh mục.";
+      const errorMessage = extractErrorMessage(
+        error,
+        "Đã có lỗi xảy ra khi tải danh mục.",
+      );
       set({ error: errorMessage, loading: false });
     }
   },
@@ -40,20 +42,16 @@ export const useCategoryStore = create<CategoryState>((set, get) => ({
 
       if (!name) throw new Error("Tên danh mục không được để trống.");
 
-      const res = await createCategory({
+      await createCategory({
         name,
         parent_id: data.parent_id,
       });
-      // Optionally, update the categories list with the newly created category
-      set((state) => ({
-        categories: [...state.categories, res],
-        loading: false,
-      }));
-      get().fetchCategories(); // Tải lại danh sách sau khi tạo mới
+      await get().fetchCategories(); // Tải lại danh sách sau khi tạo mới
     } catch (error: unknown) {
-      const errorMessage =
-        (error as { response?: { data?: { message?: string } } }).response?.data
-          ?.message || "Đã có lỗi xảy ra khi tạo danh mục.";
+      const errorMessage = extractErrorMessage(
+        error,
+        "Đã có lỗi xảy ra khi tạo danh mục.",
+      );
       set({ error: errorMessage, loading: false });
       throw new Error(errorMessage); // Ném lỗi để component có thể xử lý
     }
@@ -64,17 +62,13 @@ export const useCategoryStore = create<CategoryState>((set, get) => ({
     try {
       if (!data.name) throw new Error("Tên danh mục không được để trống.");
 
-      const res = await updateCategory(id, data);
-
-      // Opt: Cập nhật lại trong mảng ko cần gọi lại API getCategories
-      set((state) => ({
-        loading: false,
-      }));
-      get().fetchCategories(); // Tải lại danh sách sau khi cập nhật
+      await updateCategory(id, data);
+      await get().fetchCategories(); // Tải lại danh sách sau khi cập nhật
     } catch (error: unknown) {
-      const errorMessage =
-        (error as { response?: { data?: { message?: string } } }).response?.data
-          ?.message || "Đã có lỗi xảy ra khi cập nhật danh mục.";
+      const errorMessage = extractErrorMessage(
+        error,
+        "Đã có lỗi xảy ra khi cập nhật danh mục.",
+      );
       set({ error: errorMessage, loading: false });
       throw new Error(errorMessage);
     }
@@ -85,15 +79,12 @@ export const useCategoryStore = create<CategoryState>((set, get) => ({
     set({ loading: true, error: null });
     try {
       await deleteCategory(id);
-      set((state) => ({
-        categories: state.categories.filter((cat) => cat.id !== id),
-        loading: false,
-      }));
-      get().fetchCategories(); // Tải lại danh sách sau khi xóa
+      await get().fetchCategories(); // Tải lại danh sách sau khi xóa để lấy dữ liệu mới kèm thuộc tính deleted_at
     } catch (error: unknown) {
-      const errorMessage =
-        (error as { response?: { data?: { message?: string } } }).response?.data
-          ?.message || "Đã có lỗi xảy ra khi xóa danh mục.";
+      const errorMessage = extractErrorMessage(
+        error,
+        "Đã có lỗi xảy ra khi xóa danh mục.",
+      );
       set({ error: errorMessage, loading: false });
       throw new Error(errorMessage);
     }
@@ -105,9 +96,10 @@ export const useCategoryStore = create<CategoryState>((set, get) => ({
       await toggleCategoryStatus(id);
       await get().fetchCategories();
     } catch (error) {
-      const errorMessage =
-        (error as { response?: { data?: { message?: string } } }).response?.data
-          ?.message || "Không thay đổi được trạng thái danh mục";
+      const errorMessage = extractErrorMessage(
+        error,
+        "Không thay đổi được trạng thái danh mục",
+      );
       set({ error: errorMessage, loading: false });
     }
   },
@@ -118,9 +110,10 @@ export const useCategoryStore = create<CategoryState>((set, get) => ({
       await restoreCategory(id);
       await get().fetchCategories();
     } catch (error) {
-      const errorMessage =
-        (error as { response?: { data?: { message?: string } } }).response?.data
-          ?.message || "Không khôi phục được sản phẩm";
+      const errorMessage = extractErrorMessage(
+        error,
+        "Không khôi phục được sản phẩm",
+      );
       set({ error: errorMessage, loading: false });
     }
   },

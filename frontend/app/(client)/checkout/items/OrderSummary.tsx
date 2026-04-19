@@ -4,6 +4,8 @@ import Image from "next/image";
 import { ICartItem } from "@/app/types/client/cart";
 import { IBuyNowItemState } from "@/app/types/client/order";
 import { ITopping } from "@/app/types/client/product";
+import { calculateUnitPrice } from "@/lib/cartUtils";
+import { IOrderItem } from "@/app/types/base/order";
 
 interface OrderSummaryProps {
   items?: (ICartItem | IBuyNowItemState | any)[];
@@ -18,7 +20,6 @@ const OrderSummary = ({
   displayTotalPrice,
   handlePlaceOrder,
 }: OrderSummaryProps) => {
-  console.log("item hiện tại: ", items);
   return (
     <div className="space-y-6">
       <div className="bg-card p-6 rounded-xl border border-border shadow-sm sticky top-4">
@@ -49,16 +50,13 @@ const OrderSummary = ({
 
             // Tính giá 1 sản phẩm (unit_price)
             let unitPrice = 0;
+            let itemTotal = 0;
             if (isCartItem) {
-              const baseP = Number(rawItem.product?.price || 0);
-              const sizeP = Number(rawItem.size?.price || 0);
-              const topP = (rawItem.toppings || []).reduce(
-                (sum: number, t: any) => sum + Number(t.price),
-                0,
-              );
-              unitPrice = baseP + sizeP + topP;
+              unitPrice = calculateUnitPrice(rawItem);
+              itemTotal = unitPrice * quantity;
             } else {
               unitPrice = Number(rawItem.unit_price || 0);
+              itemTotal = Number(rawItem.total_price || unitPrice * quantity);
             }
 
             // 3. Render giao diện với cục data đã được "dịch" sạch sẽ
@@ -85,7 +83,7 @@ const OrderSummary = ({
                   <div className="flex justify-between items-center mt-1">
                     <p className="text-sm font-semibold">x{quantity}</p>
                     <p className="text-sm font-bold text-primary">
-                      {unitPrice.toLocaleString("vi-VN")}₫
+                      {itemTotal.toLocaleString("vi-VN")}₫
                     </p>
                   </div>
                 </div>
@@ -120,4 +118,4 @@ const OrderSummary = ({
   );
 };
 
-export default React.memo(OrderSummary);
+export default OrderSummary;

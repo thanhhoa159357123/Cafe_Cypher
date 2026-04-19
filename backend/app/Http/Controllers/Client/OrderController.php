@@ -257,4 +257,36 @@ class OrderController extends Controller
             return response()->json(['message' => 'Tạo đơn hàng thất bại!'], 500);
         }
     }
+
+    /**
+     * Hủy đơn hàng (chỉ dành cho khách hàng với đơn hàng trạng thái pending)
+     */
+    public function cancelOrder(Request $request, $id)
+    {
+        $userId = $request->user()->id;
+
+        $order = Order::where('id', $id)->where('user_id', $userId)->first();
+
+        if (!$order) {
+            return response()->json(['message' => 'Đơn hàng không tồn tại hoặc không có quyền truy cập!'], 404);
+        }
+
+        if ($order->status !== 'pending') {
+            return response()->json(['message' => 'Chỉ có thể hủy đơn hàng ở trạng thái chờ duyệt!'], 403);
+        }
+
+        $validated = $request->validate([
+            'cancel_reason' => 'nullable|string|max:255'
+        ]);
+
+        $order->status = 'cancelled';
+        $order->cancelled_by = $userId;
+        $order->cancel_reason = $validated['cancel_reason'] ?? 'Khách hàng tự hủy';
+        $order->save();
+
+        return response()->json([
+            'message' => 'Hủy đơn hàng thành công!',
+            'order' => new OrderResource($order)
+        ], 200);
+    }
 }

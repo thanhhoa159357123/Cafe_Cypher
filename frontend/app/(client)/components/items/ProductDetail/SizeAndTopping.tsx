@@ -39,7 +39,7 @@ const SizeAndTopping = ({
           <div className="flex flex-row flex-wrap gap-3">
             {sizes?.map((size, index) => {
               const isSelected = selectedSize?.id === size.id;
-              const priceDiff = size.price - product.price;
+              const priceDiff = Number(size.price) - Number(product.price);
 
               return (
                 <div

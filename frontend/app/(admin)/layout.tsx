@@ -5,7 +5,6 @@ import React, { useEffect, useRef } from "react";
 import Sidebar from "./components/Sidebar"; // Chỉnh lại đường dẫn import cho đúng thư mục của bác
 import Navbar from "./components/Navbar";
 import { useCategoryStore } from "../store/admin/useCategoryStore";
-import { useProductStore } from "../store/admin/useProductStore";
 
 export default function AdminLayout({
   children,

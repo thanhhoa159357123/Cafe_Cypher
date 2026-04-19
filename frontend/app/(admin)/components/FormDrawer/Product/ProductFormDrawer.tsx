@@ -77,15 +77,26 @@ export default function ProductFormDrawer({
 
     // Nếu thay đổi category
     if (name === "category_id") {
-      // Tìm category thật trong danh sách được truyền vào
-      const selectedCategory = availableCategories.find(
-        (c) => c.id === Number(value),
-      );
+      const catId = Number(value);
+      // Tìm category thật trong danh sách được truyền vào cả gốc lẫn con
+      let selectedCategory = availableCategories.find((c) => c.id === catId);
+
+      if (!selectedCategory) {
+        for (const cat of availableCategories) {
+          if (cat.children) {
+            const childCat = cat.children.find((c) => c.id === catId);
+            if (childCat) {
+              selectedCategory = childCat;
+              break;
+            }
+          }
+        }
+      }
 
       setFormData((prev) => ({
         ...prev,
         category: selectedCategory || null, // Gán nguyên object thật vào
-        category_id: Number(value), // Khuyên bạn nên lưu thêm trường này nếu cần gửi lên backend
+        category_id: catId, // Lưu id để đồng bộ form lúc submit
       }));
       return;
     }
@@ -210,7 +221,7 @@ export default function ProductFormDrawer({
 
             {/* Danh mục */}
             <CategorySelect
-              value={formData.category?.id}
+              value={(formData as any).category_id || formData.category?.id}
               onChange={handleChange}
               availableCategories={availableCategories}
             />

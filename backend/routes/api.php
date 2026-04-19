@@ -59,6 +59,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::controller(OrderController::class)->prefix('order')->group(function () {
             Route::get('/', 'getOrder');
             Route::post('/', 'createOrder');
+            Route::put('/{id}/cancel', 'cancelOrder');
         });
     });
 
@@ -72,6 +73,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::controller(AdminUserController::class)->prefix('users')->group(function () {
             Route::get('/', 'getUser'); // Xem danh sách user (có thể lọc theo role)
             Route::get('/{id}', 'getUserById')->where('id', '[0-9]+'); // Xem chi tiết user theo ID
+            Route::delete('/{id}', 'deleteUser'); // Xóa mềm user
+            Route::put('/{id}/restore', 'restoreUser'); // Khôi phục user
+            Route::put('/{id}/toggle-status', 'toggleStatus'); // Đổi trạng thái user
         });
 
         // Quản lý Danh mục (Thêm, Sửa, Xóa)
@@ -81,7 +85,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::put('/{category}', 'updateCategory'); // Dùng {category}
             Route::delete('/{category}', 'deleteCategory'); // Dùng {category}
             Route::put('/{category}/toggle-status', 'toggleStatus'); // Route mới để chuyển đổi trạng thái sản phẩm
-            Route::put('/{category}/restore', 'restoreProduct'); // Route mới để khôi phục sản phẩm đã xóa mềm
+            Route::put('/{category}/restore', 'restoreCategory'); // Route mới để khôi phục sản phẩm đã xóa mềm
         });
 
         // Quản lý Sản phẩm (Thêm, Sửa, Xóa)
@@ -96,14 +100,24 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::get('/filtered', 'filterProducts'); // Route để lọc sản phẩm
         });
 
-        // Quan lý Size (Xem TẤT CẢ size)
+        // Quản lý Size (CRUD size)
         Route::controller(AdminSizeController::class)->prefix('sizes')->group(function () {
             Route::get('/', 'getSizes');
+            Route::post('/', 'createSize');
+            Route::put('/{size}', 'updateSize');
+            Route::delete('/{size}', 'deleteSize');
+            Route::put('/{size}/toggle-status', 'toggleStatus');
+            Route::put('/{id}/restore', 'restoreSize');
         });
 
-        // Quản lý Topping (Xem TẤT CẢ topping)
+        // Quản lý Topping (CRUD topping)
         Route::controller(AdminToppingController::class)->prefix('toppings')->group(function () {
             Route::get('/', 'getToppings');
+            Route::post('/', 'createTopping');
+            Route::put('/{topping}', 'updateTopping');
+            Route::delete('/{topping}', 'deleteTopping');
+            Route::put('/{topping}/toggle-status', 'toggleStatus');
+            Route::put('/{id}/restore', 'restoreTopping');
         });
 
         // Quản lý Đơn hàng (Xem TẤT CẢ đơn hàng, duyệt đơn)

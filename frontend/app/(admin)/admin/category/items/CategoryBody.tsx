@@ -1,6 +1,6 @@
 import { ICategory } from "@/app/types/base/category";
 import { TableBody, TableCell, TableRow } from "@/components/ui/table";
-import { Edit, FolderTree, Trash2 } from "lucide-react";
+import { Edit, FolderTree, Trash2, RefreshCw } from "lucide-react";
 import React from "react";
 import { Switch } from "@/components/ui/switch";
 
@@ -9,6 +9,7 @@ interface CategoryBodyProps {
   handleOpenEdit: (category: ICategory) => void;
   handleDelete: (id: number | string) => Promise<void>;
   handleToggleStatus: (id: number | string) => Promise<void>;
+  handleRestore?: (id: number | string) => Promise<void>;
 }
 
 const CategoryBody = ({
@@ -16,6 +17,7 @@ const CategoryBody = ({
   handleOpenEdit,
   handleDelete,
   handleToggleStatus,
+  handleRestore,
 }: CategoryBodyProps) => {
   return (
     <TableBody className="divide-y divide-border">
@@ -48,17 +50,24 @@ const CategoryBody = ({
               <div className="flex items-center gap-2">
                 <Switch
                   checked={category.status === "active"}
+                  disabled={!!category.deleted_at}
                   onCheckedChange={() => handleToggleStatus(category.id)}
                   className="data-[state=checked]:bg-primary"
                 />
                 <span
                   className={`text-[11px] font-semibold whitespace-nowrap ${
-                    category.status === "active"
-                      ? "text-emerald-600"
-                      : "text-muted-foreground"
+                    category.deleted_at
+                      ? "text-red-500"
+                      : category.status === "active"
+                        ? "text-emerald-600"
+                        : "text-muted-foreground"
                   }`}
                 >
-                  {category.status === "active" ? "Đang bán" : "Tạm ẩn"}
+                  {category.deleted_at
+                    ? "Đã xóa"
+                    : category.status === "active"
+                      ? "Đang bán"
+                      : "Tạm ẩn"}
                 </span>
               </div>
             </TableCell>
@@ -73,13 +82,25 @@ const CategoryBody = ({
                 >
                   <Edit size={18} />
                 </button>
-                <button
-                  onClick={() => handleDelete(category.id)}
-                  className="p-1.5 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg transition-all cursor-pointer"
-                  title="Xóa"
-                >
-                  <Trash2 size={18} />
-                </button>
+                {!category.deleted_at ? (
+                  <button
+                    onClick={() => handleDelete(category.id)}
+                    className="p-1.5 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg transition-all cursor-pointer"
+                    title="Xóa"
+                  >
+                    <Trash2 size={18} />
+                  </button>
+                ) : (
+                  handleRestore && (
+                    <button
+                      onClick={() => handleRestore(category.id)}
+                      className="p-1.5 text-green-600 hover:text-green-700 hover:bg-green-100 rounded-lg transition-all cursor-pointer"
+                      title="Khôi phục"
+                    >
+                      <RefreshCw size={18} />
+                    </button>
+                  )
+                )}
               </div>
             </TableCell>
           </TableRow>
@@ -120,17 +141,24 @@ const CategoryBody = ({
                   <div className="flex items-center gap-2">
                     <Switch
                       checked={child.status === "active"}
+                      disabled={!!child.deleted_at}
                       onCheckedChange={() => handleToggleStatus(child.id)}
                       className="data-[state=checked]:bg-primary"
                     />
                     <span
                       className={`text-[11px] font-semibold whitespace-nowrap ${
-                        child.status === "active"
-                          ? "text-emerald-600"
-                          : "text-muted-foreground"
+                        child.deleted_at
+                          ? "text-red-500"
+                          : child.status === "active"
+                            ? "text-emerald-600"
+                            : "text-muted-foreground"
                       }`}
                     >
-                      {child.status === "active" ? "Đang bán" : "Tạm ẩn"}
+                      {child.deleted_at
+                        ? "Đã xóa"
+                        : child.status === "active"
+                          ? "Đang bán"
+                          : "Tạm ẩn"}
                     </span>
                   </div>
                 </TableCell>
@@ -145,13 +173,25 @@ const CategoryBody = ({
                     >
                       <Edit size={16} />
                     </button>
-                    <button
-                      onClick={() => handleDelete(child.id)}
-                      className="p-1.5 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg transition-all cursor-pointer"
-                      title="Xóa"
-                    >
-                      <Trash2 size={16} />
-                    </button>
+                    {!child.deleted_at ? (
+                      <button
+                        onClick={() => handleDelete(child.id)}
+                        className="p-1.5 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg transition-all cursor-pointer"
+                        title="Xóa"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    ) : (
+                      handleRestore && (
+                        <button
+                          onClick={() => handleRestore(child.id)}
+                          className="p-1.5 text-green-600 hover:text-green-700 hover:bg-green-100 rounded-lg transition-all cursor-pointer"
+                          title="Khôi phục"
+                        >
+                          <RefreshCw size={16} />
+                        </button>
+                      )
+                    )}
                   </div>
                 </TableCell>
               </TableRow>

@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useProductStore } from "../../store/admin/useProductStore";
-import { IProduct } from "@/app/types/base/product";
+import { useProductStore } from "@/app/store/admin/useProductStore";
+import { IProduct, ISize, ITopping } from "@/app/types/base/product";
 import { toast } from "sonner";
 import { restoreProduct } from "@/app/services/admin/productService";
+
 
 export const ProductHook = () => {
   const {
@@ -77,7 +78,7 @@ export const ProductHook = () => {
 
       // Cẩn thận map lại sizes và toppings
       const sizes = Array.isArray(data.sizes)
-        ? data.sizes.map((size: any) => ({
+        ? data.sizes.map((size: ISize) => ({
             id: size.id,
             name: size.name,
             price: Number(size.price) || 0,
@@ -85,7 +86,7 @@ export const ProductHook = () => {
         : [];
 
       const toppings = Array.isArray(data.toppings)
-        ? data.toppings.map((topping: any) => topping.id)
+        ? data.toppings.map((topping: ITopping) => topping.id)
         : [];
 
       // Dữ liệu dùng chung cho cả Create và Edit
@@ -114,8 +115,13 @@ export const ProductHook = () => {
           selectedProduct?.id,
         );
 
+        if (!selectedProduct?.id) {
+          toast.error("Không tìm thấy ID sản phẩm để cập nhật!");
+          return;
+        }
+
         // Gọi hàm update do store cung cấp
-        await updateProduct(selectedProduct?.id || "", formattedProduct as any);
+        await updateProduct(selectedProduct.id, formattedProduct as any);
         toast.success("Sản phẩm đã được cập nhật thành công!");
         setIsDrawerOpen(false);
       }

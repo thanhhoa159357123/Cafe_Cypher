@@ -54,10 +54,19 @@ const CheckOutContent = () => {
     : cart?.items || [];
 
   const displayTotalPrice = isBuyNowFlow
-    ? Number(buyNowItem?.unit_price || 0)
+    ? Number(
+        buyNowItem?.total_price ||
+          Number(buyNowItem?.unit_price || 0) *
+            Number(buyNowItem?.quantity || 1),
+      )
     : Number(cart?.total_price || 0);
 
   const onSubmitOrder = async () => {
+    if (!displayItems || displayItems.length === 0) {
+      toast.error("Không có sản phẩm nào để thanh toán!");
+      return;
+    }
+    
     if (!address || !phone) {
       toast.warning("Vui lòng điền đủ địa chỉ và số điện thoại!");
       return;

@@ -20,7 +20,6 @@ const MenuProduct = () => {
     setSelectedToppings,
     resetSelect,
   } = ProductHook();
-  console.log("Sản phẩm hiện có: ", products);
 
   const { handleChildCategoryClick } = useMenuScroll(
     categories,
@@ -53,8 +52,8 @@ const MenuProduct = () => {
               id={category.slug}
               className="scroll-mt-32"
             >
-              <div className="flex gap-8">
-                <div className="w-1/4">
+              <div className="flex flex-col md:flex-row gap-8">
+                <div className="w-full md:w-1/4">
                   <CategoryList
                     categories={category}
                     childItems={children}
@@ -63,7 +62,7 @@ const MenuProduct = () => {
                     handleChildCategoryClick={handleChildCategoryClick}
                   />
                 </div>
-                <div className="w-3/4 pt-2">
+                <div className="w-full md:w-3/4 pt-2">
                   <ProductList
                     products={filteredProducts}
                     childItems={children}

@@ -3,7 +3,7 @@
 import { IProduct } from "@/app/types/base/product";
 import { Switch } from "@/components/ui/switch";
 import { TableBody, TableCell, TableRow } from "@/components/ui/table";
-import { Edit, Trash2 } from "lucide-react";
+import { Edit, Trash2, RefreshCw } from "lucide-react";
 import React from "react";
 
 interface ProductRowProps {
@@ -11,6 +11,7 @@ interface ProductRowProps {
   handleToggleStatus: (id: number | string) => void; // Hàm toggle trạng thái sản phẩm
   handleOpenEdit: (product: IProduct) => void; // Thay 'any' bằng kiểu dữ liệu thực tế của sản phẩm
   handleDrawerDelete: (id: number | string) => void;
+  handleRestore?: (id: number | string) => void;
 }
 
 // Hàm format tiền tệ VNĐ
@@ -26,6 +27,7 @@ const ProductRow = ({
   handleToggleStatus,
   handleOpenEdit,
   handleDrawerDelete,
+  handleRestore,
 }: ProductRowProps) => {
   return (
     <TableBody className="divide-y divide-border">
@@ -106,12 +108,23 @@ const ProductRow = ({
             <div className="flex items-center gap-2">
               <Switch
                 checked={product.status === "active"}
-                onCheckedChange={() => handleToggleStatus(product.id)} // Hàm toggle nãy anh em mình bàn
+                disabled={!!product.deleted_at}
+                onCheckedChange={() => handleToggleStatus(product.id)}
               />
               <span
-                className={`text-[11px] font-bold uppercase ${product.status === "active" ? "text-green-600" : "text-muted-foreground"}`}
+                className={`text-[11px] font-bold uppercase ${
+                  product.deleted_at
+                    ? "text-red-500"
+                    : product.status === "active"
+                      ? "text-green-600"
+                      : "text-muted-foreground"
+                }`}
               >
-                {product.status === "active" ? "Đang bán" : "Tạm ẩn"}
+                {product.deleted_at
+                  ? "Đã xóa"
+                  : product.status === "active"
+                    ? "Đang bán"
+                    : "Tạm ẩn"}
               </span>
             </div>
           </TableCell>
@@ -127,7 +140,7 @@ const ProductRow = ({
                 <Edit size={18} strokeWidth={2} />
               </button>
 
-              {!product.deleted_at && ( // Chỉ hiển thị nút xóa nếu sản phẩm chưa bị xóa mềm
+              {!product.deleted_at ? (
                 <button
                   title="Xóa sản phẩm"
                   onClick={() => handleDrawerDelete(product.id)}
@@ -135,6 +148,16 @@ const ProductRow = ({
                 >
                   <Trash2 size={18} strokeWidth={2} />
                 </button>
+              ) : (
+                handleRestore && (
+                  <button
+                    title="Khôi phục"
+                    onClick={() => handleRestore(product.id)}
+                    className="text-green-600 hover:text-green-700 hover:bg-green-100 p-2 rounded-lg transition-colors cursor-pointer"
+                  >
+                    <RefreshCw size={18} strokeWidth={2} />
+                  </button>
+                )
               )}
             </div>
           </TableCell>

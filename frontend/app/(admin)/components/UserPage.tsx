@@ -17,6 +17,7 @@ import {
   Users,
   ShieldCheck,
   User,
+  RefreshCw,
 } from "lucide-react";
 import { UserHook } from "@/app/hooks/admin/UserHook";
 import { Switch } from "@/components/ui/switch";
@@ -35,14 +36,15 @@ const UserPage = ({ typeRole }: UserPageProps) => {
     isActionLoading,
     handleViewUserDetails,
     handleCloseDetails,
+    handleToggleStatus,
+    handleDeleteUser,
+    handleRestoreUser,
   } = UserHook();
 
-  // 3. Truyền thẳng typeRole dạng chuỗi ("customer" hoặc "staff") vào hàm fetch
   useEffect(() => {
     fetchUsers(typeRole);
   }, [typeRole]);
 
-  // Đổi title linh hoạt theo role luôn cho xịn
   const pageTitle =
     typeRole === "client" ? "Quản lý khách hàng" : "Quản lý nhân viên";
   const pageDesc =
@@ -53,22 +55,22 @@ const UserPage = ({ typeRole }: UserPageProps) => {
   return (
     <div className="space-y-6">
       {/* TOP: Header */}
-      <div className="flex justify-between items-center bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+      <div className="flex justify-between items-center bg-card p-6 rounded-xl border border-border shadow-sm">
         <div className="flex items-center gap-4">
-          <div className="p-3 bg-teal-50 text-teal-600 rounded-lg">
+          <div className="p-3 bg-primary/10 text-primary rounded-lg">
             <Users size={24} />
           </div>
           <div>
-            <h1 className="text-2xl font-black tracking-tight text-slate-900">
+            <h1 className="text-2xl font-black tracking-tight text-card-foreground">
               {pageTitle}
             </h1>
-            <p className="text-sm text-slate-500 font-medium mt-1">
+            <p className="text-sm text-muted-foreground font-medium mt-1">
               {pageDesc}
             </p>
           </div>
         </div>
         {typeRole === "staff" && (
-          <button className="flex items-center gap-2 bg-slate-900 text-white px-5 py-2.5 rounded-lg hover:bg-slate-800 transition-all text-sm font-bold shadow-md hover:shadow-lg">
+          <button className="flex items-center gap-2 bg-primary text-primary-foreground px-5 py-2.5 rounded-lg hover:bg-primary/90 transition-all text-sm font-bold shadow-md hover:shadow-lg cursor-pointer">
             <PlusCircle size={18} />
             Thêm nhân viên
           </button>
@@ -76,101 +78,123 @@ const UserPage = ({ typeRole }: UserPageProps) => {
       </div>
 
       {/* CONTENT: Bảng */}
-      <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+      <div className="bg-card border border-border rounded-xl shadow-sm overflow-hidden">
         <Table>
-          <TableCaption className="mb-4">
+          <TableCaption className="mb-4 text-muted-foreground">
             Danh sách tài khoản và phân quyền trên hệ thống.
           </TableCaption>
-          <TableHeader className="bg-slate-50 border-b border-slate-200">
+          <TableHeader className="bg-muted/30 border-b border-border">
             <TableRow>
-              <TableHead className="w-25 font-bold text-slate-700">
+              <TableHead className="w-25 font-bold text-card-foreground">
                 Mã KH
               </TableHead>
-              <TableHead className="font-bold text-slate-700 w-50">
+              <TableHead className="font-bold text-card-foreground w-50">
                 Họ và tên
               </TableHead>
-              <TableHead className="font-bold text-slate-700">
+              <TableHead className="font-bold text-card-foreground">
                 Số điện thoại
               </TableHead>
-              <TableHead className="font-bold text-slate-700 text-center">
+              <TableHead className="font-bold text-card-foreground text-center">
                 Vai trò
               </TableHead>
-              <TableHead className="font-bold text-slate-700 text-center">
+              <TableHead className="font-bold text-card-foreground text-center">
                 Số lượng đơn hàng
               </TableHead>
-              <TableHead className="font-bold text-slate-700 text-center">
+              <TableHead className="font-bold text-card-foreground text-center">
                 Trạng thái
               </TableHead>
-              <TableHead className="text-right font-bold text-slate-700 w-30">
+              <TableHead className="text-right font-bold text-card-foreground w-30">
                 Thao tác
               </TableHead>
             </TableRow>
           </TableHeader>
-          <TableBody className="divide-y divide-slate-100">
+          <TableBody className="divide-y divide-border">
             {users.map((user) => (
               <TableRow
                 key={user.id}
-                className="hover:bg-slate-50 transition-colors"
+                className="hover:bg-muted/20 transition-colors group"
               >
-                <TableCell className="font-semibold text-slate-500">
+                <TableCell className="font-semibold text-muted-foreground">
                   {user.id}
                 </TableCell>
-                <TableCell className="font-black text-slate-900 flex items-center gap-2">
+                <TableCell className="font-black text-card-foreground flex items-center gap-2">
                   {user.role === "Admin" && (
-                    <ShieldCheck size={16} className="text-purple-600" />
+                    <ShieldCheck size={16} className="text-primary" />
                   )}
                   {user.last_name} {user.first_name}
                 </TableCell>
-                <TableCell className="text-slate-600 font-medium">
+                <TableCell className="text-muted-foreground font-medium">
                   {user.email}
                 </TableCell>
                 <TableCell className="text-center">
                   <span
                     className={`px-2 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider ${
                       user.role === "Admin"
-                        ? "bg-purple-100 text-purple-700"
+                        ? "bg-primary/10 text-primary"
                         : user.role === "Nhân viên"
-                          ? "bg-blue-100 text-blue-700"
-                          : "bg-slate-100 text-slate-600"
+                          ? "bg-secondary/20 text-secondary-foreground"
+                          : "bg-muted text-muted-foreground"
                     }`}
                   >
                     {user.role}
                   </span>
                 </TableCell>
                 <TableCell className="text-center">
-                  <span className="text-sm font-medium text-slate-700">
+                  <span className="text-sm font-medium text-card-foreground">
                     {user.orders_count}
                   </span>
                 </TableCell>
                 <TableCell className="w-36">
                   <div className="flex items-center gap-2">
                     <Switch
+                      disabled={!!user.deleted_at}
                       checked={user.status === "active"}
-                      className="data-[state=checked]:bg-primary"
+                      onCheckedChange={() => handleToggleStatus(user.id)}
+                      className="data-[state=checked]:bg-primary cursor-pointer"
                     />
                     <span
                       className={`text-[11px] font-semibold whitespace-nowrap ${
-                        user.status === "active"
-                          ? "text-emerald-600"
-                          : "text-muted-foreground"
+                        user.deleted_at
+                          ? "text-red-500"
+                          : user.status === "active"
+                            ? "text-emerald-600"
+                            : "text-muted-foreground"
                       }`}
                     >
-                      {user.status === "active" ? "Đang hoạt động" : "Tạm ẩn"}
+                      {user.deleted_at
+                        ? "Đã xóa"
+                        : user.status === "active"
+                          ? "Đang hoạt động"
+                          : "Tạm ẩn"}
                     </span>
                   </div>
                 </TableCell>
                 <TableCell className="text-right">
-                  <div className="flex justify-end gap-3">
+                  <div className="flex justify-end gap-3 opacity-60 group-hover:opacity-100 transition-opacity">
                     <button
                       onClick={() => handleViewUserDetails(user.id)}
                       title="Xem chi tiết"
-                      className="text-blue-500 hover:text-blue-700 hover:bg-blue-50 p-1.5 rounded-md transition-all"
+                      className="text-muted-foreground hover:text-primary hover:bg-primary/10 p-1.5 rounded-md transition-all cursor-pointer"
                     >
                       <Edit size={18} />
                     </button>
-                    <button className="text-red-500 hover:text-red-700 hover:bg-red-50 p-1.5 rounded-md transition-all">
-                      <Trash2 size={18} />
-                    </button>
+                    {!user.deleted_at ? (
+                      <button
+                        onClick={() => handleDeleteUser(user.id)}
+                        title="Xóa tài khoản"
+                        className="text-muted-foreground hover:text-destructive hover:bg-destructive/10 p-1.5 rounded-md transition-all cursor-pointer"
+                      >
+                        <Trash2 size={18} />
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => handleRestoreUser(user.id)}
+                        title="Khôi phục tài khoản"
+                        className="text-green-600 hover:text-green-700 hover:bg-green-100 p-1.5 rounded-md transition-all cursor-pointer"
+                      >
+                        <RefreshCw size={18} />
+                      </button>
+                    )}
                   </div>
                 </TableCell>
               </TableRow>

@@ -16,12 +16,13 @@ class CheckRole
      */
     public function handle(Request $request, Closure $next, ...$roles): Response
     {
-        // 2. Dùng Auth::check() thay vì auth()->check()
+        // 2. Trả về JSON 401 nếu chưa đăng nhập (thay vì redirect về HTML)
         if (!Auth::check()) {
-            return redirect('/login');
+            return response()->json([
+                'message' => 'Vui lòng đăng nhập để tiếp tục.'
+            ], 401);
         }
 
-        // 3. Dùng Auth::user() và bổ sung type hint @var để tránh lỗi không tìm thấy property `role`
         /** @var \App\Models\User $user */
         $user = Auth::user();
         $userRole = $user->role;
@@ -30,6 +31,9 @@ class CheckRole
             return $next($request);
         }
 
-        return abort(403, 'Bạn không có quyền truy cập khu vực này!');
+        // 3. Trả về JSON 403 (thay vì văng HTML abort)
+        return response()->json([
+            'message' => 'Bạn không có quyền truy cập khu vực này!'
+        ], 403);
     }
 }

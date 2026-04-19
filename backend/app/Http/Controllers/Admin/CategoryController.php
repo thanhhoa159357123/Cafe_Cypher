@@ -19,9 +19,11 @@ class CategoryController extends Controller
      */
     public function getCategories()
     {
-        // Lấy category cha anctive và load các category con cũng phải active
-        $categories = Category::whereNull('parent_id')
-            ->with(['children']) // Load tất cả con (không lọc status)
+        // Lấy category cha active và load các category con cũng phải lấy theo withTrashed
+        $categories = Category::withTrashed()->whereNull('parent_id')
+            ->with(['children' => function ($query) {
+                $query->withTrashed();
+            }])
             ->get();
 
         return CategoryResource::collection($categories);
