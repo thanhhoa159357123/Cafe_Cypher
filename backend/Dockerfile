@@ -37,8 +37,8 @@ EXPOSE 8080
 # - Seed: Đổ data (nếu lỗi trùng thì bỏ qua nhờ || true)
 # - Reverb start: Chạy server Websocket ở cổng 8080 và cho chạy ngầm (&)
 # - Serve: Chạy API chính ở cổng 8080
-CMD php artisan migrate --force && \
+CMD php artisan config:clear && \
+    php artisan migrate --force && \
     (php artisan db:seed --force || true) && \
-    php artisan config:clear && \
     (php artisan reverb:start --host 0.0.0.0 --port 8080 &) && \
     php artisan serve --host 0.0.0.0 --port 8080
