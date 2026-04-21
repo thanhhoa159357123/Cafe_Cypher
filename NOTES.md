@@ -12,7 +12,7 @@
  Chạy toàn bộ Seeder: `php artisan db:seed`
  Chạy đích danh 1 file Seeder cụ thể: `php artisan db:seed --class=TenFileCuThe`
  Sửa file migration xong chạy lại: `php artisan migrate:refresh`
- Xóa sạch DB, chạy lại từ đầu và đổ mẫu: `php artisan migrate:fresh --seed`
+ Xóa sạch DB, chạy lại từ đầu và đổ mẫu: `  `
  Quay lại 1 bước migrate (Rollback): `php artisan migrate:rollback`
  Tạo Resource (Style lại JSON): `php artisan make:resource TenResource`
 
