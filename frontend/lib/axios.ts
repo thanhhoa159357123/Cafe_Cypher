@@ -19,8 +19,7 @@ axiosClient.interceptors.request.use(
 
     if (!config.url) return config;
 
-    // 1. Chỉ dùng URL API để quyết định xem CÓ NỐI PREFIX ADMIN không
-    // Lúc này bỏ luôn mấy cái check "config.url &&" vì ở trên đã lọc rồi
+    // 1. Tự động thêm Prefix cho Admin API
     const isApiAdminRoute = config.url.includes("admin");
     const adminPrefix = process.env.NEXT_PUBLIC_ADMIN_ROUTE_PREFIX;
 
@@ -31,33 +30,45 @@ axiosClient.interceptors.request.use(
       config.url = `${adminPrefix}/${cleanUrl}`;
     }
 
-    // 2. BIỆN PHÁP CHỐT HẠ: Dùng Link Web Frontend để xác định ai đang gọi API
-    // Nếu trình duyệt đang mở trang /admin/... thì chắc chắn là Admin
+    // 2. Dùng Link Web Frontend để xác định ai đang gọi API
     const isFrontendAdmin =
       typeof window !== "undefined" &&
-      window.location.pathname.includes("/admin");
+      window.location.pathname.startsWith("/admin");
 
+    // 3. CHIẾN THUẬT "QUÉT SẠCH LÒNG MỀ": Tìm token bằng mọi giá
     if (isFrontendAdmin) {
-      // Đang ở Admin -> Chỉ lấy Token Admin
       const adminStorage = localStorage.getItem("admin-auth-storage");
       if (adminStorage) {
         try {
-          token = JSON.parse(adminStorage).state.access_token;
+          const parsed = JSON.parse(adminStorage);
+          // Quét mọi trường hợp Zustand có thể lưu
+          token =
+            parsed?.state?.access_token ||
+            parsed?.state?.token ||
+            parsed?.state?.user?.access_token ||
+            parsed?.state?.user?.token ||
+            parsed?.access_token;
         } catch (e) {}
       }
     } else {
-      // Đang ở Web khách hàng -> Chỉ lấy Token Client
       const authStorage = localStorage.getItem("auth-storage");
       if (authStorage) {
         try {
-          token = JSON.parse(authStorage).state.access_token;
+          const parsed = JSON.parse(authStorage);
+          token =
+            parsed?.state?.access_token ||
+            parsed?.state?.token ||
+            parsed?.state?.user?.access_token ||
+            parsed?.access_token;
         } catch (e) {}
       }
     }
 
+    // 4. Dán vé thông hành
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+
     return config;
   },
   (error) => Promise.reject(error),
@@ -71,22 +82,30 @@ axiosClient.interceptors.response.use(
       error.response &&
       (error.response.status === 401 || error.response.status === 403)
     ) {
-      // Lại dùng Frontend URL để biết đường đá người dùng về đâu
       const isFrontendAdmin =
         typeof window !== "undefined" &&
-        window.location.pathname.includes("/admin");
+        window.location.pathname.startsWith("/admin");
+
+      // NẾU ĐANG Ở TRANG LOGIN MÀ BỊ 401 (Do gõ sai pass) -> KHÔNG ĐÁ GÌ HẾT, ĐỂ FORM TỰ BÁO LỖI
+      if (
+        typeof window !== "undefined" &&
+        window.location.pathname.includes("/management-login")
+      ) {
+        return Promise.reject(error);
+      }
 
       if (isFrontendAdmin) {
-        console.warn("Lỗi 401 Admin: Token không hợp lệ -> Đá về Login Admin!");
+        console.warn(
+          "Lỗi 401 Admin: Token die hoặc API từ chối -> Đá về Login Admin!",
+        );
+        console.warn("Đường dẫn API bị lỗi:", error.config?.url); // In ra để bác biết API nào làm phản
+
         localStorage.removeItem("admin-auth-storage");
         document.cookie =
           "auth_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
 
-        if (!window.location.pathname.includes("/management-login")) {
-          window.location.href = "/admin/management-login?key=cafe_cypher_2026";
-        }
+        window.location.href = "/admin/management-login?key=cafe_cypher_2026";
       } else {
-        console.warn("Lỗi 401 Client: Token không hợp lệ -> Đá về trang chủ!");
         const authState = useAuthStore.getState();
         if (authState.isAuthenticated) {
           toast.error("Phiên làm việc đã hết hạn. Vui lòng đăng nhập lại.");
