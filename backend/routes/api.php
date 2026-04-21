@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 
 
-$adminPrefix = env('ADMIN_ROUTE_PREFIX', 'admin');
+$adminPrefix =env('ADMIN_ROUTE_PREFIX', 'admin');
 // ==========================================
 // 1. PUBLIC ROUTES (Ai cũng xem được)
 // ==========================================
