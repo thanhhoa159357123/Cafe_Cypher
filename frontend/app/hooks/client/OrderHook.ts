@@ -39,23 +39,25 @@ export const useOrderHook = () => {
 
       // 👇 ĐÂY LÀ CHỖ QUYẾT ĐỊNH: Phải return Object chứa success: true và order_id
       // (Dựa theo code BE NestJS đợt trước, nó trả về trường 'orderId')
+      const safeResult = result as any;
       return {
         success: true,
         data: {
           order_id:
-            result?.orderId || result?.data?.orderId || result?.id || "N/A",
+            safeResult?.orderId || safeResult?.data?.orderId || safeResult?.id || "N/A",
         },
       };
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const errorResponse = (err as { response?: { status?: number; data?: { message?: string } } }).response;
       // 👇 Thêm case bắt đích danh lỗi 401 (chưa đăng nhập / mất session)
-      if (err.response?.status === 401) {
+      if (errorResponse?.status === 401) {
         toast.error("Hãy đăng nhập để tiếp tục thanh toán!", { id: toastId });
         return { success: false };
       }
 
       // Bắt lỗi từ Backend trả về (nếu có)
       const errorMsg =
-        err.response?.data?.message ||
+        errorResponse?.data?.message ||
         "Thanh toán thất bại, vui lòng kiểm tra lại!";
       toast.error(errorMsg, { id: toastId });
 
@@ -70,9 +72,10 @@ export const useOrderHook = () => {
       await cancelOrder(orderId, reason);
       toast.success("Hủy đơn hàng thành công!", { id: toastId });
       return { success: true };
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const errorResponse = (err as { response?: { data?: { message?: string } } }).response;
       const errorMsg =
-        err.response?.data?.message ||
+        errorResponse?.data?.message ||
         "Hủy đơn hàng thất bại, vui lòng hệ quản trị viên!";
       toast.error(errorMsg, { id: toastId });
       return { success: false };

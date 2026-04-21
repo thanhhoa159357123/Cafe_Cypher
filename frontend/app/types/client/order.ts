@@ -54,12 +54,18 @@ export interface IOrderState {
   openDrawer: (order: IOrder) => void;
   closeDrawer: () => void;
 
+  // Real-time Notification State
+  unreadCount: number;
+  notifications: { id: number; message: string; time: Date }[];
+  addNotification: (message: string) => void;
+  clearUnread: () => void;
+
   loading: boolean;
   error: string | null;
   orders: IOrder[] | null; // Sửa thành mảng IOrder[] vì một User có danh sách nhiều đơn hàng
   buyNowItem: IBuyNowItemState | null;
   setBuyNowItem: (item: IBuyNowItemState | null) => void;
-  fetchOrders: () => Promise<void>;
-  createOrder: (data: ICreateOrderPayload) => Promise<any>; // Nhận đúng cái rule ở trên
-  cancelOrder: (id: number, reason?: string) => Promise<any>; // Hủy đơn
+  fetchOrders: (isSilent?: boolean) => Promise<void>;
+  createOrder: (data: ICreateOrderPayload) => Promise<unknown>; // Nhận đúng cái rule ở trên
+  cancelOrder: (id: number, reason?: string) => Promise<unknown>; // Hủy đơn
 }

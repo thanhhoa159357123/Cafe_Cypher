@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Client;
 
 // 2. Thêm dòng này để nó nhận diện được file Controller gốc ở ngoài
+
+use App\Events\NewOrderEvent;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\OrderResource;
 use App\Models\Cart;
@@ -247,6 +249,9 @@ class OrderController extends Controller
             // Cập nhật tổng tiền
             $order->total_price = $totalPrice;
             $order->save();
+
+            $order->refresh();
+            broadcast(new NewOrderEvent($order));
 
             DB::commit();
 

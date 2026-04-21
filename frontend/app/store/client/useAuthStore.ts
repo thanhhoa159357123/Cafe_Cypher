@@ -24,6 +24,7 @@ export const useAuthStore = create<AuthState>()(
           const response = await getMe();
           set({
             user: {
+              id: response.id,
               last_name: response.last_name,
               first_name: response.first_name,
               email: response.email,
@@ -55,6 +56,7 @@ export const useAuthStore = create<AuthState>()(
           Cookie.set("user_role", response.user.role, { expires: 7 });
           set({
             user: {
+              id: response.user.id,
               last_name: response.user.last_name,
               first_name: response.user.first_name,
               email: response.user.email,
@@ -66,8 +68,6 @@ export const useAuthStore = create<AuthState>()(
           });
           if (response.user.role === "client") {
             useCartStore.getState().fetchCart();
-          } else {
-            window.location.href = "/admin/dashboard"; // Chuyển hướng admin sau khi login thành công
           }
         } catch (error) {
           console.error("Login failed:", error);

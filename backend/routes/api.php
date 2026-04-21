@@ -14,8 +14,12 @@ use App\Http\Controllers\Admin\SizeController as AdminSizeController;
 use App\Http\Controllers\Admin\ToppingController as AdminToppingController;
 use App\Http\Controllers\Admin\DashBoardController as AdminDashBoardController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
+use App\Http\Controllers\Admin\AdminController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Str;
+
+$adminPrefix = env('ADMIN_ROUTE_PREFIX', 'admin');
 
 // ==========================================
 // 1. PUBLIC ROUTES (Ai cũng xem được)
@@ -25,8 +29,12 @@ Route::get('/products', [ProductController::class, 'getProducts'])->name('produc
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
-
-
+// Admin Public Routes
+Route::prefix($adminPrefix)->group(function () {
+    Route::post('/admin/login', [AdminController::class, 'login']);
+});
+// Admin Public Routes
+// Route::post('/admin/login', [AdminController::class, 'login'])->middleware('throttle:5,1');
 // ==========================================
 // 2. PROTECTED ROUTES (Bắt buộc đăng nhập)
 // ==========================================
@@ -45,7 +53,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // ==========================================
     // KHU VỰC CỦA CLIENT (Người dùng mua hàng)
     // ==========================================
-    Route::middleware('role:client,staff,admin')->group(function () {
+    Route::middleware('role:client')->group(function () {
 
         // Nhóm Cart
         Route::controller(CartController::class)->prefix('cart')->group(function () {
@@ -63,72 +71,78 @@ Route::middleware('auth:sanctum')->group(function () {
         });
     });
 
+    $adminPrefix = env('ADMIN_ROUTE_PREFIX', Str::random(40));
+    Route::prefix($adminPrefix)->group(function () {
 
-    // ==========================================
-    // KHU VỰC CỦA ADMIN & STAFF (Quản trị viên)
-    // ==========================================
-    Route::middleware('role:admin,staff')->prefix('admin')->group(function () {
+        // ==========================================
+        // KHU VỰC CỦA ADMIN & STAFF (Quản trị viên)
+        // ==========================================
+        Route::middleware('role:admin,staff')->prefix('admin')->group(function () {
 
-        // Quản lý Người dùng (Xem danh sách khách hàng, nhân viên)
-        Route::controller(AdminUserController::class)->prefix('users')->group(function () {
-            Route::get('/', 'getUser'); // Xem danh sách user (có thể lọc theo role)
-            Route::get('/{id}', 'getUserById')->where('id', '[0-9]+'); // Xem chi tiết user theo ID
-            Route::delete('/{id}', 'deleteUser'); // Xóa mềm user
-            Route::put('/{id}/restore', 'restoreUser'); // Khôi phục user
-            Route::put('/{id}/toggle-status', 'toggleStatus'); // Đổi trạng thái user
+            // Đăng xuất cho Admin
+            Route::post('/logout', [AdminController::class, 'logout']);
+
+            // Quản lý Người dùng (Xem danh sách khách hàng, nhân viên)
+            Route::controller(AdminUserController::class)->prefix('users')->group(function () {
+                Route::get('/', 'getUser'); // Xem danh sách user (có thể lọc theo role)
+                Route::get('/{id}', 'getUserById')->where('id', '[0-9]+'); // Xem chi tiết user theo ID
+                Route::delete('/{id}', 'deleteUser'); // Xóa mềm user
+                Route::put('/{id}/restore', 'restoreUser'); // Khôi phục user
+                Route::put('/{id}/toggle-status', 'toggleStatus'); // Đổi trạng thái user
+            });
+
+            // Quản lý Danh mục (Thêm, Sửa, Xóa)
+            Route::controller(AdminCategoryController::class)->prefix('categories')->group(function () {
+                Route::get('/', 'getCategories'); // <- THÊM GET DANH SÁCH CHO ADMIN CŨNG TỐT NÈ
+                Route::post('/', 'createCategory');
+                Route::put('/{category}', 'updateCategory'); // Dùng {category}
+                Route::delete('/{category}', 'deleteCategory'); // Dùng {category}
+                Route::put('/{category}/toggle-status', 'toggleStatus'); // Route mới để chuyển đổi trạng thái sản phẩm
+                Route::put('/{category}/restore', 'restoreCategory'); // Route mới để khôi phục sản phẩm đã xóa mềm
+            });
+
+            // Quản lý Sản phẩm (Thêm, Sửa, Xóa)
+
+            Route::controller(AdminProductController::class)->prefix('products')->group(function () {
+                Route::get('/', 'getProducts'); // <- THÊM GET DANH SÁCH
+                Route::post('/', 'createProduct');
+                Route::put('/{product}', 'updateProduct'); // Dùng {product}
+                Route::delete('/{product}', 'deleteProduct'); // Dùng {product}
+                Route::put('/{product}/toggle-status', 'toggleStatus'); // Route mới để chuyển đổi trạng thái sản phẩm
+                Route::put('/{product}/restore', 'restoreProduct'); // Route mới để khôi phục sản phẩm đã xóa mềm
+                Route::get('/filtered', 'filterProducts'); // Route để lọc sản phẩm
+            });
+
+            // Quản lý Size (CRUD size)
+            Route::controller(AdminSizeController::class)->prefix('sizes')->group(function () {
+                Route::get('/', 'getSizes');
+                Route::post('/', 'createSize');
+                Route::put('/{size}', 'updateSize');
+                Route::delete('/{size}', 'deleteSize');
+                Route::put('/{size}/toggle-status', 'toggleStatus');
+                Route::put('/{id}/restore', 'restoreSize');
+            });
+
+            // Quản lý Topping (CRUD topping)
+            Route::controller(AdminToppingController::class)->prefix('toppings')->group(function () {
+                Route::get('/', 'getToppings');
+                Route::post('/', 'createTopping');
+                Route::put('/{topping}', 'updateTopping');
+                Route::delete('/{topping}', 'deleteTopping');
+                Route::put('/{topping}/toggle-status', 'toggleStatus');
+                Route::put('/{id}/restore', 'restoreTopping');
+            });
+
+            // Quản lý Đơn hàng (Xem TẤT CẢ đơn hàng, duyệt đơn)
+            Route::controller(AdminOrderController::class)->prefix('orders')->group(function () {
+                Route::get('/', 'getAllOrders'); // Khác với getOrder của Client nhé
+                Route::get('/{id}', 'getOrder')->where('id', '[0-9]+'); // Xem chi tiết đơn hàng
+                Route::put('/{id}/status', 'updateOrderStatus'); // Cập nhật trạng thái đơn hàng (Admin & Staff mới có quyền này)
+                Route::get('/filtered', 'filterOrders'); // Route để lọc đơn hàng theo trạng thái, ngày tháng, v.v.
+            });
+
+            // Quản lý Dashboard (Chỉ Admin mới có quyền này)
+            Route::get('/dashboard', [AdminDashBoardController::class, 'getDashboard'])->middleware('role:admin');
         });
-
-        // Quản lý Danh mục (Thêm, Sửa, Xóa)
-        Route::controller(AdminCategoryController::class)->prefix('categories')->group(function () {
-            Route::get('/', 'getCategories'); // <- THÊM GET DANH SÁCH CHO ADMIN CŨNG TỐT NÈ
-            Route::post('/', 'createCategory');
-            Route::put('/{category}', 'updateCategory'); // Dùng {category}
-            Route::delete('/{category}', 'deleteCategory'); // Dùng {category}
-            Route::put('/{category}/toggle-status', 'toggleStatus'); // Route mới để chuyển đổi trạng thái sản phẩm
-            Route::put('/{category}/restore', 'restoreCategory'); // Route mới để khôi phục sản phẩm đã xóa mềm
-        });
-
-        // Quản lý Sản phẩm (Thêm, Sửa, Xóa)
-
-        Route::controller(AdminProductController::class)->prefix('products')->group(function () {
-            Route::get('/', 'getProducts'); // <- THÊM GET DANH SÁCH
-            Route::post('/', 'createProduct');
-            Route::put('/{product}', 'updateProduct'); // Dùng {product}
-            Route::delete('/{product}', 'deleteProduct'); // Dùng {product}
-            Route::put('/{product}/toggle-status', 'toggleStatus'); // Route mới để chuyển đổi trạng thái sản phẩm
-            Route::put('/{product}/restore', 'restoreProduct'); // Route mới để khôi phục sản phẩm đã xóa mềm
-            Route::get('/filtered', 'filterProducts'); // Route để lọc sản phẩm
-        });
-
-        // Quản lý Size (CRUD size)
-        Route::controller(AdminSizeController::class)->prefix('sizes')->group(function () {
-            Route::get('/', 'getSizes');
-            Route::post('/', 'createSize');
-            Route::put('/{size}', 'updateSize');
-            Route::delete('/{size}', 'deleteSize');
-            Route::put('/{size}/toggle-status', 'toggleStatus');
-            Route::put('/{id}/restore', 'restoreSize');
-        });
-
-        // Quản lý Topping (CRUD topping)
-        Route::controller(AdminToppingController::class)->prefix('toppings')->group(function () {
-            Route::get('/', 'getToppings');
-            Route::post('/', 'createTopping');
-            Route::put('/{topping}', 'updateTopping');
-            Route::delete('/{topping}', 'deleteTopping');
-            Route::put('/{topping}/toggle-status', 'toggleStatus');
-            Route::put('/{id}/restore', 'restoreTopping');
-        });
-
-        // Quản lý Đơn hàng (Xem TẤT CẢ đơn hàng, duyệt đơn)
-        Route::controller(AdminOrderController::class)->prefix('orders')->group(function () {
-            Route::get('/', 'getAllOrders'); // Khác với getOrder của Client nhé
-            Route::get('/{id}', 'getOrder')->where('id', '[0-9]+'); // Xem chi tiết đơn hàng
-            Route::put('/{id}/status', 'updateOrderStatus'); // Cập nhật trạng thái đơn hàng (Admin & Staff mới có quyền này)
-            Route::get('/filtered', 'filterOrders'); // Route để lọc đơn hàng theo trạng thái, ngày tháng, v.v.
-        });
-
-        // Quản lý Dashboard (Chỉ Admin mới có quyền này)
-        Route::get('/dashboard', [AdminDashBoardController::class, 'getDashboard'])->middleware('role:admin');
     });
 });

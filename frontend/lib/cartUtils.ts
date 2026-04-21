@@ -6,8 +6,9 @@ export const calculateToppingsPrice = (toppings: ICartItem["toppings"]) => {
 };
 
 export const calculateUnitPrice = (item: ICartItem) => {
+  const productPrice = item.product?.price || 0;
   const basePrice =
-    item.size && item.size.price > 0 ? item.size.price : item.product.price;
+    item.size && item.size.price > 0 ? item.size.price : productPrice;
   console.log("basePrice", basePrice);
   const toppingsPrice = calculateToppingsPrice(item.toppings);
   return basePrice + toppingsPrice;

@@ -55,10 +55,20 @@ export default function OrderFormDrawer({
   if (!displayOrder) return null;
 
   const handleStatusChange = async (newStatus: string) => {
-    if (newStatus === "cancelled" && !cancelReason) {
-      alert("Vui lòng nhập lý do huỷ đơn");
+    if (newStatus === "cancelled") {
+      const reason = window.prompt(
+        "Vui lòng nhập lý do huỷ đơn khách hàng (bắt buộc):",
+      );
+      if (reason === null) return; // Nếu user bấm Cancel trên hộp thoại prompt
+      if (!reason.trim()) {
+        alert("Lý do không được để trống. Đơn hàng chưa bị hủy!");
+        return;
+      }
+      await onUpdateStatus(displayOrder.id, newStatus, reason.trim());
+      onClose();
       return;
     }
+
     await onUpdateStatus(displayOrder.id, newStatus, cancelReason);
     onClose();
   };

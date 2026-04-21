@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Table,
   TableBody,
@@ -15,6 +15,8 @@ import { CategoryHook } from "@/app/hooks/admin/CategoryHook";
 import CategoryFormDrawer from "../../components/FormDrawer/CategoryFormDrawer";
 import CategoryBody from "./items/CategoryBody";
 import TitleHeader from "./items/TitleHeader";
+import echo from "@/lib/echo";
+import { toast } from "sonner";
 
 const CategoryPage = () => {
   const {
@@ -31,6 +33,21 @@ const CategoryPage = () => {
     handleRestoreCategory,
     handleToggleStatus,
   } = CategoryHook();
+
+  useEffect(() => {
+    if (echo) {
+      console.log("--- Đang hóng sóng Reverb ---");
+
+      echo.channel("test-channel").listen(".test-reverb", (data: any) => {
+        console.log("THẤY DATA RỒI:", data);
+        toast.success(`Thông báo: ${data.message}`);
+      });
+
+      return () => {
+        echo?.leaveChannel("test-channel");
+      };
+    }
+  }, []);
 
   return (
     <div className="space-y-6">

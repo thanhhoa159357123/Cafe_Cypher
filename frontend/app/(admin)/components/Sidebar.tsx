@@ -1,6 +1,9 @@
 // app/(admin)/components/Sidebar.tsx (Tùy vị trí bác đặt)
+"use client";
+
 import React from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   LayoutDashboard,
   ShoppingCart,
@@ -8,9 +11,27 @@ import {
   Tags,
   PlusSquare,
   Users,
+  LogOut,
 } from "lucide-react";
+import { useAdminAuthStore } from "@/app/store/admin/useAdminAuthStore";
+import { toast } from "sonner";
 
 const Sidebar = () => {
+  const router = useRouter();
+  const { logout } = useAdminAuthStore();
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      toast.success("Đã đăng xuất khỏi phiên quản trị.");
+      const secretKey =
+        process.env.NEXT_PUBLIC_ADMIN_SECRET || "cafe_cypher_2026";
+      router.push(`/admin/management-login?key=${secretKey}`);
+    } catch (error) {
+      toast.error("Lỗi đăng xuất.");
+    }
+  };
+
   // Danh sách menu chuẩn theo Database của bác
   const menuItems = [
     {
@@ -78,7 +99,11 @@ const Sidebar = () => {
 
       {/* BOTTOM: USER/LOGOUT */}
       <div className="p-4 border-t border-border mt-auto">
-        <div className="flex items-center gap-3 px-3 py-2 text-sm font-semibold text-red-500 hover:bg-red-50 rounded-lg cursor-pointer transition-colors">
+        <div
+          onClick={handleLogout}
+          className="flex items-center gap-3 px-3 py-3 text-sm font-semibold text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg cursor-pointer transition-colors"
+        >
+          <LogOut size={20} className="text-red-500" />
           Đăng xuất
         </div>
       </div>

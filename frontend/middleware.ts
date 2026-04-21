@@ -1,47 +1,83 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-// XÓA dòng import getMe đi nhé
 
 export async function middleware(request: NextRequest) {
   const token = request.cookies.get("auth_token")?.value;
-
   const { pathname } = request.nextUrl;
 
-  // Nếu không có token, chặn ngay lập tức
-  if (!token) {
-    return NextResponse.redirect(new URL("/login", request.url));
+  // 1. Cho phép truy cập trang đăng nhập quản trị mà không cần token
+  if (pathname === "/admin/management-login") {
+    // Nếu đã có token, thử fetch api/me xem nếu là admin/staff thì đá thẳng vào dashboard luôn, không cho ở lại trang login nữa
+    if (token) {
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000"}/api/me`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              Accept: "application/json",
+            },
+          },
+        );
+        if (response.ok) {
+          const user = await response.json();
+          if (user.role === "admin")
+            return NextResponse.redirect(
+              new URL("/admin/dashboard", request.url),
+            );
+          if (user.role === "staff")
+            return NextResponse.redirect(
+              new URL("/staff/dashboard", request.url),
+            );
+          if (user.role === "client")
+            return NextResponse.redirect(new URL("/", request.url));
+        }
+      } catch (error) {
+        // Lỗi thì cứ cho đi tiếp vào trang login
+      }
+    }
+    return NextResponse.next();
   }
 
+  // 2. Chặn các route quản trị nếu không có token (giấu vết hoặc đá về client)
+  if (!token) {
+    if (pathname.startsWith("/admin")) {
+      return NextResponse.redirect(new URL("/", request.url));
+    }
+    return NextResponse.redirect(new URL("/", request.url));
+  }
+
+  // 3. Nếu có token, kiểm tra auth
   try {
-    // 1. Phải dùng thẳng URL API, không qua axios hay service bên ngoài
-    const response = await fetch("http://127.0.0.1:8000/api/me", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: "application/json",
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000"}/api/me`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: "application/json",
+        },
       },
-    });
+    );
 
     if (!response.ok) {
-      return NextResponse.redirect(new URL("/login", request.url));
+      // Token bị từ chối (hết hạn / server restart mất token DB) -> Xóa cookie
+      const res = NextResponse.redirect(new URL("/", request.url));
+      res.cookies.delete("auth_token");
+      return res;
     }
 
     const user = await response.json();
     const realRole = user.role;
 
-    // ... (Code chặn quyền phía dưới giữ nguyên)
-    if (
-      pathname.startsWith("/admin") ||
-      pathname.startsWith("/admin/dashboard")
-    ) {
+    // Kiểm tra quyền truy cập Admin
+    if (pathname.startsWith("/admin")) {
       if (realRole !== "admin") {
         return NextResponse.redirect(new URL("/", request.url));
       }
     }
 
-    if (
-      pathname.startsWith("/staff") ||
-      pathname.startsWith("/staff/dashboard")
-    ) {
+    // Kiểm tra quyền truy cập Staff
+    if (pathname.startsWith("/staff")) {
       if (realRole !== "staff" && realRole !== "admin") {
         return NextResponse.redirect(new URL("/", request.url));
       }
@@ -50,14 +86,14 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   } catch (error) {
     console.error("Middleware Auth Error:", error);
-    return NextResponse.redirect(new URL("/login", request.url));
+    return NextResponse.redirect(new URL("/", request.url));
   }
 }
 
 export const config = {
   matcher: [
     "/admin/:path*",
-    "/admin-dashboard/:path*", // Bắt thêm cái này!
+    "/admin-dashboard/:path*",
     "/staff/:path*",
     "/staff-dashboard/:path*",
   ],

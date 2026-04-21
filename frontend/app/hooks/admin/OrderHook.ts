@@ -17,15 +17,18 @@ export const OrderHook = () => {
     fetchOrderById,
     updateOrderStatus,
     filterOrders,
+    currentPage,
+    filterParams,
+    setCurrentPage,
+    setFilterParams,
   } = useOrderStore();
-  const [currentPage, setCurrentPage] = useState(1);
+
   const searchParams = useSearchParams();
   const userIdFromURL = searchParams.get("user_id");
 
   const [selectedOrder, setSelectedOrder] = useState<IAdminOrder | null>(null);
   // Khai báo loading CỤC BỘ chỉ dành riêng cho việc lấy chi tiết / update
   const [isActionLoading, setIsActionLoading] = useState(false);
-  const [filterParams, setFilterParams] = useState<any>(null); // Lưu điều kiện lọc để có thể tái sử dụng khi cần
 
   useEffect(() => {
     // Nếu có truyền user_id lên URL (từ UserPage qua)

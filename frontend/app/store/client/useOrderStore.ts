@@ -4,7 +4,11 @@ import {
   ICreateOrderPayload,
   IOrderState,
 } from "../../types/client/order";
-import { cancelOrderService, createOrder, getOrders } from "../../services/client/orderService";
+import {
+  cancelOrderService,
+  createOrder,
+  getOrders,
+} from "../../services/client/orderService";
 
 export const useOrderStore = create<IOrderState>((set, get) => ({
   selectedOrder: null,
@@ -17,18 +21,33 @@ export const useOrderStore = create<IOrderState>((set, get) => ({
   error: null,
   orders: null,
 
+  // Real-time Notification Storage
+  unreadCount: 0,
+  notifications: [],
+  addNotification: (message) => {
+    set((state) => ({
+      unreadCount: state.unreadCount + 1,
+      notifications: [
+        { id: Date.now(), message, time: new Date() },
+        ...state.notifications,
+      ].slice(0, 20), // Giữ lại 20 thông báo gần nhất
+    }));
+  },
+  clearUnread: () => set({ unreadCount: 0 }),
+
   buyNowItem: null, // <-- Thêm state cho Buy Now
   setBuyNowItem: (item: IBuyNowItemState | null) => set({ buyNowItem: item }), // <-- Thêm setter cho Buy Now
 
-  fetchOrders: async () => {
-    set({ loading: true, error: null });
+  fetchOrders: async (isSilent = false) => {
+    if (!isSilent) set({ loading: true, error: null });
     try {
       const response = await getOrders();
-      // <-- Sửa: Lấy trực tiếp biến response vì bên service đã return data
-      set({ loading: false, orders: response.data });
-      return response; // <-- Sửa: Trả về response để component gọi có thể dùng
+      set({ orders: response.data });
+      return response;
     } catch (error) {
-      set({ loading: false, error: "Failed to fetch orders" });
+      if (!isSilent) set({ error: "Failed to fetch orders" });
+    } finally {
+      if (!isSilent) set({ loading: false });
     }
   },
 
@@ -55,22 +74,33 @@ export const useOrderStore = create<IOrderState>((set, get) => ({
   cancelOrder: async (id: number, reason?: string) => {
     set({ loading: true, error: null });
     try {
-      const response = await cancelOrderService(id, { cancel_reason: reason || '' });
-      
+      const response = await cancelOrderService(id, {
+        cancel_reason: reason || "",
+      });
+
       const currentOrders = get().orders;
-      const updatedOrders = currentOrders ? currentOrders.map(order => 
-        order.id === id ? { ...order, status: 'cancelled', cancel_reason: reason } : order
-      ) : null;
-      
+      const updatedOrders = currentOrders
+        ? currentOrders.map((order) =>
+            order.id === id
+              ? { ...order, status: "cancelled", cancel_reason: reason }
+              : order,
+          )
+        : null;
+
       const currentSelectedOrder = get().selectedOrder;
-      const updatedSelectedOrder = currentSelectedOrder?.id === id 
-        ? { ...currentSelectedOrder, status: 'cancelled', cancel_reason: reason }
-        : currentSelectedOrder;
+      const updatedSelectedOrder =
+        currentSelectedOrder?.id === id
+          ? {
+              ...currentSelectedOrder,
+              status: "cancelled",
+              cancel_reason: reason,
+            }
+          : currentSelectedOrder;
 
       set({
         loading: false,
         orders: updatedOrders,
-        selectedOrder: updatedSelectedOrder
+        selectedOrder: updatedSelectedOrder,
       });
 
       return response;
@@ -78,5 +108,5 @@ export const useOrderStore = create<IOrderState>((set, get) => ({
       set({ loading: false, error: "Failed to cancel order" });
       throw error;
     }
-  }
+  },
 }));

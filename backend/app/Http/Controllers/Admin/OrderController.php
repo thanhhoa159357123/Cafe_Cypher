@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Events\OrderStatusUpdatedEvent;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use Illuminate\Http\Request;
@@ -16,7 +17,10 @@ class OrderController extends Controller
      */
     public function getAllOrders()
     {
-        $orders = Order::with(['user', 'items.product'])->paginate(10);
+        $orders = Order::with(['user', 'items.product'])->orderBy(
+            'created_at',
+            'desc'
+        )->paginate(10);
         return OrderResource::collection($orders);
     }
 
@@ -70,6 +74,8 @@ class OrderController extends Controller
 
         $order->status = $newStatus;
         $order->save();
+
+        broadcast(new OrderStatusUpdatedEvent($order));
 
         return response()->json([
             'message' => 'Cập nhật trạng thái đơn hàng thành công!',
