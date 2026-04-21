@@ -48,7 +48,9 @@ export const useAdminAuthStore = create<AdminAuthState>()(
             isAuthenticated: true,
           });
 
-          document.cookie = `auth_token=${response.data.token}; path=/; max-age=604800`;
+          const isSecure = location.protocol === "https:";
+          const securePart = isSecure ? "; Secure; SameSite=None" : "; SameSite=Lax";
+          document.cookie = `auth_token=${response.data.token}; path=/; max-age=604800${securePart}`;
         } catch (error) {
           throw error;
         }

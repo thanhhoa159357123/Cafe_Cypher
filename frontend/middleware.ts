@@ -10,15 +10,15 @@ export async function middleware(request: NextRequest) {
     // Nếu đã có token, thử fetch api/me xem nếu là admin/staff thì đá thẳng vào dashboard luôn, không cho ở lại trang login nữa
     if (token) {
       try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000"}/api/me`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              Accept: "application/json",
-            },
+        const apiBase =
+          process.env.NEXT_PUBLIC_API_URL ||
+          "http://127.0.0.1:8000/api";
+        const response = await fetch(`${apiBase}/me`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: "application/json",
           },
-        );
+        });
         if (response.ok) {
           const user = await response.json();
           if (user.role === "admin")
@@ -49,15 +49,14 @@ export async function middleware(request: NextRequest) {
 
   // 3. Nếu có token, kiểm tra auth
   try {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000"}/api/me`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          Accept: "application/json",
-        },
+    const apiBase =
+      process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000/api";
+    const response = await fetch(`${apiBase}/me`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/json",
       },
-    );
+    });
 
     if (!response.ok) {
       // Token bị từ chối (hết hạn / server restart mất token DB) -> Xóa cookie

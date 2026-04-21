@@ -58,7 +58,9 @@ function ManagementLoginForm() {
 
           if (res.status === 200) {
             // Set lại cookie ngay lập tức để Middleware cho qua
-            document.cookie = `auth_token=${access_token}; path=/; max-age=604800`;
+            const isSecure = location.protocol === "https:";
+            const securePart = isSecure ? "; Secure; SameSite=None" : "; SameSite=Lax";
+            document.cookie = `auth_token=${access_token}; path=/; max-age=604800${securePart}`;
             toast.success(
               `Đang khôi phục phiên đăng nhập của ${user.last_name || "Admin"}...`,
             );
