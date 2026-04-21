@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 
 
+$adminPrefix = config('app.admin_prefix');
 // ==========================================
 // 1. PUBLIC ROUTES (Ai cũng xem được)
 // ==========================================
@@ -29,11 +30,15 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
 // Admin Public Routes
+Route::prefix($adminPrefix)->group(function () {
+    Route::post('/admin/login', [AdminController::class, 'login']);
+});
+// Admin Public Routes
 // Route::post('/admin/login', [AdminController::class, 'login'])->middleware('throttle:5,1');
 // ==========================================
 // 2. PROTECTED ROUTES (Bắt buộc đăng nhập)
 // ==========================================
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware('auth:sanctum')->group(function () use ($adminPrefix) {
 
     // --- Dùng chung cho mọi Role (Đã login là dùng được) ---
     Route::post('/logout', [AuthController::class, 'logout']);
@@ -67,11 +72,6 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
 
-    $adminPrefix = config('app.admin_prefix');;
-    // Admin Public Routes
-    Route::prefix($adminPrefix)->group(function () {
-        Route::post('/admin/login', [AdminController::class, 'login']);
-    });
 
     Route::prefix($adminPrefix)->group(function () {
 
