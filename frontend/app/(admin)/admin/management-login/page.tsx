@@ -46,7 +46,7 @@ function ManagementLoginForm() {
         try {
           // Thử ping API để kiểm tra xem token trong Storage còn sống thực sự không
           const res = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000"}/api/me`,
+            `${process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000"}/me`,
             {
               headers: {
                 Authorization: `Bearer ${access_token}`,
