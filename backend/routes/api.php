@@ -67,7 +67,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
 
-    $adminPrefix = env('ADMIN_ROUTE_PREFIX', 'admin');
+    $adminPrefix = config('app.admin_prefix');;
     // Admin Public Routes
     Route::prefix($adminPrefix)->group(function () {
         Route::post('/admin/login', [AdminController::class, 'login']);
