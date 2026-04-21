@@ -1,18 +1,16 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, ReactNode, useState, Suspense } from "react";
 import { Table, TableCaption } from "@/components/ui/table";
-import { ShoppingCart, FileDown, Filter, FilterX, Search } from "lucide-react";
+import { ShoppingCart, FileDown } from "lucide-react";
 import { OrderHook } from "@/app/hooks/admin/OrderHook";
 import OrderFormDrawer from "../../components/FormDrawer/Order/OrderFormDrawer";
-import Image from "next/image";
 import TitleHeader from "./items/TitleHeader";
 import OrderBody from "./items/OrderBody";
 import ButtonPagination from "../../components/ButtonPagination";
 import FilterOrder from "./items/FilterOrder";
-import { useSearchParams } from "next/navigation";
 
-// Hàm hỗ trợ dịch trạng thái tiếng Anh sang tiếng Việt và màu sắc Bootstrap
+// Hàm hỗ trợ dịch trạng thái
 const getStatusConfig = (status: string) => {
   const configs: Record<string, { label: string; className: string }> = {
     pending: {
@@ -41,7 +39,8 @@ const getStatusConfig = (status: string) => {
   );
 };
 
-const OrderPage = () => {
+// --- COMPONENT CHỨA LOGIC CHÍNH ---
+const OrderListContent = () => {
   const {
     orders,
     selectedOrder,
@@ -50,36 +49,29 @@ const OrderPage = () => {
     handleViewOrderDetails,
     handleCloseDetails,
     updateOrderStatus,
-
     meta,
     currentPage,
     handleFilter,
     handleResetFilter,
     handlePageChange,
     initialSearchValue,
-  } = OrderHook();
+  } = OrderHook(); // Hook này có chứa useSearchParams() gây lỗi build
 
-  // State cục bộ cho Filter Form
   const [searchWord, setSearchWord] = useState(initialSearchValue);
   const [statusVal, setStatusVal] = useState("");
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
 
-  // Hàm gọi Handle Filter của Hook
   const onSubmitFilter = (e: React.FormEvent) => {
     e.preventDefault();
-
-    // Gói tất cả các state có giá trị vào 1 object và gửi
     const params: any = {};
     if (searchWord) params.search = searchWord;
     if (statusVal) params.status = statusVal;
     if (dateFrom) params.date_from = dateFrom;
     if (dateTo) params.date_to = dateTo;
-
     handleFilter(params);
   };
 
-  // Hàm Reset
   const onClearFilter = () => {
     setSearchWord("");
     setStatusVal("");
@@ -90,7 +82,6 @@ const OrderPage = () => {
 
   return (
     <div className="space-y-6">
-      {/* TOP: Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-card p-6 rounded-2xl border border-border shadow-sm gap-4">
         <div className="flex items-center gap-4">
           <div className="p-3 bg-primary/10 text-primary rounded-xl">
@@ -113,7 +104,6 @@ const OrderPage = () => {
         </div>
       </div>
 
-      {/* FILTER BAR - Khu vực tìm kiếm sáng tạo dựa trên API của bạn */}
       <FilterOrder
         onSubmitFilter={onSubmitFilter}
         onClearFilter={onClearFilter}
@@ -127,7 +117,6 @@ const OrderPage = () => {
         setDateTo={setDateTo}
       />
 
-      {/* CONTENT: Bảng */}
       <div
         className={`bg-card border border-border rounded-2xl shadow-sm overflow-hidden transition-opacity duration-300 ${isFetchingOrders ? "opacity-50 pointer-events-none" : "opacity-100"}`}
       >
@@ -144,7 +133,6 @@ const OrderPage = () => {
         </Table>
       </div>
 
-      {/* Phân trang */}
       {meta && meta.last_page > 1 && (
         <ButtonPagination
           meta={meta}
@@ -164,4 +152,20 @@ const OrderPage = () => {
   );
 };
 
-export default OrderPage;
+// --- COMPONENT EXPORT CHÍNH ---
+// Next.js yêu cầu useSearchParams phải nằm trong Suspense khi build Static
+export default function OrderPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex items-center justify-center min-h-[400px]">
+          <p className="text-muted-foreground animate-pulse">
+            Đang tải dữ liệu đơn hàng...
+          </p>
+        </div>
+      }
+    >
+      <OrderListContent />
+    </Suspense>
+  );
+}
