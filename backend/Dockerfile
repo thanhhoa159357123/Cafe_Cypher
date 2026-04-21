@@ -22,7 +22,7 @@ WORKDIR /app
 COPY . .
 
 # 6. Cài đặt các thư viện trong composer.json (bỏ qua dev để nhẹ)
-RUN composer install --no-dev --optimize-autoloader
+RUN composer install --no-dev --optimize-autoloader --no-scripts
 
 # 7. Cấp quyền cho các thư mục quan trọng để không bị lỗi 500
 RUN chown -R www-data:www-data /app/storage /app/bootstrap/cache && \
@@ -38,5 +38,6 @@ EXPOSE 8080
 # - Serve: Chạy API chính ở cổng 8080
 CMD php artisan migrate --force && \
     (php artisan db:seed --force || true) && \
+    php artisan config:clear && \
     (php artisan reverb:start --host 0.0.0.0 --port 8080 &) && \
     php artisan serve --host 0.0.0.0 --port 8080
