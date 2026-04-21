@@ -17,47 +17,43 @@ const axiosClient = axios.create({
 axiosClient.interceptors.request.use(
   (config) => {
     let token = null;
-    let tokenType = "Bearer";
 
-    // Xử lý tự động thêm Prefix bảo mật cho các route admin
+    // 1. Xác định xem đây có phải request tới Admin API không
+    // Kiểm tra url có chứa "/admin/" không (không cần bắt đầu bằng /)
+    const isAdminApi = config.url && config.url.includes("/admin/");
     const adminPrefix = process.env.NEXT_PUBLIC_ADMIN_ROUTE_PREFIX;
-    const isAdminRoute = config.url && config.url.startsWith("/admin/");
 
-    if (adminPrefix && isAdminRoute) {
-      // Nếu config.url đang là "admin/login"
-      // Ta muốn nó thành "secret-portal-admin-2026/admin/login"
-      config.url = `${adminPrefix}/${config.url}`;
+    // 2. Tự động thêm Prefix nếu chưa có (Chỉ thêm một lần)
+    if (adminPrefix && isAdminApi && !config.url.includes(adminPrefix)) {
+      const cleanUrl = config.url.startsWith("/")
+        ? config.url.substring(1)
+        : config.url;
+      config.url = `${adminPrefix}/${cleanUrl}`;
     }
 
-    // Ưu tiên đọc Token từ Admin Storage nếu truy cập API quản trị
-    const adminStorageStr = localStorage.getItem("admin-auth-storage");
-    const authStorageStr = localStorage.getItem("auth-storage");
-
-    if (isAdminRoute && adminStorageStr) {
-      try {
-        const authData = JSON.parse(adminStorageStr);
-        token = authData.state.access_token;
-      } catch (error) {}
-    }
-
-    // Fallback qua Client Storage nếu chưa có token phía trên
-    if (!token && authStorageStr) {
-      try {
-        const authData = JSON.parse(authStorageStr);
-        token = authData.state.access_token;
-      } catch (error) {}
+    // 3. Lấy đúng Token
+    if (isAdminApi) {
+      const adminStorage = localStorage.getItem("admin-auth-storage");
+      if (adminStorage) {
+        try {
+          token = JSON.parse(adminStorage).state.access_token;
+        } catch (e) {}
+      }
+    } else {
+      const authStorage = localStorage.getItem("auth-storage");
+      if (authStorage) {
+        try {
+          token = JSON.parse(authStorage).state.access_token;
+        } catch (e) {}
+      }
     }
 
     if (token) {
-      // Dán "vé thông hành" vào Header
-      config.headers.Authorization = `${tokenType} ${token}`;
+      config.headers.Authorization = `Bearer ${token}`;
     }
-
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  },
+  (error) => Promise.reject(error),
 );
 
 // XỬ LÝ KHI TOKEN HẾT HẠN

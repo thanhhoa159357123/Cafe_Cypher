@@ -98,7 +98,7 @@ return [
     'cipher' => 'AES-256-CBC',
 
     'key' => env('APP_KEY'),
-    'admin_prefix' => env('ADMIN_ROUTE_PREFIX', 'admin'),
+
     'previous_keys' => [
         ...array_filter(
             explode(',', (string) env('APP_PREVIOUS_KEYS', ''))
