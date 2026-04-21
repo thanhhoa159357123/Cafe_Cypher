@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\SizeRequest;
 use App\Models\Size;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
 class SizeController extends Controller
@@ -33,7 +34,7 @@ class SizeController extends Controller
         $size = Size::create($data);
 
         Log::info("Size mới tạo: " . json_encode($size));
-
+        Cache::forget('client_sizes'); // Xóa cache để FE Client cập nhật Size mới
         return response()->json([
             'message' => 'Thêm size thành công!',
             'data' => $size,
@@ -56,7 +57,7 @@ class SizeController extends Controller
         $size->update($data);
 
         Log::info("Size sau khi cập nhật: " . json_encode($size));
-
+        Cache::forget('client_sizes'); // Xóa cache để FE Client cập nhật Size mới
         return response()->json([
             'message' => 'Cập nhật size thành công!',
             'data' => $size,
@@ -82,7 +83,7 @@ class SizeController extends Controller
         $size->delete(); // Soft delete (chỉ set deleted_at)
 
         Log::info("Đã xóa mềm size ID: " . $sizeId);
-
+        Cache::forget('client_sizes'); // Xóa cache để FE Client cập nhật Size mới
         return response()->json([
             'message' => 'Size đã được xóa thành công.',
         ]);
@@ -101,7 +102,7 @@ class SizeController extends Controller
             $size->save();
 
             Log::info("Đã chuyển trạng thái size ID: {$size->id} sang {$size->status}");
-
+            Cache::forget('client_sizes'); // Xóa cache để FE Client cập nhật Size mới
             return response()->json([
                 'message' => 'Cập nhật trạng thái size thành công!',
                 'data' => $size,
@@ -125,7 +126,7 @@ class SizeController extends Controller
         $size->restore();
 
         Log::info("Đã khôi phục size ID: " . $id);
-
+        Cache::forget('client_sizes'); // Xóa cache để FE Client cập nhật Size mới
         return response()->json([
             'message' => 'Size đã được khôi phục thành công.',
             'data' => $size,

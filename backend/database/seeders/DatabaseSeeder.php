@@ -21,8 +21,8 @@ class DatabaseSeeder extends Seeder
             ToppingSeeder::class,
             ProductToppingSeeder::class,
             SizeSeeder::class,
-            ProductSizeSeeder::class
-            // Thêm các seeder khác ở đây...
+            ProductSizeSeeder::class,
+            UserSeeder::class,  
         ]);
     }
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\ToppingRequest;
 use App\Models\Topping;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
 class ToppingController extends Controller
@@ -34,10 +35,12 @@ class ToppingController extends Controller
 
         Log::info("Topping mới tạo: " . json_encode($topping));
 
+        Cache::forget('client_toppings');
         return response()->json([
             'message' => 'Thêm topping thành công!',
             'data' => $topping,
         ], 201);
+
     }
 
     /**
@@ -57,6 +60,7 @@ class ToppingController extends Controller
 
         Log::info("Topping sau khi cập nhật: " . json_encode($topping));
 
+        Cache::forget('client_toppings');
         return response()->json([
             'message' => 'Cập nhật topping thành công!',
             'data' => $topping,
@@ -83,6 +87,7 @@ class ToppingController extends Controller
 
         Log::info("Đã xóa mềm topping ID: " . $toppingId);
 
+        Cache::forget('client_toppings');
         return response()->json([
             'message' => 'Topping đã được xóa thành công.',
         ]);
@@ -101,6 +106,7 @@ class ToppingController extends Controller
 
             Log::info("Đã chuyển trạng thái topping ID: {$topping->id} sang {$topping->status}");
 
+            Cache::forget('client_toppings');
             return response()->json([
                 'message' => 'Cập nhật trạng thái topping thành công!',
                 'data' => $topping,
@@ -125,6 +131,7 @@ class ToppingController extends Controller
 
         Log::info("Đã khôi phục topping ID: " . $id);
 
+        Cache::forget('client_toppings');
         return response()->json([
             'message' => 'Topping đã được khôi phục thành công.',
             'data' => $topping,

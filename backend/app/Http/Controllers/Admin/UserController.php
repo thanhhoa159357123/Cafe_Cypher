@@ -27,7 +27,7 @@ class UserController extends Controller
         }
 
         // Nếu không truyền role thì sẽ lấy toàn bộ user
-        $users = $query->get();
+        $users = $query->paginate(10);
 
         return response()->json($users);
     }

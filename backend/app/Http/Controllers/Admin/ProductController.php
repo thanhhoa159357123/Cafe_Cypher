@@ -7,6 +7,7 @@ use App\Http\Requests\Admin\StoreProductRequest;
 use App\Http\Resources\ProductResource;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
@@ -75,7 +76,7 @@ class ProductController extends Controller
         if (!empty($validated['toppings'])) {
             $product->toppings()->sync($validated['toppings']);
         }
-
+        Cache::forget('client_products_active'); // Bắt buộc xóa để Menu khách hàng tự load lại giá/món mới
         return new ProductResource($product->load(['category', 'sizes', 'toppings']));
     }
 
@@ -85,7 +86,7 @@ class ProductController extends Controller
     public function deleteProduct(Product $product)
     {
         $product->delete();
-
+        Cache::forget('client_products_active'); // Bắt buộc xóa để Menu khách hàng tự load lại giá/món mới
         return response()->json(['message' => 'Sản phẩm đã được xóa thành công.']);
     }
 
@@ -164,7 +165,7 @@ class ProductController extends Controller
             // Nếu gửi mảng rỗng (xóa hết topping)
             $product->toppings()->sync([]);
         }
-
+        Cache::forget('client_products_active'); // Bắt buộc xóa để Menu khách hàng tự load lại giá/món mới
         return new ProductResource($product->load(['category', 'sizes', 'toppings']));
     }
 
@@ -176,7 +177,7 @@ class ProductController extends Controller
         try {
             $product->status = ($product->status === 'active') ? 'inactive' : 'active';
             $product->save();
-
+            Cache::forget('client_products_active'); // Bắt buộc xóa để Menu khách hàng tự load lại giá/món mới
             return response()->json([
                 'message' => 'Cập nhật trạng thái thành công!',
                 'data' => $product // Trả về để FE cập nhật UI ngay lập tức
@@ -194,6 +195,7 @@ class ProductController extends Controller
         // Tìm cả trong thùng rác và khôi phục (đưa deleted_at về null)
         $product = Product::withTrashed()->findOrFail($id);
         $product->restore();
+        Cache::forget('client_products_active'); // Bắt buộc xóa để Menu khách hàng tự load lại giá/món mới
         return response()->json(['message' => 'Sản phẩm đã được khôi phục thành công.']);
     }
 

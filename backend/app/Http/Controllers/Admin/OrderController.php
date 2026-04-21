@@ -88,7 +88,10 @@ class OrderController extends Controller
      */
     public function filterOrders(Request $request)
     {
-        $query = Order::with(['user', 'items.product']);
+        $query = Order::with([
+            'user:id,first_name,last_name,email', // Chỉ lấy cột cần, đỡ tốn RAM
+            'items.product:id,name,image_url,price',
+        ]);
 
         if ($request->has('search')) {
             $search = $request->input('search');

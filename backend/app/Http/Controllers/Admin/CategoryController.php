@@ -7,6 +7,7 @@ use App\Http\Resources\CategoryResource;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
@@ -52,7 +53,8 @@ class CategoryController extends Controller
         Log::info("Dữ liệu sau khi validate và thêm slug: " . json_encode($data));
 
         $category = Category::create($data);
-
+        Cache::forget('client_categories_active');
+        Cache::forget('client_products_active');
         Log::info("Danh mục mới tạo: " . json_encode($category));
 
         return new CategoryResource($category);
@@ -82,7 +84,8 @@ class CategoryController extends Controller
 
         $categoryId = $category->id; // Lưu id lại để log
         $category->delete();
-
+        Cache::forget('client_categories_active');
+        Cache::forget('client_products_active');
         // 3. Sửa lại chữ cho đúng
         Log::info("Đã xóa danh mục ID: " . $categoryId);
 
@@ -117,6 +120,8 @@ class CategoryController extends Controller
 
         $category->update($data);
         Log::info("Danh mục sau khi cập nhật: " . json_encode($category));
+        Cache::forget('client_categories_active');
+        Cache::forget('client_products_active');
 
         return new CategoryResource($category);
     }
@@ -129,7 +134,8 @@ class CategoryController extends Controller
         try {
             $category->status = ($category->status === 'active') ? 'inactive' : 'active';
             $category->save();
-
+            Cache::forget('client_categories_active');
+            Cache::forget('client_products_active');
             return response()->json([
                 'message' => 'Cập nhật trạng thái thành công!',
                 'data' => $category // Trả về để FE cập nhật UI ngay lập tức
@@ -147,6 +153,8 @@ class CategoryController extends Controller
         // Tìm cả trong thùng rác và khôi phục (đưa deleted_at về null)
         $category = Category::withTrashed()->findOrFail($id);
         $category->restore();
+        Cache::forget('client_categories_active');
+        Cache::forget('client_products_active');
         return response()->json(['message' => 'Danh mục đã được khôi phục thành công.']);
     }
 }
