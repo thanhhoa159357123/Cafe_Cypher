@@ -19,7 +19,7 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['https://cafe-cypher.up.railway.app/'], // Tạm thời để dấu sao '*' để thông cửa hoàn toàn cho nhanh
+    'allowed_origins' => ['https://cafe-cypher.up.railway.app'], // Tạm thời để dấu sao '*' để thông cửa hoàn toàn cho nhanh
 
     'allowed_origins_patterns' => [],
 
