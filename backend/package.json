@@ -3,6 +3,7 @@
     "private": true,
     "type": "module",
     "scripts": {
+        "build": "echo 'No assets to build for API only'",
         "dev": "vite"
     },
     "devDependencies": {
