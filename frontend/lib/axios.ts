@@ -64,34 +64,24 @@ axiosClient.interceptors.response.use(
       error.response &&
       (error.response.status === 401 || error.response.status === 403)
     ) {
-      const isAdminRoute = error.config?.url?.startsWith("/admin/");
-      const isStaffRoute = error.config?.url?.startsWith("/staff/");
+      // Dùng URL gốc để check xem có phải admin bị lỗi không
+      const isUrlAdmin = error.config.url.includes("admin");
 
-      if (isAdminRoute || isStaffRoute) {
-        // Nếu là Admin/Staff bị 401 -> Xóa quyền và cookie, ép đá văng về login
-        console.warn(
-          "Lỗi 401 Admin: Token không hợp lệ hoặc đã xóa localStorage!",
-        );
+      if (isUrlAdmin) {
+        console.warn("Admin hết hạn - Đá về trang Login Admin");
         localStorage.removeItem("admin-auth-storage");
-        document.cookie =
-          "auth_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-
-        // Tránh loop vô hạn nếu đang ở trang login
         if (!window.location.pathname.includes("/management-login")) {
           window.location.href = "/admin/management-login?key=cafe_cypher_2026";
         }
       } else {
-        // ✅ CHỈ hiển thị Toast "hết hạn" nếu trong Store đánh dấu là ĐÃ ĐĂNG NHẬP
-        const authState = useAuthStore.getState();
-        if (authState.isAuthenticated) {
-          toast.error("Phiên làm việc đã hết hạn. Vui lòng đăng nhập lại.");
+        console.warn("Client hết hạn - Đá về trang chủ");
+        const authStore = useAuthStore.getState();
+        if (authStore.isAuthenticated) {
+          toast.error("Phiên làm việc hết hạn.");
         }
-        // Xóa store của Zustand để app tự log out và không bị lặp loop 401
         localStorage.removeItem("auth-storage");
-        useAuthStore.getState().logout();
+        authStore.logout();
       }
-
-      console.warn("Lỗi 401: Token không hợp lệ hoặc đã hết hạn!");
     }
     return Promise.reject(error);
   },
