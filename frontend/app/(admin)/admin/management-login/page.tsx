@@ -45,14 +45,19 @@ function ManagementLoginForm() {
     const verifyToken = async () => {
       if (!isValidating && isAuthenticated && access_token && user) {
         try {
-          // BƯỚC 1: IMPORT AXIOSCLIENT LÊN ĐẦU FILE NHÉ!
-          // import axiosClient from "@/path/to/your/axiosClient";
-
-          // Dùng axiosClient để nó tự động xử lý Prefix và Headers
-          // Gọi API /me nhưng thêm /admin/me để axios nhận diện và gắn prefix
-          const res = await axiosClient.get("/admin/me");
+          // Thử ping API để kiểm tra xem token trong Storage còn sống thực sự không
+          const res = await axiosClient.get(
+            `${process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000"}/me`,
+            {
+              headers: {
+                Authorization: `Bearer ${access_token}`,
+                Accept: "application/json",
+              },
+            },
+          );
 
           if (res.status === 200) {
+            // Set lại cookie ngay lập tức để Middleware cho qua
             document.cookie = `auth_token=${access_token}; path=/; max-age=604800`;
             toast.success(
               `Đang khôi phục phiên đăng nhập của ${user.last_name || "Admin"}...`,
@@ -63,11 +68,12 @@ function ManagementLoginForm() {
             } else if (user.role === "staff") {
               router.push("/staff/dashboard");
             }
+          } else {
+            // Token đã chết hoặc bị xóa trên DB -> Xóa luôn storage để không bị loop
+            useAdminAuthStore.getState().logout();
           }
         } catch (error) {
           console.error("Lỗi xác thực Auto-login:", error);
-          // Lỗi thì logout để dọn dẹp
-          useAdminAuthStore.getState().logout();
         }
       }
     };
