@@ -15,11 +15,11 @@ return [
     |
     */
 
-    'paths' => ['api/*', 'sanctum/csrf-cookie'],
+    'paths' => ['api/*', 'sanctum/csrf-cookie', 'reverb/*'], // Thêm reverb vào nếu có dùng
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['http://localhost:3000'],
+    'allowed_origins' => ['https://cafe-cypher.up.railway.app/'], // Tạm thời để dấu sao '*' để thông cửa hoàn toàn cho nhanh
 
     'allowed_origins_patterns' => [],
 
@@ -29,6 +29,6 @@ return [
 
     'max_age' => 0,
 
-    'supports_credentials' => false,
+    'supports_credentials' => true, // Để là true nếu bác có dùng Cookie/Session
 
 ];
