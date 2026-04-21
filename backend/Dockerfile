@@ -25,7 +25,8 @@ COPY . .
 RUN composer install --no-dev --optimize-autoloader --no-scripts
 
 # 7. Cấp quyền cho các thư mục quan trọng để không bị lỗi 500
-RUN chown -R www-data:www-data /app/storage /app/bootstrap/cache && \
+RUN mkdir -p /app/storage /app/bootstrap/cache && \
+    chown -R www-data:www-data /app/storage /app/bootstrap/cache && \
     chmod -R 775 /app/storage /app/bootstrap/cache
 
 # 8. Railway sẽ map cổng này ra ngoài
