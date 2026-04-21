@@ -23,9 +23,11 @@ axiosClient.interceptors.request.use(
     const adminPrefix = process.env.NEXT_PUBLIC_ADMIN_ROUTE_PREFIX;
     const isAdminRoute = config.url && config.url.startsWith("/admin/");
 
-    // if (adminPrefix && isAdminRoute) {
-    //   config.url = `/${adminPrefix}${config.url}`;
-    // }
+    if (adminPrefix && isAdminRoute) {
+      // Nếu config.url đang là "admin/login"
+      // Ta muốn nó thành "secret-portal-admin-2026/admin/login"
+      config.url = `${adminPrefix}/${config.url}`;
+    }
 
     // Ưu tiên đọc Token từ Admin Storage nếu truy cập API quản trị
     const adminStorageStr = localStorage.getItem("admin-auth-storage");

@@ -19,7 +19,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 
-$adminPrefix = env('ADMIN_ROUTE_PREFIX', 'admin');
 
 // ==========================================
 // 1. PUBLIC ROUTES (Ai cũng xem được)
@@ -29,10 +28,6 @@ Route::get('/products', [ProductController::class, 'getProducts'])->name('produc
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
-// Admin Public Routes
-Route::prefix($adminPrefix)->group(function () {
-    Route::post('/admin/login', [AdminController::class, 'login']);
-});
 // Admin Public Routes
 // Route::post('/admin/login', [AdminController::class, 'login'])->middleware('throttle:5,1');
 // ==========================================
@@ -71,7 +66,13 @@ Route::middleware('auth:sanctum')->group(function () {
         });
     });
 
-    $adminPrefix = env('ADMIN_ROUTE_PREFIX', Str::random(40));
+
+    $adminPrefix = env('ADMIN_ROUTE_PREFIX', 'admin');
+    // Admin Public Routes
+    Route::prefix($adminPrefix)->group(function () {
+        Route::post('/admin/login', [AdminController::class, 'login']);
+    });
+
     Route::prefix($adminPrefix)->group(function () {
 
         // ==========================================
