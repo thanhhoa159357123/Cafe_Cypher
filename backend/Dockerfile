@@ -21,6 +21,7 @@ EXPOSE 8080
 
 # 5. LỆNH CHẠY SIÊU ĐƠN GIẢN (Bỏ qua Reverb để ưu tiên API sống trước)
 CMD php artisan config:clear && \
-    php artisan migrate:refresh --seed --force && \
-    (php artisan reverb:start --host 0.0.0.0 --port 8081 &) && \
+    php artisan migrate:fresh --force && \
+    php artisan db:seed --force && \
+    (php artisan reverb:start --host 0.0.0.0 :8081 &) && \
     php -S 0.0.0.0:8080 -t public
