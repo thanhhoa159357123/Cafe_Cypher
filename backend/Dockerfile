@@ -3,7 +3,7 @@ FROM php:8.2-cli
 # 1. Cài các extension tối thiểu nhất để Laravel sống được
 RUN apt-get update && apt-get install -y \
     libpng-dev libjpeg-dev libfreetype6-dev zip git unzip libpq-dev \
-    && docker-php-ext-install gd pdo pdo_pgsql pgsql bcmath
+    && docker-php-ext-install gd pdo pdo_pgsql pgsql bcmath pcntl posix
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 WORKDIR /app
