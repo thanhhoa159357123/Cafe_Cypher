@@ -12,7 +12,6 @@ export const CartHook = () => {
   }) => {
     try {
       await addToCart(data);
-      toast.success("Thêm sản phẩm thành công!");
     } catch (error) {
       toast.error("Thêm thất bại! Vui lòng thử lại.");
     }

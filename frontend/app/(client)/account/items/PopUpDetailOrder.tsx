@@ -2,12 +2,19 @@
 "use client";
 import { useOrderStore } from "@/app/store/client/useOrderStore";
 import { useOrderHook } from "@/app/hooks/client/OrderHook";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const PopUpDetailOrder = () => {
   const { isOpen, selectedOrder, closeDrawer } = useOrderStore();
   const { handleCancelOrder } = useOrderHook();
   const [isCanceling, setIsCanceling] = useState(false);
+  const [showAllItems, setShowAllItems] = useState(false);
+
+  useEffect(() => {
+    if (!isOpen) {
+      setTimeout(() => setShowAllItems(false), 300);
+    }
+  }, [isOpen]);
 
   const onCancel = async () => {
     if (!selectedOrder) return;
@@ -107,10 +114,13 @@ const PopUpDetailOrder = () => {
             {/* 2. Danh sách sản phẩm */}
             <div className="space-y-4">
               <h3 className="font-bold border-l-4 border-primary pl-2 text-lg flex items-center gap-2">
-                <span>☕</span> Sản phẩm đã đặt
+                <span>☕</span> Sản phẩm đã đặt ({selectedOrder.items.length})
               </h3>
               <div className="space-y-3">
-                {selectedOrder.items.map((item, idx) => (
+                {(showAllItems
+                  ? selectedOrder.items
+                  : selectedOrder.items.slice(0, 3)
+                ).map((item, idx) => (
                   <div
                     key={idx}
                     className="bg-muted/50 p-5 rounded-2xl border border-border/50 hover:shadow-md hover:bg-muted/70 transition-all cursor-pointer"
@@ -154,6 +164,16 @@ const PopUpDetailOrder = () => {
                   </div>
                 ))}
               </div>
+              {selectedOrder.items.length > 3 && (
+                <button
+                  onClick={() => setShowAllItems(!showAllItems)}
+                  className="w-full py-2.5 flex items-center justify-center text-sm text-primary font-semibold bg-primary/10 rounded-xl hover:bg-primary/20 transition-colors cursor-pointer"
+                >
+                  {showAllItems
+                    ? "🔼 Ẩn bớt sản phẩm"
+                    : `🔽 Xem thêm ${selectedOrder.items.length - 3} sản phẩm khác...`}
+                </button>
+              )}
             </div>
 
             {/* 3. Thanh toán & Trạng thái */}

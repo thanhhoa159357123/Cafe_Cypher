@@ -17,8 +17,7 @@ const Cart = ({ onClose, user, isAuthenticated }: CartProps) => {
   const { cart, updateCartItem, removeCartItem } = CartHook();
 
   // Tính tổng số lượng ly nước có trong giỏ hàng
-  const totalQuantity =
-    cart?.items?.reduce((acc, item) => acc + item.quantity, 0) || 0;
+  const totalQuantity = cart?.items?.length || 0;
 
   // Rỗng nếu mảng item ko tồn tại HOẶC count = 0
   const isCartEmpty = !cart?.items || cart.items.length === 0;
@@ -95,12 +94,13 @@ const Cart = ({ onClose, user, isAuthenticated }: CartProps) => {
               Bạn chưa chọn món nước nào! Về lại menu và thêm vài ly cafe thơm
               ngon nhé.
             </p>
-            <button
+            <Link
+              href="/"
               onClick={onClose}
-              className="px-8 py-3.5 bg-primary text-primary-foreground font-semibold rounded-xl hover:bg-primary/90 transition-colors shadow-sm cursor-pointer"
+              className="px-8 py-3.5 bg-primary text-primary-foreground font-semibold rounded-xl hover:bg-primary/90 transition-colors shadow-sm cursor-pointer inline-flex items-center justify-center"
             >
               Quay lại Menu
-            </button>
+            </Link>
           </div>
         ) : (
           /* TRƯỜNG HỢP 2: CÓ HÀNG (Vì Navbar đã lọc hộ bước đăng nhập rồi) */

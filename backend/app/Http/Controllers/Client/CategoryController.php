@@ -15,8 +15,23 @@ class CategoryController extends Controller
         $categories = Cache::remember('client_categories_active', 3600, function () {
             return Category::whereNull('parent_id')
                 ->where('status', 'active')
+                // 1. Chỉ lấy danh mục cha nếu nó có sản phẩm (trực tiếp) HOẶC có danh mục con chứa sản phẩm
+                ->where(function ($query) {
+                    $query->whereHas('products', function ($productQuery) {
+                        $productQuery->where('status', 'active');
+                    })->orWhereHas('children', function ($childQuery) {
+                        $childQuery->where('status', 'active')
+                            ->whereHas('products', function ($productQuery) {
+                                $productQuery->where('status', 'active');
+                            });
+                    });
+                })
+                // 2. Chỉ truy vấn các danh mục con nếu bản thân danh mục con đó có sản phẩm
                 ->with(['children' => function ($query) {
-                    $query->where('status', 'active');
+                    $query->where('status', 'active')
+                        ->whereHas('products', function ($productQuery) {
+                            $productQuery->where('status', 'active');
+                        });
                 }])->get();
         });
 

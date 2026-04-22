@@ -49,8 +49,9 @@ const QuantityInput = ({
   };
 
   const handleDecrease = () => {
-    if (currentQuantity > 1) {
-      const newVal = currentQuantity - 1;
+    const currentVal = parseInt(value) || 0;
+    if (currentVal > 1) {
+      const newVal = currentVal - 1;
       setValue(newVal.toString()); // UI phản hồi lập tức 0 ms
 
       if (debounceRef.current) clearTimeout(debounceRef.current);
@@ -64,7 +65,8 @@ const QuantityInput = ({
   };
 
   const handleIncrease = () => {
-    const newVal = currentQuantity + 1;
+    const currentVal = parseInt(value) || 0;
+    const newVal = currentVal + 1;
     setValue(newVal.toString()); // UI phản hồi lập tức 0 ms
 
     if (debounceRef.current) clearTimeout(debounceRef.current);

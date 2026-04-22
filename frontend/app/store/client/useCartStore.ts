@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { CartState } from "../../types/client/cart";
+import { CartState, ICartItem } from "../../types/client/cart";
 // Đổi tên các hàm import từ service để tránh bị trùng tên với action của store
 import {
   addToCart as apiAddToCart,
@@ -18,6 +18,12 @@ export const useCartStore = create<CartState>((set, get) => ({
     if (!silent) set({ loading: true, error: null });
     try {
       const response = await apiGetCart();
+      // Đảm bảo thứ tự hiển thị không bị nhảy khi gọi lại api
+      if (response.data && response.data.items) {
+        response.data.items.sort(
+          (a: ICartItem, b: ICartItem) => Number(a.id) - Number(b.id),
+        );
+      }
       set({ loading: false, cart: response.data });
     } catch (error) {
       set({ loading: false, error: "Failed to fetch cart" });
@@ -38,7 +44,12 @@ export const useCartStore = create<CartState>((set, get) => ({
     try {
       await apiAddToCart(data);
       await get().fetchCart();
+      // 3. CẬP NHẬT TOAST THÀNH SUCCESS (Nó sẽ tự mất sau vài giây)
+      toast.success("Đã thêm vào giỏ hàng thành công!", { id: toastId });
+
+      set({ loading: false }); // Tắt loading trong store
     } catch (error) {
+      toast.dismiss(toastId); // Xoá toast loading nếu có lỗi
       set({ loading: false, error: "Failed to add item to cart" });
       throw error; // Ném lỗi để CartHook bắt và hiển thị Toast
     }

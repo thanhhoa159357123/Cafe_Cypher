@@ -5,7 +5,7 @@ import { toast } from "sonner";
 const axiosClient = axios.create({
   baseURL:
     process.env.NEXT_PUBLIC_API_URL ||
-    "https://cafecypher-backend-production.up.railway.app/api",
+    "http://127.0.0.1:8000/api" /* Fallback nếu biến môi trường không được thiết lập */,
   headers: {
     Accept: "application/json",
     "Content-Type": "application/json",

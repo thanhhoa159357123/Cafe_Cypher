@@ -141,12 +141,10 @@ const CartItem = ({
                     TỔNG THÀNH TIỀN:
                   </span>
                   <div className="flex flex-col items-end">
-                    {item.quantity > 1 && (
-                      <span className="text-[12px] text-muted-foreground mr-1">
-                        ({item.quantity} x{" "}
-                        {calculateUnitPrice(item).toLocaleString()}₫)
-                      </span>
-                    )}
+                    <span className="text-[12px] text-muted-foreground mr-1">
+                      ({item.quantity} x{" "}
+                      {calculateUnitPrice(item).toLocaleString()}₫)
+                    </span>
                     <span className="text-xl font-black text-primary">
                       {calculateSubtotal(item).toLocaleString()}₫
                     </span>

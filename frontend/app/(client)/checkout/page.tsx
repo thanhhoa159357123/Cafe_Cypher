@@ -8,6 +8,19 @@ import { useOrderHook } from "../../hooks/client/OrderHook";
 import OrderSummary from "./items/OrderSummary";
 import { toast } from "sonner";
 import ModalPayment from "./items/ModalPayment";
+import { z } from "zod";
+
+const checkoutSchema = z.object({
+  address: z
+    .string()
+    .min(5, "Địa chỉ nhận hàng quá ngắn, vui lòng nhập cụ thể hơn!"),
+  phone: z
+    .string()
+    .regex(
+      /^0[0-9]{9}$/,
+      "Số điện thoại không hợp lệ! Vui lòng nhập đúng 10 số (Bắt đầu bằng số 0).",
+    ),
+});
 
 // 👇 Đổi tên CheckOutPage cũ thành CheckOutContent
 const CheckOutContent = () => {
@@ -32,7 +45,8 @@ const CheckOutContent = () => {
   const isOrderedRef = useRef(false);
 
   const { cart } = useCartStore();
-  const { buyNowItem, handleCreateOrder, loading } = useOrderHook();
+  const { setBuyNowItem, buyNowItem, handleCreateOrder, loading } =
+    useOrderHook();
 
   useEffect(() => {
     if (!isBuyNowFlow) return;
@@ -61,14 +75,28 @@ const CheckOutContent = () => {
       )
     : Number(cart?.total_price || 0);
 
+  const handleUpdateBuyNowQuantity = (id: number | string, qty: number) => {
+    if (buyNowItem) {
+      const unitPrice = Number(buyNowItem.unit_price || 0);
+      setBuyNowItem({
+        ...buyNowItem,
+        quantity: qty,
+        total_price: unitPrice * qty,
+      });
+    }
+  };
+
   const onSubmitOrder = async () => {
     if (!displayItems || displayItems.length === 0) {
       toast.error("Không có sản phẩm nào để thanh toán!");
       return;
     }
-    
-    if (!address || !phone) {
-      toast.warning("Vui lòng điền đủ địa chỉ và số điện thoại!");
+
+    const validationResult = checkoutSchema.safeParse({ address, phone });
+    if (!validationResult.success) {
+      validationResult.error.issues.forEach((issue) => {
+        toast.warning(issue.message);
+      });
       return;
     }
 
@@ -136,9 +164,14 @@ const CheckOutContent = () => {
                 <div className="relative">
                   <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <input
-                    type="text"
+                    type="tel"
+                    maxLength={10}
+                    pattern="[0-9]*"
                     value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
+                    onChange={(e) => {
+                      const onlyNums = e.target.value.replace(/\D/g, "");
+                      setPhone(onlyNums);
+                    }}
                     placeholder="VD: 0987654321"
                     className="w-full pl-10 pr-4 py-2 rounded-lg border border-input bg-background focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
                   />
@@ -227,6 +260,9 @@ const CheckOutContent = () => {
           isLoading={loading}
           displayTotalPrice={displayTotalPrice}
           handlePlaceOrder={onSubmitOrder}
+          handleUpdateQuantity={
+            isBuyNowFlow ? handleUpdateBuyNowQuantity : undefined
+          }
         />
       </div>
 

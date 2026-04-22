@@ -85,8 +85,7 @@ const Navbar = () => {
                   )}
                 </button>
 
-                {/* Khung Dropdown hiển thị danh sách Thông Báo (Tương tự Admin) */}
-                {showNoti && (
+                {/* {showNoti && (
                   <div className="absolute right-0 mt-4 w-87.5 bg-background border border-border rounded-lg shadow-2xl overflow-hidden z-50">
                     <div className="p-3 border-b border-border bg-muted/30 font-semibold text-sm">
                       Thông báo từ quán
@@ -116,7 +115,7 @@ const Navbar = () => {
                       )}
                     </div>
                   </div>
-                )}
+                )} */}
               </div>
 
               {/* Vùng chứa Icon giỏ hàng có position relative */}

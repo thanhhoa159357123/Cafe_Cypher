@@ -47,8 +47,16 @@ export const loginSchema = z.object({
 export type LoginFormData = z.infer<typeof loginSchema>;
 
 export const registerSchema = z.object({
-  lastName: z.string().trim().min(1, "Họ là bắt buộc"),
-  firstName: z.string().trim().min(1, "Tên là bắt buộc"),
+  lastName: z
+    .string()
+    .trim()
+    .min(1, "Họ là bắt buộc")
+    .regex(/^[\p{L}\s]+$/u, "Họ chỉ được chứa chữ cái"),
+  firstName: z
+    .string()
+    .trim()
+    .min(1, "Tên là bắt buộc")
+    .regex(/^[\p{L}\s]+$/u, "Tên chỉ được chứa chữ cái"),
   email: z
     .string()
     .trim()

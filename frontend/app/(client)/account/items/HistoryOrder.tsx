@@ -2,10 +2,38 @@
 import { IOrder } from "@/app/types/base/order";
 import { useOrderStore } from "@/app/store/client/useOrderStore";
 import { useOrderHook } from "@/app/hooks/client/OrderHook";
+import { Eye, XCircle } from "lucide-react";
 
 interface HistoryOrderProps {
   orders: IOrder[] | null;
 }
+
+const getStatusInfo = (status: string) => {
+  switch (status) {
+    case "pending":
+      return { text: "Chờ xác nhận", color: "bg-yellow-100 text-yellow-600" };
+    case "processing":
+      return { text: "Đang chuẩn bị", color: "bg-blue-100 text-blue-600" };
+    case "shipping":
+      return { text: "Đang giao", color: "bg-orange-100 text-orange-600" };
+    case "completed":
+      return { text: "Hoàn thành", color: "bg-green-100 text-green-600" };
+    case "cancelled":
+      return { text: "Đã hủy", color: "bg-red-100 text-red-600" };
+    default:
+      return { text: status, color: "bg-gray-100 text-gray-600" };
+  }
+};
+
+const formatDate = (dateStr: string) => {
+  try {
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return dateStr;
+    return `${d.toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" })} - ${d.toLocaleDateString("vi-VN")}`;
+  } catch {
+    return dateStr;
+  }
+};
 
 const HistoryOrder = ({ orders }: HistoryOrderProps) => {
   const openDrawer = useOrderStore((state) => state.openDrawer);
@@ -45,28 +73,28 @@ const HistoryOrder = ({ orders }: HistoryOrderProps) => {
                       {order.order_number}
                     </span>
                   </td>
-                  <td className="py-5 text-sm text-muted-foreground">
-                    <div className="flex flex-col items-start gap-0.5">
-                      <span className="font-bold text-card-foreground text-sm tracking-tight">
-                        {order.created_at.split(" ")[0]}
-                      </span>
-                      <div className="flex items-center text-[11px] text-muted-foreground font-medium">
-                        <span className="bg-secondary text-secondary-foreground px-1.5 py-0.5 rounded mr-1.5">
-                          {order.created_at.split(" ")[1]}
-                        </span>
-                      </div>
-                    </div>
+                  <td className="py-5 text-sm font-medium text-foreground">
+                    {formatDate(order.created_at)}
                   </td>
                   <td className="py-5">
-                    <div className="flex flex-wrap gap-2">
-                      {order.items.map((item, idx) => (
+                    <div className="flex flex-wrap gap-2 items-center">
+                      {order.items.slice(0, 3).map((item, idx) => (
                         <img
                           key={idx}
                           src={item.image_url || "/placeholder.png"}
-                          className="h-16 w-16 rounded-lg border-2 border-card object-cover shadow-sm"
+                          className="h-12 w-12 rounded-lg border border-border object-cover shadow-sm"
                           alt="product"
                         />
                       ))}
+                      {order.items.length > 3 && (
+                        <button
+                          onClick={() => openDrawer(order)}
+                          className="h-12 w-12 rounded-lg bg-secondary flex items-center justify-center text-xs font-bold text-secondary-foreground hover:bg-secondary/80 transition-colors cursor-pointer"
+                          title="Xem thêm"
+                        >
+                          +{order.items.length - 3}
+                        </button>
+                      )}
                     </div>
                   </td>
                   <td className="py-5 text-right font-bold text-card-foreground">
@@ -74,51 +102,45 @@ const HistoryOrder = ({ orders }: HistoryOrderProps) => {
                   </td>
                   <td className="py-5 text-center">
                     <span
-                      className={`inline-block px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter ${
-                        order.status === "pending"
-                          ? "bg-yellow-100 text-yellow-600"
-                          : order.status === "cancelled"
-                            ? "bg-red-100 text-red-600"
-                            : "bg-primary/10 text-primary"
-                      }`}
+                      className={`inline-block px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter ${getStatusInfo(order.status).color}`}
                     >
-                      {order.status === "pending"
-                        ? "Chờ xác nhận"
-                        : order.status === "cancelled"
-                          ? "Đã hủy"
-                          : order.status}
+                      {getStatusInfo(order.status).text}
                     </span>
                   </td>
                   <td className="py-5">
-                    <button
-                      onClick={() => openDrawer(order)}
-                      className="px-3 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors font-medium cursor-pointer"
-                    >
-                      Chi tiết
-                    </button>
-                    {order.status === "pending" && (
+                    <div className="flex items-center gap-2">
                       <button
-                        onClick={() => {
-                          if (
-                            window.confirm(
-                              "Bạn có chắc chắn muốn hủy đơn hàng này không?",
-                            )
-                          ) {
-                            handleCancelOrder(order.id, "Khách hàng tự hủy");
-                          }
-                        }}
-                        className="px-3 py-2 bg-destructive text-destructive-foreground rounded-md hover:bg-destructive/90 transition-colors font-medium ml-2 cursor-pointer"
+                        onClick={() => openDrawer(order)}
+                        title="Xem chi tiết"
+                        className="p-2 bg-primary/10 text-primary rounded-md hover:bg-primary/20 transition-colors cursor-pointer"
                       >
-                        Hủy
+                        <Eye className="w-5 h-5" />
                       </button>
-                    )}
+                      {order.status === "pending" && (
+                        <button
+                          onClick={() => {
+                            if (
+                              window.confirm(
+                                "Bạn có chắc chắn muốn hủy đơn hàng này không?",
+                              )
+                            ) {
+                              handleCancelOrder(order.id, "Khách hàng tự hủy");
+                            }
+                          }}
+                          title="Hủy đơn hàng"
+                          className="p-2 bg-destructive/10 text-destructive rounded-md hover:bg-destructive/20 transition-colors cursor-pointer"
+                        >
+                          <XCircle className="w-5 h-5" />
+                        </button>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))
             ) : (
               <tr>
                 <td
-                  colSpan={5}
+                  colSpan={6}
                   className="py-10 text-center text-muted-foreground italic"
                 >
                   Chưa có dữ liệu đơn hàng.

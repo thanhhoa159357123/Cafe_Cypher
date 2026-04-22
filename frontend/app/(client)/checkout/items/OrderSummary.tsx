@@ -3,15 +3,17 @@ import React from "react";
 import Image from "next/image";
 import { ICartItem } from "@/app/types/client/cart";
 import { IBuyNowItemState } from "@/app/types/client/order";
-import { ITopping } from "@/app/types/client/product";
+import { ISize, ITopping } from "@/app/types/client/product";
 import { calculateUnitPrice } from "@/lib/cartUtils";
 import { IOrderItem } from "@/app/types/base/order";
+import QuantityInput from "../../components/items/Cart/QuantityInput";
 
 interface OrderSummaryProps {
   items?: (ICartItem | IBuyNowItemState | any)[];
   isLoading: boolean;
   displayTotalPrice: number;
   handlePlaceOrder: () => void;
+  handleUpdateQuantity?: (id: number | string, quantity: number) => void;
 }
 
 const OrderSummary = ({
@@ -19,6 +21,7 @@ const OrderSummary = ({
   isLoading,
   displayTotalPrice,
   handlePlaceOrder,
+  handleUpdateQuantity,
 }: OrderSummaryProps) => {
   return (
     <div className="space-y-6">
@@ -42,6 +45,10 @@ const OrderSummary = ({
               ? rawItem.size?.name
               : rawItem.size_name;
             const quantity = rawItem.quantity || 1;
+
+            const productSizePriceCart = isCartItem
+              ? Number(rawItem.size?.price || rawItem.product?.price || 0)
+              : Number(rawItem.unit_price || 0);
 
             // Lấy danh sách tên topping để hiển thị (nếu có)
             const toppingNames = isCartItem
@@ -80,8 +87,19 @@ const OrderSummary = ({
                       .filter(Boolean)
                       .join(" + ")}
                   </p>
-                  <div className="flex justify-between items-center mt-1">
-                    <p className="text-sm font-semibold">x{quantity}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {productSizePriceCart.toLocaleString("vi-VN")}₫
+                  </p>
+                  <div className="flex justify-between items-center mt-3">
+                    {isBuyNow && handleUpdateQuantity ? (
+                      <QuantityInput
+                        itemId={rawItem.product_id}
+                        currentQuantity={quantity}
+                        onUpdate={handleUpdateQuantity}
+                      />
+                    ) : (
+                      <p className="text-sm font-semibold">x{quantity}</p>
+                    )}
                     <p className="text-sm font-bold text-primary">
                       {itemTotal.toLocaleString("vi-VN")}₫
                     </p>
