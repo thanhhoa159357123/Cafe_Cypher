@@ -70,7 +70,7 @@ const Navbar = () => {
             <div className="flex items-center justify-center gap-6">
               {/* Nút Chuông Thông Báo */}
               <div className="relative">
-                <button
+                {/* <button
                   onClick={() => {
                     setShowNoti(!showNoti);
                     if (unreadCount > 0) clearUnread();
@@ -83,7 +83,7 @@ const Navbar = () => {
                       {unreadCount > 9 ? "9+" : unreadCount}
                     </span>
                   )}
-                </button>
+                </button> */}
 
                 {/* {showNoti && (
                   <div className="absolute right-0 mt-4 w-87.5 bg-background border border-border rounded-lg shadow-2xl overflow-hidden z-50">
