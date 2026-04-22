@@ -19,7 +19,10 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['*'], // Tạm thời để dấu sao '*' để thông cửa hoàn toàn cho nhanh
+    'allowed_origins' => [
+        'https://cafe-cypher.vercel.app',
+        'https://cafe-cypher-95x8ofom6-thanh-hoas-projects-736544a3.vercel.app' // Ném cả link preview của Vercel vào cho chắc cốp
+    ],
 
     'allowed_origins_patterns' => [],
 
