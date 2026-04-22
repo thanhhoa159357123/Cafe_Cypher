@@ -23,4 +23,4 @@ EXPOSE 8080
 CMD php artisan config:clear && \
     php artisan migrate --force && \
     (php artisan reverb:start --host 0.0.0.0 --port 8081 &) && \
-    php -S 0.0.0.0:${PORT:-8080} -t public
+    php -S 0.0.0.0:8080 -t public
