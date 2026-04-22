@@ -19,10 +19,7 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => [
-        'https://cafe-cypher.vercel.app', // XÓA DẤU / Ở ĐUÔI ĐI BÁC!
-        'http://localhost:3000',
-    ],
+    'allowed_origins' => ['*'], // Tạm thời để dấu sao '*' để thông cửa hoàn toàn cho nhanh
 
     'allowed_origins_patterns' => [],
 
