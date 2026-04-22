@@ -13,7 +13,8 @@ COPY . .
 RUN composer install --no-dev --optimize-autoloader --no-scripts
 
 # 3. Cấp quyền
-RUN chmod -R 777 storage bootstrap/cache
+RUN mkdir -p storage/framework/sessions storage/framework/views storage/framework/cache bootstrap/cache && \
+    chmod -R 777 storage bootstrap/cache
 
 # 4. Port của Railway
 EXPOSE 8080
