@@ -18,7 +18,7 @@ class UserSeeder extends Seeder
             'first_name' => 'Admin',
             'last_name' => 'Cypher',
             'email' => 'admin@gmail.com',
-            'password' => bcrypt('123456'), // Mật khẩu bác tự chọn
+            'password' => bcrypt('password'), // Mật khẩu bác tự chọn
             'role' => 'admin',
             'status' => 'active'
         ]);

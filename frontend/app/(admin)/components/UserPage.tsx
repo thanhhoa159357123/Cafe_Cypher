@@ -40,6 +40,7 @@ const UserPage = ({ typeRole }: UserPageProps) => {
     handleDeleteUser,
     handleRestoreUser,
   } = UserHook();
+  console.log("us", users);
 
   useEffect(() => {
     fetchUsers(typeRole);

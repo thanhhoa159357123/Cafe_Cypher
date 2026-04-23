@@ -20,6 +20,8 @@ return [
     'allowed_methods' => ['*'],
 
     'allowed_origins' => [
+        'http://localhost:3000',
+        'http://127.0.0.1:3000',
         'https://cafe-cypher.vercel.app',
         'https://cafe-cypher-95x8ofom6-thanh-hoas-projects-736544a3.vercel.app' // Ném cả link preview của Vercel vào cho chắc cốp
     ],

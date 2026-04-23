@@ -7,6 +7,7 @@ use App\Http\Requests\AdminLoginRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 
 class AdminController extends Controller
 {
@@ -29,6 +30,8 @@ class AdminController extends Controller
 
         // 4. Mọi thứ ok, tạo token
         $token = $user->createToken('admin-token')->plainTextToken;
+
+        Log::info("Admin/Staff (ID: {$user->id}, Email: {$user->email}) đã đăng nhập vào hệ thống quản trị.");
 
         return response()->json([
             'message' => 'Đăng nhập thành công',
