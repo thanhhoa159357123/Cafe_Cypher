@@ -1,6 +1,6 @@
 # ☕ Cafe_Cypher
 
-> Một hệ thống quản lý và đặt hàng cafe trực tuyến hiện đại được xây dựng với kiến trúc Decoupled (Laravel API & NextJS Frontend).
+> Một hệ thống quản lý và đặt hàng cafe trực tuyến hiện đại, ứng dụng kiến trúc Decoupled (Laravel API & NextJS Frontend) kết hợp xử lý thời gian thực.
 
 ![Next JS](https://img.shields.io/badge/Next-black?style=for-the-badge&logo=next.js&logoColor=white)
 ![Laravel](https://img.shields.io/badge/laravel-%23FF2D20.svg?style=for-the-badge&logo=laravel&logoColor=white)
@@ -10,42 +10,61 @@
 ![Railway](https://img.shields.io/badge/Railway-0B0D0E?style=for-the-badge&logo=railway&logoColor=white)
 ![Laravel Reverb](https://img.shields.io/badge/Laravel_Reverb-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)
 ![Postman](https://img.shields.io/badge/Postman-FF6C37?style=for-the-badge&logo=postman&logoColor=white)
-![DataGrip](https://img.shields.io/badge/DataGrip-000000?style=for-the-badge&logo=datagrip&logoColor=white)
 ![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
-![pnpm](https://img.shields.io/badge/pnpm-%234a4a4a.svg?style=for-the-badge&logo=pnpm&logoColor=f69220)
 
 ---
 
-## 🚀 Live Demo
-
-**Frontend:** [https://cafe-cypher.vercel.app/](https://cafe-cypher.vercel.app/)
-
----
-
-## 🛠 Tech Stack
-
-| Thành phần | Công nghệ sử dụng |
-| :--- | :--- |
-| **Frontend** | NextJS 16 (App Router), TailwindCSS |
-| **Backend** | Laravel 12, MySQL |
-| **Real-time** | **Laravel Reverb** (WebSockets) |
-| **Deployment** | Vercel (Frontend) & Railway (Backend) |
-| **Tools** | Postman, Docker, DataGrip |
+## 🚀 Live Demo & Giới thiệu
+- **Frontend Live Demo:** [https://cafe-cypher.vercel.app/](https://cafe-cypher.vercel.app/)
+- **Vai trò dự án:** Solo Fullstack Developer (Tự nghiên cứu, thiết kế database, phát triển API và xây dựng giao diện từ con số 0).
 
 ---
 
-## 📂 Cấu trúc dự án
-- `backend/`: Chứa mã nguồn Laravel 12 API, Database Migrations và Reverb WebSockets.
-- `frontend/`: Chứa mã nguồn NextJS 16, sử dụng App Router, Group Router và TailwindCSS.
+## 🛠 Tech Stack & Kiến trúc hệ thống
+
+Dự án được xây dựng theo mô hình **Decoupled Architecture**, tách biệt hoàn toàn giao diện người dùng và máy chủ xử lý logic, giao tiếp thông qua RESTful API.
+
+| Thành phần | Công nghệ sử dụng | Mục đích |
+| :--- | :--- | :--- |
+| **Frontend** | NextJS 16 (App Router), TailwindCSS | Tối ưu hóa SEO (SSR/SSG), quản lý routing linh hoạt và UI/UX mượt mà. |
+| **Backend API** | Laravel 12, MySQL | Xây dựng RESTful API chuẩn mực, xử lý logic nghiệp vụ và quản lý Database. |
+| **Real-time** | Laravel Reverb (WebSockets) | Đồng bộ trạng thái đơn hàng ngay lập tức giữa Client và Admin Dashboard. |
+| **Deployment** | Vercel, Railway, Docker | Quản lý môi trường CI/CD cơ bản và đưa ứng dụng lên cloud. |
 
 ---
 
+## 🧠 Technical Highlights & Điểm nhấn kỹ thuật
+- **Tích hợp WebSockets:** Thiết lập thành công Laravel Reverb để đẩy sự kiện (broadcast events) realtime khi có đơn hàng mới, giảm tải việc Client phải gọi API liên tục (polling).
+- **Quản lý State & API Fetching:** Ứng dụng hiệu quả các Hook của React/NextJS để quản lý giỏ hàng cục bộ và đồng bộ với server một cách mượt mà.
+- **Bảo mật & Phân quyền:** Phân tách rõ ràng luồng Authentication cho Người dùng (Client) và Quản trị viên (Admin).
 
-## ✨ Tính năng nổi bật
-- ⚡ **Real-time Order:** Hệ thống thông báo và cập nhật đơn hàng tức thì nhờ **Laravel Reverb**.
-- 🛡 **Admin Dashboard:** Quản trị toàn diện Sản phẩm, Danh mục, Topping/Size và Khách hàng.
-- 🛒 **Shopping Cart:** Trải nghiệm đặt hàng mượt mà, tối ưu UX cho người dùng.
-- 📱 **Responsive Design:** Giao diện tối giản, dễ sử dụng.
+---
+
+## 📚 Những gì tôi học được (What I Learned)
+Đóng vai trò là dự án cá nhân tâm huyết, Cafe_Cypher giúp tôi củng cố và thực hành các kỹ năng thực tế:
+1. Hiểu sâu về cách thiết kế và triển khai luồng giao tiếp giữa **NextJS (Frontend)** và **Laravel (Backend API)**.
+2. Nắm bắt cơ chế hoạt động của **WebSockets** để giải quyết bài toán thời gian thực (Real-time).
+3. Làm quen với quy trình Deploy một ứng dụng Fullstack lên môi trường Production (Vercel & Railway).
+4. Cải thiện tư duy tổ chức thư mục code, quản lý Component và tối ưu trải nghiệm người dùng (UX/UI).
+
+---
+
+## ✨ Tính năng cốt lõi
+- ⚡ **Real-time Order System:** Thông báo đơn hàng mới tức thì cho Admin, cập nhật trạng thái đơn (Đang xử lý, Hoàn thành) realtime cho khách hàng.
+- 🛒 **Smart Shopping Cart:** Thêm/sửa/xóa sản phẩm, tính toán giá trị đơn hàng linh hoạt dựa trên kích cỡ (Size) và Topping tùy chọn.
+- 🛡 **Admin Dashboard:** Cung cấp giao diện quản trị trực quan (CRUD) cho Danh mục, Sản phẩm, Khách hàng và Đơn hàng.
+- 📱 **Fully Responsive:** Giao diện hiển thị tốt trên mọi thiết bị (Mobile, Tablet, Desktop).
+
+---
+## Database Schema (ERD)
+<p align="center">
+<img src="https://github.com/user-attachments/assets/7d91a4a8-bfb7-416d-b143-494248f2fefe" alt="Sơ đồ ERD dự án Cafe_Cypher" width="100%" />
+</p>
+
+**Phân tích logic thiết kế:**
+- **Mô hình quan hệ (Relational Model):** Sử dụng các bảng trung gian (`product_sizes`, `product_topping`) để giải quyết quan hệ Nhiều-Nhiều (Many-to-Many), cho phép một sản phẩm có nhiều tùy chọn và ngược lại.
+- **Quản lý trạng thái đơn hàng:** Tách biệt `cart_items` (giỏ hàng tạm thời) và `order_items` (dữ liệu đơn hàng đã chốt) để lưu trữ lịch sử giao dịch chính xác ngay cả khi thông tin sản phẩm thay đổi theo thời gian.
+- **Phân cấp danh mục:** Bảng `categories` hỗ trợ cấu trúc cây (parent/child) giúp mở rộng danh mục sản phẩm linh hoạt.
 
 ---
 
